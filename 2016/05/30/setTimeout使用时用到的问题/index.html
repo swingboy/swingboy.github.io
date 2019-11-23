@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>setTimeout使用时用到的问题 | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式。而且方法只执行一次。但是我们在用的时候会有一些问题甚至是误区。1.try/catch捕捉不到它的错误看下面：1234567try&amp;#123;    setTimeout(function()&amp;#123;        throw new Error(&amp;quot;我是异常！”)    &amp;#125;, 1000);&amp;#125; c">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="setTimeout使用时用到的问题">
+<meta property="og:url" content="http://swingboy.github.io/2016/05/30/setTimeout使用时用到的问题/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式。而且方法只执行一次。但是我们在用的时候会有一些问题甚至是误区。1.try/catch捕捉不到它的错误看下面：1234567try&amp;#123;    setTimeout(function()&amp;#123;        throw new Error(&amp;quot;我是异常！”)    &amp;#125;, 1000);&amp;#125; c">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-23T14:30:46.726Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="setTimeout使用时用到的问题">
+<meta name="twitter:description" content="setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式。而且方法只执行一次。但是我们在用的时候会有一些问题甚至是误区。1.try/catch捕捉不到它的错误看下面：1234567try&amp;#123;    setTimeout(function()&amp;#123;        throw new Error(&amp;quot;我是异常！”)    &amp;#125;, 1000);&amp;#125; c">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-setTimeout使用时用到的问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/30/setTimeout使用时用到的问题/" class="article-date">
+  <time datetime="2016-05-30T02:52:41.000Z" itemprop="datePublished">2016-05-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      setTimeout使用时用到的问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式。而且方法只执行一次。但是我们在用的时候会有一些问题甚至是误区。<br>1.try/catch捕捉不到它的错误<br>看下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">        throw new Error(&quot;我是异常！”)</span><br><span class="line">    &#125;, 1000);</span><br><span class="line">&#125; catch(e)&#123;</span><br><span class="line">    console.log(e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里的try/catch 语句块只捕获setTimeout函数自身内部发生的那些错误。因为setTimeout 异步地运行其回调，所以即使延时设置为0，回调抛出的错误也会直接流向应用程序。</p>
+<p>2.执行的时候会被阻塞<br>看下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var date = new Date;</span><br><span class="line">setTimeout(function()&#123;</span><br><span class="line">   console.log(&quot;时间差：&quot; + (new Date - date));</span><br><span class="line">&#125;, 1000);</span><br><span class="line">while(true) &#123;</span><br><span class="line">if(new Date - date &gt; 3000) break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们期望 console 在 1s 之后出结果，可事实上他却是在 3008ms 之后运行的。这就是 JavaScript 单线程给我们带来的小问题，while循环阻塞了setTimeout 函数的执行。至于说为什么不执行setTimeout，是因为js的工作机制就是是：当线程中没有执行任何同步代码的前提下才会执行异步代码(这里的setTimeout是异步代码)，所以setTimeout的代码只能等js空闲才会执行。所以得等后面while执行完。</p>
+<p>3.setTimeout 方法的及时性问题<br>看下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var date = new Date, count = 0, timer;</span><br><span class="line">timer = setInterval(function ()&#123;</span><br><span class="line">   if(new Date - date &gt; 1000) &#123;</span><br><span class="line">       clearInterval(timer), console.log(&apos;执行次数:&apos;  + count);</span><br><span class="line">   &#125;</span><br><span class="line">   count++;</span><br><span class="line">&#125;, 0);</span><br></pre></td></tr></table></figure></p>
+<p>测试结果可以看出来 1s 中运行的次数大概在 200次多次。因为什么呢，因为setInterval 和 setTimeout 函数运转的最短周期大概是5ms 左右（并非因为函数作用域的转换消耗了时间，）<br>这个数值在 HTML规范 中也是有提到的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">5. Let timeout be the second method argument, or zero if the argument was omitted.</span><br><span class="line">如果 timeout 参数没有写，默认为 0</span><br><span class="line"></span><br><span class="line">7. If nesting level is greater than 5, and timeout is less than 4, then increase timeout to 4.</span><br><span class="line">如果嵌套的层次大于 5 ，并且 timeout 设置的数值小于 4 则直接取 4.</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2016/05/30/setTimeout使用时用到的问题/" data-id="cjv3rsv1b00040njfg2y62cpz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/14/美好的怀念/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          美好的怀念
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/27/我有话说/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">我有话说</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

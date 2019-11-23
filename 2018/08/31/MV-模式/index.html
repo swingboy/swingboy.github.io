@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>MV* 模式 | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MV* 模式三个非常重要的架构模式：1、MVC (Model(模型)-View(视图)-Controller(控制器))2、MVP (Model(模型)-View(视图)-Presenter(中介者))3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型))  过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MV* 模式">
+<meta property="og:url" content="http://swingboy.github.io/2018/08/31/MV-模式/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="MV* 模式三个非常重要的架构模式：1、MVC (Model(模型)-View(视图)-Controller(控制器))2、MVP (Model(模型)-View(视图)-Presenter(中介者))3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型))  过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/mvc.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/mvp.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/mvvm.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/mvvm_binder.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/flux.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/flux-abstract.png">
+<meta property="og:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/MVC_bad.png">
+<meta property="og:updated_time" content="2019-11-23T14:30:31.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MV* 模式">
+<meta name="twitter:description" content="MV* 模式三个非常重要的架构模式：1、MVC (Model(模型)-View(视图)-Controller(控制器))2、MVP (Model(模型)-View(视图)-Presenter(中介者))3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型))  过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript">
+<meta name="twitter:image" content="http://swingboy.github.io/2018/08/31/MV-模式/imgs/mv/mvc.png">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-MV-模式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/31/MV-模式/" class="article-date">
+  <time datetime="2018-08-31T15:15:35.000Z" itemprop="datePublished">2018-08-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MV* 模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="MV-模式"><a href="#MV-模式" class="headerlink" title="MV* 模式"></a>MV* 模式</h1><h4 id="三个非常重要的架构模式："><a href="#三个非常重要的架构模式：" class="headerlink" title="三个非常重要的架构模式："></a>三个非常重要的架构模式：</h4><p>1、MVC (Model(模型)-View(视图)-Controller(控制器))<br>2、MVP (Model(模型)-View(视图)-Presenter(中介者))<br>3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型)) </p>
+<p>过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript。</p>
+<ul>
+<li>MV*模式主要解决的问题, View代码难以维护的问题。</li>
+<li>MV*模式将View中的逻辑分离出去，形成一个弱逻辑的易于维护的视图。</li>
+<li>MV<em> 中的</em>是Model和View的桥梁，负责保持Model和View的”同步”。</li>
+</ul>
+<h2 id="MVC（Model-View-Controller）"><a href="#MVC（Model-View-Controller）" class="headerlink" title="MVC（Model-View-Controller）"></a>MVC（Model-View-Controller）</h2><p>MVC除了把应用程序分成View、Model层，还额外的加了一个Controller层，它的职责为进行Model和View之间的协作（路由、输入预处理等）的应用逻辑；Model进行处理业务逻辑。</p>
+<p>Model、View、Controller三个层次的依赖关系如下：</p>
+<p><img src="./imgs/mv/mvc.png" alt></p>
+<p>大体流程：  </p>
+<ul>
+<li>View 传送指令到 Controller  </li>
+<li>Controller 完成业务逻辑后，要求 Model 改变状态  </li>
+<li>Model 将新的数据发送到 View，用户得到反馈  </li>
+</ul>
+<h4 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h4><p>Controller和View都依赖Model层，Controller和View可以互相依赖。在一些资料Controller和View之间的依赖关系可能不一样，有些是单向依赖，有些是双向依赖，这个其实关系不大，最终它们的依赖关系都是为了把处理用户行为触发的事件处理权交给Controller。</p>
+<h4 id="关键点："><a href="#关键点：" class="headerlink" title="关键点："></a>关键点：</h4><p>1、View是把控制权交移给Controller，Controller执行应用程序相关的应用逻辑（对来自View数据进行预处理、决定调用哪个Model的接口等等）。<br>2、Controller操作Model，Model执行业务逻辑对数据进行处理。但不会直接操作View，可以说它是对View无知的。<br>3、View和Model的同步消息是通过观察者模式进行，而同步操作是由View自己请求Model的数据然后对视图进行更新。</p>
+<p>需要特别注意的是MVC模式的精髓在于第三点：Model的更新是通过观察者模式告知View的，具体表现形式可以是Pub/Sub或者是触发Events。而网上很多对于MVC的描述都没有强调这一点。通过观察者模式的好处就是：不同的MVC三角关系可能会有共同的Model，一个MVC三角中的Controller操作了Model以后，两个MVC三角的View都会接受到通知，然后更新自己。保持了依赖同一块Model的不同View显示数据的实时性和准确性。</p>
+<h4 id="MVC优点："><a href="#MVC优点：" class="headerlink" title="MVC优点："></a>MVC优点：</h4><p>把业务逻辑和展示逻辑分离，模块化程度高。且当应用逻辑需要变更的时候，不需要变更业务逻辑和展示逻辑，只需要Controller换成另外一个Controller (观察者模式可以做到多视图同时更新)</p>
+<h4 id="MVC缺点："><a href="#MVC缺点：" class="headerlink" title="MVC缺点："></a>MVC缺点：</h4><p>Controller测试困难。因为视图同步操作是由View自己执行，而View只能在有UI的环境下运行。在没有UI环境下对Controller进行单元测试的时候，应用逻辑正确性是无法验证的：Model更新的时候，无法对View的更新操作进行断言。<br>View无法组件化。View是强依赖特定的Model的，如果需要把这个View抽出来作为一个另外一个应用程序可复用的组件就困难了。因为不同程序的的Domain Model是不一样的</p>
+<h4 id="前端的MVC与服务端的MVC"><a href="#前端的MVC与服务端的MVC" class="headerlink" title="前端的MVC与服务端的MVC"></a>前端的MVC与服务端的MVC</h4><blockquote>
+<p>与服务端显著的差别来自于controller：在后台应用中，用户和服务器之间的交互是通过http请求实现的，因此后台controller的表达形式是http请求的handler，并且和router（定义网站的url规则）紧密相关; 而前端应用中，用户和网页之间的交互主要是通过操作事件（例如点击鼠标、键盘输入等）实现的，因此前端的controller这里可以简单理解为各种交互事件的handler。</p>
+</blockquote>
+<h4 id="backbone-js"><a href="#backbone-js" class="headerlink" title="backbone.js"></a>backbone.js</h4><p>轻量级，支持jquery，自带路由，对象化视图，强大的sync机制减少页面大小从而加快页面显示。</p>
+<h4 id="Breeze-js"><a href="#Breeze-js" class="headerlink" title="Breeze.js"></a>Breeze.js</h4><p>国产货，众联无限开发的一套独立自研的前端MVC框架。他的概念很有意思，就是将后端开发语言，如Java，的概念模拟应用到前端。有class有继承，能实现模板和应用绑定。</p>
+<p>优点：概念模拟，学习成本低，上手快。封装很薄，扩展性和兼容性都很好<br>缺点：相关的组件和第三方资源比较少，依赖jquery和seajs</p>
+<p>—————-分割线————————</p>
+<p>不同人、前后端对于 MVC 的理解有巨大的差异<br>这些基本的还是要了解的<br>mvc：实际上后端开发过程中是v-c-m-c-v，v和m并没有关系  </p>
+<p>DEMO:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">var Myapp = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">var Model = function()&#123;</span><br><span class="line">	this.data = &#123;&#125;;</span><br><span class="line">	this.getData = function()&#123;</span><br><span class="line">		return this.data;</span><br><span class="line">	&#125;</span><br><span class="line">	this.setData = function(obj)&#123;</span><br><span class="line">		this.data = obj;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var View = function()&#123;</span><br><span class="line">	var _model;</span><br><span class="line">	this.click = function()&#123;</span><br><span class="line">		var _controller = new Controller();</span><br><span class="line">		_model = _controller.render(&apos;MVC&apos;);</span><br><span class="line">		var content = _model.getData().content;</span><br><span class="line"></span><br><span class="line">		document.querySelector(&apos;#content&apos;).innerHTML = content;</span><br><span class="line">		console.log(&apos;&lt;p&gt;&apos; + content + &apos; &lt;/p&gt;&apos;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var Controller = function()&#123;</span><br><span class="line">	this.render = function(content)&#123;</span><br><span class="line">		var model = new Model();</span><br><span class="line">		//... my logis</span><br><span class="line">		model.setData(&#123;content: content&#125;);</span><br><span class="line">		return model;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var _view = new View();</span><br><span class="line">_view.click();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">var myapp = &#123;&#125;;	</span><br><span class="line"></span><br><span class="line">myapp.Model = function() &#123;</span><br><span class="line">    var val = 0;</span><br><span class="line"></span><br><span class="line">    this.add = function(v) &#123;</span><br><span class="line">        if (val &lt; 100) val += v;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.sub = function(v) &#123;</span><br><span class="line">        if (val &gt; 0) val -= v;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.getVal = function() &#123;</span><br><span class="line">        return val;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    var self = this, </span><br><span class="line">        views = [];</span><br><span class="line"></span><br><span class="line">    this.register = function(view) &#123;</span><br><span class="line">        views.push(view);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.notify = function() &#123;</span><br><span class="line">        for(var i = 0; i &lt; views.length; i++) &#123;</span><br><span class="line">            views[i].render(self);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">myapp.View = function(controller) &#123;</span><br><span class="line">    var $num = $(&apos;#num&apos;),</span><br><span class="line">        $incBtn = $(&apos;#increase&apos;),</span><br><span class="line">        $decBtn = $(&apos;#decrease&apos;);</span><br><span class="line"></span><br><span class="line">    this.render = function(model) &#123;</span><br><span class="line">        $num.text(model.getVal());</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    $incBtn.click(controller.increase);</span><br><span class="line">    $decBtn.click(controller.decrease);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">myapp.Controller = function() &#123;</span><br><span class="line">    var model = null,</span><br><span class="line">        view = null;</span><br><span class="line"></span><br><span class="line">    this.init = function() &#123;</span><br><span class="line">        /* 初始化 */</span><br><span class="line">        model = new myapp.Model();</span><br><span class="line">        view = new myapp.View(this);</span><br><span class="line"></span><br><span class="line">        /* View向Model注册，当Model更新就会去通知View */</span><br><span class="line">        model.register(view);</span><br><span class="line">        model.notify();</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    /* 让Model更新数值并通知View更新视图 */</span><br><span class="line">    this.increase = function() &#123;</span><br><span class="line">        model.add(1);</span><br><span class="line">        model.notify();</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.decrease = function() &#123;</span><br><span class="line">        model.sub(1);</span><br><span class="line">        model.notify();</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var controller = new myapp.Controller();</span><br><span class="line">controller.init();</span><br></pre></td></tr></table></figure>
+<h2 id="MVP（Model-View-Presenter）"><a href="#MVP（Model-View-Presenter）" class="headerlink" title="MVP（Model-View-Presenter）"></a>MVP（Model-View-Presenter）</h2><p>模型-视图-展示器(MVP)是MVC设计模式的一个衍生模式,它专注于提升展现逻辑。它来自于上个世纪九十年代早期的一个叫做Taligent的公司.而MVC和MVP的目标都直指对整个多组件关注点的分离,它们之间有一些基础上的不同。</p>
+<p>MVP 模式将 Controller 改名为 Presenter，同时改变了通信方向。</p>
+<p>MVP打破了View原来对于Model的依赖，其余的依赖关系和MVC模式一致。</p>
+<p>图示：</p>
+<p><img src="./imgs/mv/mvp.png" alt></p>
+<p>1、各部分之间的通信，都是双向的。<br>2.、View 与 Model 不发生联系，都通过 Presenter 传递。<br>3、View 非常薄，不部署任何业务逻辑，称为”被动视图”（Passive View），即没有任何主动性，而 Presenter非常厚，所有逻辑都部署在那里。</p>
+<p>和MVC模式一样，用户对View的操作都会从View交移给Presenter。Presenter会执行相应的应用程序逻辑，并且对Model进行相应的操作；而这时候Model执行完业务逻辑以后，也是通过观察者模式把自己变更的消息传递出去，但是是传给Presenter而不是View。Presenter获取到Model变更的消息以后，通过View提供的接口更新界面。</p>
+<p>关键点：</p>
+<p>1、View不再负责同步的逻辑，而是由Presenter负责。Presenter中既有应用程序逻辑也有同步逻辑。<br>2、View需要提供操作界面的接口给Presenter进行调用。（关键）</p>
+<p>对比在MVC中，Controller是不能操作View的，View也没有提供相应的接口；而在MVP当中，Presenter可以操作View，View需要提供一组对界面操作的接口给Presenter进行调用；Model仍然通过事件广播自己的变更，但由Presenter监听而不是View。</p>
+<h4 id="MVP（Passive-View）优点"><a href="#MVP（Passive-View）优点" class="headerlink" title="MVP（Passive View）优点"></a>MVP（Passive View）优点</h4><p>便于测试。Presenter对View是通过接口进行，在对Presenter进行不依赖UI环境的单元测试的时候。可以通过Mock一个View对象，这个对象只需要实现了View的接口即可。然后依赖注入到Presenter中，单元测试的时候就可以完整的测试Presenter应用逻辑的正确性。</p>
+<p>View可以进行组件化。在MVP当中，View不依赖Model。这样就可以让View从特定的业务场景中脱离出来，可以说View可以做到对业务完全无知。它只需要提供一系列接口提供给上层操作。这样就可以做到高度可复用的View组件。</p>
+<h4 id="MVP缺点："><a href="#MVP缺点：" class="headerlink" title="MVP缺点："></a>MVP缺点：</h4><p>Presenter中除了应用逻辑以外，还有大量的View-&gt;Model，Model-&gt;View的手动同步逻辑，造成Presenter比较笨重，维护起来会比较困难。</p>
+<blockquote>
+<p>MVP 的架构模式是有两种情况的，一种叫做 supervising controller 另一种是 passive view，后者由于 vm 之间没有任何的联系，所以能够与 MVC 之间比较容易的区分。</p>
+</blockquote>
+<p>DEMO:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">var Model = function()&#123;</span><br><span class="line">    this.data =&#123;&#125;;</span><br><span class="line">    this.getData = function()&#123;</span><br><span class="line">        return this.data;</span><br><span class="line">    &#125;</span><br><span class="line">    this.setData = function(obj)&#123;</span><br><span class="line">        this.data = obj;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var View = function()&#123;</span><br><span class="line">    this.show = function(desc)&#123;</span><br><span class="line">        console.log(&apos;&lt;p&gt;&apos; + desc + &apos;&lt;/p&gt;&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">    this.click = function()&#123;</span><br><span class="line">        var _controller = new Presenter(this);</span><br><span class="line">        _controller.render(&apos;MVC&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var Presenter = function(view)&#123;</span><br><span class="line">    var _model = new Model();</span><br><span class="line">    var _view = view;</span><br><span class="line">    this.render = function(desc)&#123;</span><br><span class="line">        //...处理业务</span><br><span class="line">        _model.setData(&#123;type:&apos;hello MVP&apos;&#125;)</span><br><span class="line">        var type = _model.getData().type;</span><br><span class="line">        _view.show(type);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var _view = new View();</span><br><span class="line">_view.click();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">var myapp = &#123;&#125;;	</span><br><span class="line">myapp.Model = function() &#123;</span><br><span class="line">    var val = 0;</span><br><span class="line"></span><br><span class="line">    this.add = function(v) &#123;</span><br><span class="line">        if (val &lt; 100) val += v;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.sub = function(v) &#123;</span><br><span class="line">        if (val &gt; 0) val -= v;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.getVal = function() &#123;</span><br><span class="line">        return val;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">myapp.View = function() &#123;</span><br><span class="line">    var $num = $(&apos;#num&apos;),</span><br><span class="line">        $incBtn = $(&apos;#increase&apos;),</span><br><span class="line">        $decBtn = $(&apos;#decrease&apos;);</span><br><span class="line"></span><br><span class="line">    this.render = function(model) &#123;</span><br><span class="line">        $num.text(model.getVal());</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.init = function() &#123;</span><br><span class="line">        var presenter = new myapp.Presenter(this);</span><br><span class="line">        $incBtn.click(presenter.increase);</span><br><span class="line">        $decBtn.click(presenter.decrease);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">myapp.Presenter = function(view) &#123;</span><br><span class="line">    var _model = new myapp.Model();</span><br><span class="line">    var _view = view;</span><br><span class="line"></span><br><span class="line">    _view.render(_model);</span><br><span class="line"></span><br><span class="line">    this.increase = function() &#123;</span><br><span class="line">        _model.add(1);</span><br><span class="line">        _view.render(_model);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.decrease = function() &#123;</span><br><span class="line">        _model.sub(1);</span><br><span class="line">        _view.render(_model);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">new myapp.View().init();</span><br></pre></td></tr></table></figure>
+<h4 id="Riot-js"><a href="#Riot-js" class="headerlink" title="Riot.js"></a>Riot.js</h4><p>riot.js是一个客户端模型-视图-呈现(MVP)框架并且它非常轻量级甚至小于1kb. 所有它能构建的有如下：一个模板引擎，路由，甚至是库和一个严格的并具有组织的MVP模式。当模型数据变化时视图也会自动更新。</p>
+<p><a href="https://github.com/riot/riot" target="_blank" rel="noopener">Riot.js</a></p>
+<h2 id="MVVM（Model-View-ViewModel）"><a href="#MVVM（Model-View-ViewModel）" class="headerlink" title="MVVM（Model-View-ViewModel）"></a>MVVM（Model-View-ViewModel）</h2><p>MVVM 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。MVVM可以看作是一种特殊的MVP（Passive View）模式，或者说是对MVP模式的一种改良。</p>
+<p>唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然.</p>
+<p>图示：<br><img src="./imgs/mv/mvvm.png" alt></p>
+<h4 id="MVVM的调用关系"><a href="#MVVM的调用关系" class="headerlink" title="MVVM的调用关系"></a>MVVM的调用关系</h4><p>MVVM的调用关系和MVP一样。但是，在ViewModel当中会有一个叫Binder。以前全部由Presenter负责的View和Model之间数据同步操作交由给Binder处理。你只需要在View的模版语法当中，指令式地声明View上的显示的内容是和Model的哪一块数据绑定的。当ViewModel对进行Model更新的时候，Binder会自动把数据更新到View上去，当用户对View进行操作（例如表单输入），Binder也会自动把数据更新到Model上去。这种方式称为：双向数据绑定。</p>
+<p>来张图再：<br><img src="./imgs/mv/mvvm_binder.png" alt></p>
+<p>MVVM把View和Model的同步逻辑自动化了。以前Presenter负责的View和Model同步不再手动地进行操作，而是交由框架所提供的Binder进行负责。只需要告诉Binder，View显示的数据对应的是Model哪一部分即可。(重点区别)</p>
+<h4 id="MVVM的优点："><a href="#MVVM的优点：" class="headerlink" title="MVVM的优点："></a>MVVM的优点：</h4><p>提高可维护性。解决了MVP大量的手动View和Model同步的问题，提供双向绑定机制。提高了代码的可维护性。<br>简化测试。因为同步逻辑是交由Binder做的，View跟着Model同时变更，所以只需要保证Model的正确性，View就正确。大大减少了对View同步更新的测试。</p>
+<h4 id="MVVM的缺点"><a href="#MVVM的缺点" class="headerlink" title="MVVM的缺点"></a>MVVM的缺点</h4><p>过于简单的图形界面不适用，或说牛刀杀鸡。<br>对于大型的图形应用程序，视图状态较多，ViewModel的构建和维护的成本都会比较高。<br>数据绑定的声明是指令式地写在View的模版当中的，这些内容是没办法去打断点debug的。  </p>
+<h4 id="Knockout-js"><a href="#Knockout-js" class="headerlink" title="Knockout.js"></a>Knockout.js</h4><p>K.O.是一个MVVM框架，受到其支持者的大量好评。它强调陈述式UI绑定和自动UI刷新。<br>优点：支持绑定，文档做得出色，引导系统超级赞。<br>缺点：绑定语法晦涩，缺乏坚实的视图组件层次结构。希望能够轻松地重用组件，也觉得定义成一个MVVM框架是有害的。这些框架中基本没有MVC，但都是（MVP,MVVM之类的）的变种。  </p>
+<h4 id="Angular-js"><a href="#Angular-js" class="headerlink" title="Angular.js"></a>Angular.js</h4><p>AngularJS 诞生于2009年，由Misko Hevery 等人创建，后为Google所收购。是一款优秀的前端JS框架，已经被用于Google的多款产品当中。AngularJS有着诸多特性，最为核心的是：MVW（Model-View-Whatever）、模块化、自动化双向数据绑定、语义化标签、依赖注入等等。</p>
+<h4 id="Vue-js"><a href="#Vue-js" class="headerlink" title="Vue.js"></a>Vue.js</h4><p>Vue.js是用于构建交互式的 Web界面的库。它提供了 MVVM数据绑定和一个可组合的组件系统，具有简单、灵活的API。从技术上讲， Vue.js集中在 MVVM 模式上的视图模型层，并通过双向数据绑定连接视图和模型。实际的 DOM操作和输出格式被抽象出来成指令和过滤器。相比其它的MVVM框架，Vue.js更容易上手。</p>
+<p>DEMO:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">var Myapp = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">Myapp.Model = function(viewModel)&#123;</span><br><span class="line">	this.viewModel = viewModel;</span><br><span class="line">	this.viewModel.bindModel(this);</span><br><span class="line">	this.data = &#123;&#125;;</span><br><span class="line">	this.getData = function()&#123;</span><br><span class="line">		return this.data;</span><br><span class="line">	&#125;</span><br><span class="line">	this.setData = function(data)&#123;</span><br><span class="line">		this.data = data;</span><br><span class="line">		this.viewModel.onModelChange(this);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">Myapp.View = function(viewModel)&#123;</span><br><span class="line">	this.viewModel = viewModel;</span><br><span class="line">	this.viewModel.bindView(this);</span><br><span class="line">	this._desc = &apos;MVVM&apos;;</span><br><span class="line">	this.show = function(_desc)&#123;</span><br><span class="line">		_desc &amp;&amp; (this._desc = _desc);</span><br><span class="line">		console.log(&apos;&lt;p&gt;&apos; + this._desc + &apos;&lt;/p&gt;&apos;);</span><br><span class="line">		document.querySelector(&apos;#content&apos;).innerHTML = this._desc;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	this.editDesc = function(desc)&#123;</span><br><span class="line">		// this._desc = &apos;MVVM&apos;;</span><br><span class="line">		this._desc = desc;</span><br><span class="line">		this.viewModel.onPageChange(this);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">Myapp.ViewModel = function()&#123;</span><br><span class="line">	var _model;</span><br><span class="line">	var _view;</span><br><span class="line">	var _this = this;</span><br><span class="line"></span><br><span class="line">	_this.bindModel = function(model)&#123;</span><br><span class="line">		_model = model;</span><br><span class="line">	&#125;</span><br><span class="line">	_this.bindView = function(view)&#123;</span><br><span class="line">		_view = view;</span><br><span class="line">	&#125;</span><br><span class="line">	_this.onPageChange = function(view)&#123;</span><br><span class="line">		_model.setData(&#123;desc: view.desc&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">	_this.onModelChange = function(model)&#123;</span><br><span class="line">		_view.show(model.getData().desc);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">var viewModel = new Myapp.ViewModel();</span><br><span class="line">var model = new Myapp.Model(viewModel);</span><br><span class="line">var view = new Myapp.View(viewModel);</span><br><span class="line"></span><br><span class="line">view.show();</span><br><span class="line">// &lt;p&gt;MVVM&lt;/p&gt;</span><br><span class="line"></span><br><span class="line">view.editDesc(&apos;test&apos;);</span><br><span class="line">// &lt;p&gt;TEST&lt;/p&gt;</span><br><span class="line"></span><br><span class="line">model.setData(&#123;desc:&apos;hello MVVM&apos;&#125;);</span><br><span class="line">// &lt;p&gt;hello MVVM&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="Model-View-Editor（MVE）"><a href="#Model-View-Editor（MVE）" class="headerlink" title="Model-View-Editor（MVE）"></a>Model-View-Editor（MVE）</h2><p>略</p>
+<h2 id="FLUX"><a href="#FLUX" class="headerlink" title="FLUX"></a>FLUX</h2><p>Flux 是一种架构思想，专门解决软件的结构问题。它跟MVC架构是同一类东西，但是更加简单和清晰。</p>
+<p>flux的核心思想和代码实现虽然很简单（基本上就是一个event dispatcher而已），但在“state-view”开发模式中，却是非常重要的一个环节。</p>
+<blockquote>
+<p>Flux存在多种实现（至少15种）</p>
+</blockquote>
+<p>图示：</p>
+<p><img src="./imgs/mv/flux.png" alt></p>
+<h5 id="基本概念（组成部分）："><a href="#基本概念（组成部分）：" class="headerlink" title="基本概念（组成部分）："></a>基本概念（组成部分）：</h5><ul>
+<li>View：视图层  </li>
+<li>Action（动作）：视图层发出的消息（比如mouseClick）  </li>
+<li>Dispatcher（派发器）：用来接收Actions、执行回调函数  </li>
+<li>Store（数据层）：用来存放应用的状态，一旦发生变动，就提醒Views要更新页面  </li>
+</ul>
+<p>Flux 的最大特点，就是数据的”单向流动”：   </p>
+<ul>
+<li>用户访问 View  </li>
+<li>View 发出用户的 Action  </li>
+<li>Dispatcher 收到 Action，要求 Store 进行相应的更新  </li>
+<li>Store 更新后，发出一个”change”事件  </li>
+<li>View 收到”change”事件后，更新页面 </li>
+</ul>
+<p>上面过程中，数据总是”单向流动”，任何相邻的部分都不会发生数据的”双向流动”。这保证了流程的清晰。</p>
+<p><img src="./imgs/mv/flux-abstract.png" alt></p>
+<p>对比MVC  </p>
+<p><img src="./imgs/mv/MVC_bad.png" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>MV* 的目的是把应用程序的数据、业务逻辑和界面展示部分这三块解耦，分离关注点，不仅利于团队协作和测试，更有利于维护和管理。业务逻辑不再关心底层数据的读写，而这些数据又以对象的形式呈现给业务逻辑层。从MVC-&gt;MVP-&gt;MVVM，就像一个打怪升级的过程。后者解决了前者遗留的问题，把前者的缺点优化成了优点。它们都是在MVC的基础上随着时代和应用环境的发展衍变而来的。</p>
+<p><a href="https://github.com/livoras/blog/issues/11" target="_blank" rel="noopener">界面之下的：还原真实的MV*模式</a></p>
+<p><a href="https://www.cnblogs.com/fliu/articles/5245923.html" target="_blank" rel="noopener">Flux架构入门</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="cjv3rsv23000u0njfva98m8ac" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/11/23/XSS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          XSS
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/26/React-v16-4-0-事件原理/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">React v16.4.0 事件原理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

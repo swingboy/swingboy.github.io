@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>webpackLoader | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是 Loader ？本质上来说，loader 就是一个 node 模块，这很符合 webpack 中“万物皆模块”的思路。既然是 node 模块，那就一定会导出点什么。在 webpack 的定义中，loader 导出一个函数，loader 会在转换源模块（resource）的时候调用该函数。在这个函数内部，我们可以通过传入 this 上下文给 Loader API 来使用它们。  我们也可以概">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpackLoader">
+<meta property="og:url" content="http://swingboy.github.io/2019/03/29/webpackLoader/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="什么是 Loader ？本质上来说，loader 就是一个 node 模块，这很符合 webpack 中“万物皆模块”的思路。既然是 node 模块，那就一定会导出点什么。在 webpack 的定义中，loader 导出一个函数，loader 会在转换源模块（resource）的时候调用该函数。在这个函数内部，我们可以通过传入 this 上下文给 Loader API 来使用它们。  我们也可以概">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-23T14:30:56.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpackLoader">
+<meta name="twitter:description" content="什么是 Loader ？本质上来说，loader 就是一个 node 模块，这很符合 webpack 中“万物皆模块”的思路。既然是 node 模块，那就一定会导出点什么。在 webpack 的定义中，loader 导出一个函数，loader 会在转换源模块（resource）的时候调用该函数。在这个函数内部，我们可以通过传入 this 上下文给 Loader API 来使用它们。  我们也可以概">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-webpackLoader" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/29/webpackLoader/" class="article-date">
+  <time datetime="2019-03-29T12:47:50.000Z" itemprop="datePublished">2019-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      webpackLoader
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是-Loader-？"><a href="#什么是-Loader-？" class="headerlink" title="什么是 Loader ？"></a>什么是 Loader ？</h3><p>本质上来说，loader 就是一个 node 模块，这很符合 webpack 中“万物皆模块”的思路。既然是 node 模块，那就一定会导出点什么。在 webpack 的定义中，loader 导出一个函数，loader 会在转换源模块（resource）的时候调用该函数。在这个函数内部，我们可以通过传入 this 上下文给 Loader API 来使用它们。</p>
+<ul>
+<li>我们也可以概括一下 loader 的功能：把源模块转换成通用模块。</li>
+</ul>
+<p>我们常常见到的，webpack 中的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">let webpackConfig = &#123;</span><br><span class="line">    //...</span><br><span class="line">    module: &#123;</span><br><span class="line">        rules: [&#123;</span><br><span class="line">            test: /\.js$/,</span><br><span class="line">            use: [&#123;</span><br><span class="line">                loader: &apos;x-loader&apos;, </span><br><span class="line">                options: &#123;/* ... */&#125;</span><br><span class="line">            &#125;, &#123;</span><br><span class="line">                loader: &apos;y-loader&apos;, </span><br><span class="line">                options: &#123;/* ... */&#125;</span><br><span class="line">            &#125;]</span><br><span class="line">        &#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    resolveLoader: &#123;</span><br><span class="line">        modules: [&apos;node_modules&apos;, path.resolve(__dirname, &apos;loaders&apos;)]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="好处"><a href="#好处" class="headerlink" title="好处"></a>好处</h3><p>loader为 JavaScript 生态系统提供了更多能力。 用户现在可以更加灵活地引入细粒度逻辑，例如压缩、打包、语言翻译和其他更多。  </p>
+<h3 id="常用loader"><a href="#常用loader" class="headerlink" title="常用loader"></a>常用loader</h3><p>style-loader——将处理结束的CSS代码存储在js中，运行时嵌入&lt;style&gt;后挂载至html页面上<br>css-loader——加载器，使webpack可以识别css模块<br>sass-loader——加载器，使webpack可以识别scss/sass文件，默认使用node-sass进行编译<br>less-loader<br>url-loader<br>babel-loader<br>cache-loader<br>…</p>
+<p>一堆~~</p>
+<h3 id="loader-特性"><a href="#loader-特性" class="headerlink" title="loader 特性"></a>loader 特性</h3><p>支持链式传递。一组链式的 loader 将按照相反的顺序执行。loader 链中的第一个 loader 返回值给下一个 loader。在最后一个 loader，返回 webpack 所预期的 JavaScript。<br>可以是同步的，也可以是异步的。  </p>
+<p>运行在 Node.js 中，并且能够执行任何可能的操作。 </p>
+<p>接收查询参数。用于对 loader 传递配置。  </p>
+<p>也能够使用 options 对象进行配置。  </p>
+<p>除了使用 package.json 常见的 main 属性，还可以将普通的 npm 模块导出为 loader，做法是在 package.json 里定义一个 loader 字段。  </p>
+<p>loader 能够产生额外的任意文件。</p>
+<h3 id="webpack-中如何工作的"><a href="#webpack-中如何工作的" class="headerlink" title="webpack 中如何工作的"></a>webpack 中如何工作的</h3><p>当你在 webpack 项目中引入模块时，匹配到 rule （例如下面的 /.js$/）就会启用对应的 loader。这时loader 会导出一个函数，这个函数接受的唯一参数是一个包含源文件内容的字符串。也就是source</p>
+<p>接着我们在函数中处理 source 的转化，最终返回处理好的值。当然返回值的数量和返回方式依据 loader 的需求来定。一般情况下可以通过 return 返回一个值，也就是转化后的值。如果需要返回多个参数，则须调用 this.callback(err, values…) 来返回。在异步 loader 中你可以通过抛错来处理异常情况。Webpack 建议我们返回 1 至 2 个参数，第一个参数是转化后的 source，可以是 string 或 buffer。第二个参数可选，是用来当作 SourceMap 的对象。</p>
+<h4 id="这些loader如何一起工作的"><a href="#这些loader如何一起工作的" class="headerlink" title="这些loader如何一起工作的"></a>这些loader如何一起工作的</h4><p>归根结底是将某中标准的文件转化为另一种标准的文件，也可以理解为字符串</p>
+<p>以处理 scss 文件为例：</p>
+<ul>
+<li>1.scss 源代码会先交给 sass-loader 把 scss 转换成 css；  </li>
+<li>2.把 sass-loader 输出的 CSS 交给 css-loader 处理，找出 CSS 中依赖的资源、压缩 CSS 等；  </li>
+<li>3.把 css-loader 输出的 CSS 交给 style-loader 处理，转换成通过脚本加载的 JavaScript 代码；</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">webpack.config.js</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        test: /\.js/,</span><br><span class="line">        use: [</span><br><span class="line">            &apos;style-loader&apos;,</span><br><span class="line">            &apos;css-loader&apos;,</span><br><span class="line">            &apos;sass-loader&apos;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>loader 的调用顺序是 sass-loader -&gt; css-loader -&gt; style-loader。<br>sass-loader 拿到 source，处理后把 JS 代码传递给 css-loader，css-loader 拿到 sass-loader 处理过的 “source” ，再处理之后给 style-loader，style-loader 处理完后再交给 webpack。<br>style-loader 最终把返回值和 source map 传给 webpack。</p>
+<h4 id="开发-Loader"><a href="#开发-Loader" class="headerlink" title="开发 Loader"></a>开发 Loader</h4><p>Loader 就像是一个翻译员，能把源文件经过转化后输出新的结果，并且一个文件还可以链式的经过多个翻译员翻译。</p>
+<p>首先我们要知道：</p>
+<h4 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h4><p>按照loader的返回值可以分为两种：</p>
+<ul>
+<li>最左loader：这种loader会返回字符串描述的js模块代码，已经是loader的最终处理结果了，这样的字符串会被添加到webpack的模块函数中</li>
+<li><p>非最左loader：返回值不是js模块代码，而仅仅是对资源的中间处理结果，这样的字符串需要被后续的loader处理</p>
+<p>（一般情况下，在loader的链式调用中，一般是这样：最左loader！非最左loader！非最左loader ….）</p>
+</li>
+</ul>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">module.exports = function loader(source) &#123;</span><br><span class="line">	//返回的值是js模块代码，这个loader属于最左loader  </span><br><span class="line">    return `module.exports = &#123;fn: $&#123;source&#125;&#125;`;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="aync-loader"><a href="#aync-loader" class="headerlink" title="aync loader"></a>aync loader</h5><p>把以上例子中的loader定义为</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> module.exports = function(source) &#123;</span><br><span class="line">    var callback = this.async();</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">       callback(null,`module.exports = &#123;fn: $&#123;source&#125;&#125;`)</span><br><span class="line">    &#125;,5000);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="pitching-loader"><a href="#pitching-loader" class="headerlink" title="pitching loader"></a>pitching loader</h5><p>在loader函数对象上添加一个pitch属性，这个pitch所执行的函数称为pitching loader。在pitching loader中可以通过data把数据传递给对应的loader，而不能传递给其他loader。</p>
+<p>在链式调用中，pitching loader 与 loader的执行次序（以 a!b!c!resource 为例）</p>
+<p>pitch a<br>    pitch b<br>        pitch c<br>            read file resource (adds resource to dependencies)<br>        run c<br>    run b<br>run a  </p>
+<ul>
+<li>style-loader 为例</li>
+</ul>
+<p><a href="https://www.webpackjs.com/contribute/writing-a-loader/" target="_blank" rel="noopener">官方翻译文档编写一个loader</a></p>
+<h4 id="开始写吧"><a href="#开始写吧" class="headerlink" title="开始写吧 ~~"></a>开始写吧 ~~</h4><ul>
+<li>创建 loader 的目录及模块文件</li>
+<li>在 webpack 中配置 rule 及 loader 的解析路径，并且要注意 loader 的顺序，这样在 require 指定类型文件时，我们能让处理流经过指定 laoder。</li>
+<li>遵循原则设计和开发 loader。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//解析路径  </span><br><span class="line">resolveLoader: &#123;</span><br><span class="line">        modules: [&apos;node_modules&apos;, path.resolve(__dirname, &apos;loaders&apos;)]</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>最简单的loader,source 中加一行代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var loaderUtils = require(&apos;loader-utils&apos;);</span><br><span class="line"></span><br><span class="line">module.exports = function(source) &#123;</span><br><span class="line">    var opts = loaderUtils.getOptions(this) || &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    console.log(this.context, );</span><br><span class="line">    console.log(this.resource);</span><br><span class="line">    // console.info(opts);</span><br><span class="line">    return `//i am the test line;\n$&#123;source&#125;`;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>实现的一个简易的babel-loader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var babel = require(&quot;@babel/core&quot;)</span><br><span class="line">//https://webpack.js.org/api/loaders/#this-callback</span><br><span class="line">module.exports = function (source, inputSourceMap) &#123;</span><br><span class="line">  var babelOptions = &#123;</span><br><span class="line">    presets: [&apos;@babel/preset-env&apos;],</span><br><span class="line">    inputSourceMap: inputSourceMap,</span><br><span class="line">    filename: this.request.split(&apos;!&apos;)[1].split(&apos;/&apos;).pop(),</span><br><span class="line">    sourceMaps: true</span><br><span class="line">  &#125;</span><br><span class="line">  var result = babel.transform(source, babelOptions)</span><br><span class="line">  	this.callback(null, result.code, result.map)</span><br><span class="line"></span><br><span class="line">	return ;//// always return undefined when calling 	callback()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>串联组合中的 loader 并不一定要返回 JS 代码。只要下游的 loader 能有效处理上游 loader 的输出，那么上游的 loader 可以返回任意类型的模块。</li>
+</ul>
+<h4 id="还有一些常用-API："><a href="#还有一些常用-API：" class="headerlink" title="还有一些常用 API："></a>还有一些常用 API：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">this.context：当前处理文件的所在目录，假如当前 Loader 处理的文件是 /src/main.js，则 this.context 就等于 /src。</span><br><span class="line">this.resource：当前处理文件的完整请求路径，包括 querystring，例如 /src/main.js?name=1。</span><br><span class="line">this.resourcePath：当前处理文件的路径，例如 /src/main.js。</span><br><span class="line">this.resourceQuery：当前处理文件的 querystring。</span><br><span class="line">this.target：等于 Webpack 配置中的 Target。</span><br><span class="line">this.loadModule：但 Loader 在处理一个文件时，如果依赖其它文件的处理结果才能得出当前文件的结果时， 就可以通过 this.loadModule(request: string, callback: function(err, source, sourceMap, module)) 去获得 request 对应文件的处理结果。</span><br><span class="line">this.resolve：像 require 语句一样获得指定文件的完整路径，使用方法为 resolve(context: string, request: string, callback: function(err, result: string))。</span><br><span class="line">this.addDependency：给当前处理文件添加其依赖的文件，以便再其依赖的文件发生变化时，会重新调用 Loader 处理该文件。使用方法为 addDependency(file: string)。</span><br><span class="line">this.addContextDependency：和 addDependency 类似，但 addContextDependency 是把整个目录加入到当前正在处理文件的依赖中。使用方法为 addContextDependency(directory: string)。</span><br><span class="line">this.clearDependencies：清除当前正在处理文件的所有依赖，使用方法为 clearDependencies()。</span><br><span class="line">this.emitFile：输出一个文件，使用方法为 emitFile(name: string, content: Buffer|string, sourceMap: &#123;...&#125;)。</span><br></pre></td></tr></table></figure>
+<p><a href="https://segmentfault.com/a/1190000012990122" target="_blank" rel="noopener">写一个loader</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="cjv3rsv1x000o0njf5mq1lxa2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/29/webpackPlugin/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          webpackPlugin
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/29/about-tapable/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">about tapable</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

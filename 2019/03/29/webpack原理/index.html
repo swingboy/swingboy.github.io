@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>webpack原理 | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="webpack 原理webpack核心概念entry 一个可执行模块或库的入口文件。 chunk 多个文件组成的一个代码块，例如把一个可执行模块和它所有依赖的模块组合和一个 chunk.  loader 文件转换器，例如把es6转换为es5，scss转换为css。 plugin 插件，用于扩展webpack的功能，在webpack构建生命周期的节点上加入扩展hook为webpack添加功能。">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack原理">
+<meta property="og:url" content="http://swingboy.github.io/2019/03/29/webpack原理/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="webpack 原理webpack核心概念entry 一个可执行模块或库的入口文件。 chunk 多个文件组成的一个代码块，例如把一个可执行模块和它所有依赖的模块组合和一个 chunk.  loader 文件转换器，例如把es6转换为es5，scss转换为css。 plugin 插件，用于扩展webpack的功能，在webpack构建生命周期的节点上加入扩展hook为webpack添加功能。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://swingboy.github.io/2019/03/29/webpack原理/.../">
+<meta property="og:updated_time" content="2019-11-23T14:29:16.258Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpack原理">
+<meta name="twitter:description" content="webpack 原理webpack核心概念entry 一个可执行模块或库的入口文件。 chunk 多个文件组成的一个代码块，例如把一个可执行模块和它所有依赖的模块组合和一个 chunk.  loader 文件转换器，例如把es6转换为es5，scss转换为css。 plugin 插件，用于扩展webpack的功能，在webpack构建生命周期的节点上加入扩展hook为webpack添加功能。">
+<meta name="twitter:image" content="http://swingboy.github.io/2019/03/29/webpack原理/.../">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-webpack原理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/29/webpack原理/" class="article-date">
+  <time datetime="2019-03-29T12:49:07.000Z" itemprop="datePublished">2019-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      webpack原理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="webpack-原理"><a href="#webpack-原理" class="headerlink" title="webpack 原理"></a>webpack 原理</h1><h2 id="webpack核心概念"><a href="#webpack核心概念" class="headerlink" title="webpack核心概念"></a>webpack核心概念</h2><p>entry 一个可执行模块或库的入口文件。</p>
+<p>chunk 多个文件组成的一个代码块，例如把一个可执行模块和它所有依赖的模块组合和一个 chunk. </p>
+<p>loader 文件转换器，例如把es6转换为es5，scss转换为css。</p>
+<p>plugin 插件，用于扩展webpack的功能，在webpack构建生命周期的节点上加入扩展hook为webpack添加功能。  </p>
+<h3 id="webpack-模块？"><a href="#webpack-模块？" class="headerlink" title="webpack 模块？"></a>webpack 模块？</h3><p>对比 Node.js 模块，webpack 模块能够以各种方式表达它们的依赖关系，几个例子如下：</p>
+<p>ES2015 import 语句<br>CommonJS require() 语句<br>AMD define 和 require 语句<br>css/sass/less 文件中的 @import 语句<br>样式(url(…))或 HTML 文件(\<img src="...\">)中的图片链接(image url) </p>
+<h3 id="支持的模块类型"><a href="#支持的模块类型" class="headerlink" title="支持的模块类型"></a>支持的模块类型</h3><p>webpack 通过 loader 可以支持各种语言和预处理器编写模块。loader 描述了 webpack 如何处理 非 JavaScript(non-JavaScript) 模块，并且在bundle中引入这些依赖。 webpack 社区已经为各种流行语言和语言处理器构建了 loader，包括：</p>
+<ul>
+<li>CoffeeScript</li>
+<li>TypeScript</li>
+<li>ESNext (Babel)</li>
+<li>Sass</li>
+<li>Less</li>
+<li>Stylus</li>
+</ul>
+<h3 id="事件系统"><a href="#事件系统" class="headerlink" title="事件系统"></a>事件系统</h3><p>Webpack的基础组件之一Tapable是为其量身定做的“EventEmitter”，但它不只是单纯的事件中枢，还相应补充了对事件流程的控制能力，增加了如waterfall/series/parallel系列方法，实现了同步/异步、顺序/并行等事件流的控制能力。</p>
+<ul>
+<li>发布/订阅模式</li>
+</ul>
+<h2 id="webpack构建流程-总括"><a href="#webpack构建流程-总括" class="headerlink" title="webpack构建流程 总括"></a>webpack构建流程 总括</h2><p>解析webpack配置参数，合并从shell传入和webpack.config.js文件里配置的参数，生产最后的配置结果。</p>
+<p>注册所有配置的插件，好让插件监听webpack构建生命周期的事件节点，以做出对应的反应。 </p>
+<p>从配置的entry入口文件开始解析文件构建AST语法树，找出每个文件所依赖的文件，递归下去。 </p>
+<p>在解析文件递归的过程中根据文件类型和loader配置找出合适的loader用来对文件进行转换。  </p>
+<p>递归完后得到每个文件的最终结果，根据entry配置生成代码块chunk。  </p>
+<p>输出所有chunk到文件系统。  </p>
+<ul>
+<li>在构建生命周期中有一系列插件在合适的时机做了合适的事情，比如一些插件的操作。</li>
+<li>Webpack 会在特定的时间点广播出特定的事件</li>
+</ul>
+<h3 id="1-webpack入口（webpack-config-js和shell-options）"><a href="#1-webpack入口（webpack-config-js和shell-options）" class="headerlink" title="1. webpack入口（webpack.config.js和shell options）"></a>1. webpack入口（webpack.config.js和shell options）</h3><p>从配置文件package.json 和 Shell 语句中读取与合并参数，得出最终的参数；</p>
+<p>每次在命令行输入 webpack 后，操作系统都会去调用 ./node_modules/.bin/webpack 这个 shell 脚本。这个脚本会去调用 ./node_modules/webpack/bin/webpack.js </p>
+<ul>
+<li>开一个子进程处理 cli</li>
+</ul>
+<h3 id="2-用yargs参数解析"><a href="#2-用yargs参数解析" class="headerlink" title="2. 用yargs参数解析"></a>2. 用yargs参数解析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// webpack/bin/webpack.js =&gt; webpack-cli/bin/cli.js</span><br><span class="line">yargs.parse(process.argv.slice(2), (err, argv, output) =&gt; &#123;</span><br></pre></td></tr></table></figure>
+<h3 id="3-webpack初始化"><a href="#3-webpack初始化" class="headerlink" title="3.webpack初始化"></a>3.webpack初始化</h3><p>（1）构建compiler对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// webpack-cli/bin/cli.js</span><br><span class="line">let lastHash = null;</span><br><span class="line">let compiler;</span><br><span class="line">try &#123;</span><br><span class="line">    compiler = webpack(options);</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">compiler = new Compiler(options.context);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>还会某些阶段注册一些钩子，compiler.hooks.watchRun、beforeRun、done</li>
+</ul>
+<p>（2）注册NodeEnvironmentPlugin插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 在webpack/lib/webpack.js </span><br><span class="line">new NodeEnvironmentPlugin().apply(compiler);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//NodeEnvironmentPlugin.js</span><br><span class="line">apply(compiler) &#123;</span><br><span class="line">    compiler.inputFileSystem = new CachedInputFileSystem(</span><br><span class="line">        new NodeJsInputFileSystem(),</span><br><span class="line">        60000</span><br><span class="line">    );</span><br><span class="line">    const inputFileSystem = compiler.inputFileSystem;</span><br><span class="line">    compiler.outputFileSystem = new NodeOutputFileSystem();</span><br><span class="line">    compiler.watchFileSystem = new NodeWatchFileSystem(</span><br><span class="line">        compiler.inputFileSystem</span><br><span class="line">    );</span><br><span class="line">    // 注册beforeRun</span><br><span class="line">    compiler.hooks.beforeRun.tap(&quot;NodeEnvironmentPlugin&quot;, compiler =&gt; &#123;</span><br><span class="line">        if (compiler.inputFileSystem === inputFileSystem) inputFileSystem.purge();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）挂载options中的基础插件，调用WebpackOptionsApply库初始化基础插件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">//webpack/lib/webpack.js</span><br><span class="line">compiler.options = options;</span><br><span class="line">new NodeEnvironmentPlugin().apply(compiler);</span><br><span class="line">if (options.plugins &amp;&amp; Array.isArray(options.plugins)) &#123;</span><br><span class="line">    for (const plugin of options.plugins) &#123;</span><br><span class="line">        if (typeof plugin === &quot;function&quot;) &#123;</span><br><span class="line">            plugin.apply(compiler);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            plugin.apply(compiler);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">compiler.hooks.environment.call();</span><br><span class="line">compiler.hooks.afterEnvironment.call();</span><br><span class="line">//调用WebpackOptionsApply库初始化基础插件。</span><br><span class="line">compiler.options = new WebpackOptionsApply().process(options, compiler);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//  WebpackOptionsApply</span><br><span class="line">class WebpackOptionsApply extends OptionsApply &#123;</span><br><span class="line">	constructor() &#123;</span><br><span class="line">		super();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * @param &#123;WebpackOptions&#125; options options object</span><br><span class="line">	 * @param &#123;Compiler&#125; compiler compiler object</span><br><span class="line">	 * @returns &#123;WebpackOptions&#125; options object</span><br><span class="line">	 */</span><br><span class="line">	process(options, compiler) &#123;</span><br><span class="line">        // 一堆基础插件</span><br><span class="line">        ...</span><br><span class="line">		let ExternalsPlugin;</span><br><span class="line">        new JsonpTemplatePlugin().apply(compiler);</span><br><span class="line">        new FetchCompileWasmTemplatePlugin(&#123;</span><br><span class="line">            mangleImports: options.optimization.mangleWasmImports</span><br><span class="line">        &#125;).apply(compiler);</span><br><span class="line">        new FunctionModulePlugin().apply(compiler);</span><br><span class="line">        new NodeSourcePlugin(options.node).apply(compiler);</span><br><span class="line">        new LoaderTargetPlugin(options.target).apply(compiler);</span><br><span class="line">        ....</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>（4） run 开始编译(compiler.run)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// webpack/lib/webpack.js</span><br><span class="line">if (</span><br><span class="line">    options.watch === true ||</span><br><span class="line">    (Array.isArray(options) &amp;&amp; options.some(o =&gt; o.watch))</span><br><span class="line">) &#123;</span><br><span class="line">    const watchOptions = Array.isArray(options)</span><br><span class="line">        ? options.map(o =&gt; o.watchOptions || &#123;&#125;)</span><br><span class="line">        : options.watchOptions || &#123;&#125;;</span><br><span class="line">    return compiler.watch(watchOptions, callback);</span><br><span class="line">&#125;</span><br><span class="line">compiler.run(callback);</span><br></pre></td></tr></table></figure>
+<p>实例compiler后根据options的watch判断是否启动了watch，如果启动watch了就调用compiler.watch来监控构建文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if (</span><br><span class="line">    options.watch === true ||</span><br><span class="line">    (Array.isArray(options) &amp;&amp; options.some(o =&gt; o.watch))</span><br><span class="line">) &#123;</span><br><span class="line">    const watchOptions = Array.isArray(options)</span><br><span class="line">        ? options.map(o =&gt; o.watchOptions || &#123;&#125;)</span><br><span class="line">        : options.watchOptions || &#123;&#125;;</span><br><span class="line">    return compiler.watch(watchOptions, callback);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>这么分析来，webpack的实际入口是Compiler类的run方法</p>
+</li>
+<li><p>注： 这些事情都是在 webpack/lib/webpack.js做掉</p>
+</li>
+</ul>
+<p>在 run 方法里做了哪些事情了 ？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//compiler.js 的 run 方法</span><br><span class="line">...</span><br><span class="line">this.hooks.beforeRun.callAsync(this, err =&gt; &#123;</span><br><span class="line">    if (err) return finalCallback(err);</span><br><span class="line"></span><br><span class="line">    this.hooks.run.callAsync(this, err =&gt; &#123;</span><br><span class="line">        if (err) return finalCallback(err);</span><br><span class="line"></span><br><span class="line">        this.readRecords(err =&gt; &#123;</span><br><span class="line">            if (err) return finalCallback(err);</span><br><span class="line"></span><br><span class="line">            this.compile(onCompiled);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">...</span><br><span class="line">后面会执行、触发 this.compile (见下面分析)</span><br></pre></td></tr></table></figure>
+<h3 id="5-触发compile"><a href="#5-触发compile" class="headerlink" title="5.触发compile"></a>5.触发compile</h3><p>（1）在run的过程中，已经触发了一些钩子：beforeRun-&gt;run-&gt;beforeCompile（在complie方法中this.hooks.beforeCompile）-&gt;compile(this.hooks.beforeCompile回调中)-&gt;make-&gt;seal(compilation.seal)</p>
+<ul>
+<li>其中很多钩子已经注册。beforeCompile 在构建complier 时已经完成</li>
+</ul>
+<p>（2）构建了Compilation对象</p>
+<p>在run()方法中，执行了this.compile（）</p>
+<p>this.compile()中创建了compilation 见如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// complier.js 的 compile</span><br><span class="line">compile(callback) &#123;</span><br><span class="line">    const params = this.newCompilationParams();</span><br><span class="line">    this.hooks.beforeCompile.callAsync(params, err =&gt; &#123;</span><br><span class="line">        ...</span><br><span class="line">        //回到hook 里面，可以看看实现</span><br><span class="line">        this.hooks.compile.call(params);</span><br><span class="line">        const compilation = this.newCompilation(params);</span><br><span class="line">        // 这里触发make 分析入口等（见下面）</span><br><span class="line">        this.hooks.make.callAsync(compilation, err =&gt; &#123;</span><br><span class="line">            ...</span><br><span class="line">            compilation.finish();</span><br><span class="line">            compilation.seal(err =&gt; &#123;</span><br><span class="line">                ...</span><br><span class="line">                this.hooks.afterCompile.callAsync(compilation, err </span><br><span class="line">                    ...</span><br><span class="line">                    return callback(null, compilation);</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Compilation负责整个编译过程，包含了每个构建环节所对应的方法。对象内部保留了对compiler的引用。</p>
+</li>
+<li><p>当 Webpack 以开发模式运行时，每当检测到文件变化，一次新的 Compilation 将被创建。</p>
+</li>
+<li><p>Compilation很重要！编译生产资源变换文件都靠它。</p>
+</li>
+</ul>
+<h3 id="6-addEntry-make-分析入口文件创建模块对象"><a href="#6-addEntry-make-分析入口文件创建模块对象" class="headerlink" title="6.addEntry() make 分析入口文件创建模块对象"></a>6.addEntry() make 分析入口文件创建模块对象</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//complier 中的 make钩子</span><br><span class="line">this.hooks.make = new AsyncParallelHook([&quot;compilation&quot;])</span><br></pre></td></tr></table></figure>
+<p>compile中触发hooks.make(异步)事件并调用addEntry</p>
+<p>webpack的make钩子中, tapAsync注册了一个DllEntryPlugin, 就是将入口模块通过调用compilation。（下面有注册代码）</p>
+<p>这一注册在Compiler.compile()方法中被执行。</p>
+<p>addEntry方法将所有的入口模块添加到编译构建队列中，开启编译流程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//DllEntryPlugin.js</span><br><span class="line">compiler.hooks.make.tapAsync(&quot;DllEntryPlugin&quot;, (compilation, callback) =&gt; &#123;</span><br><span class="line">    compilation.addEntry(</span><br><span class="line">        this.context,</span><br><span class="line">        new DllEntryDependency(</span><br><span class="line">            this.entries.map((e, idx) =&gt; &#123;</span><br><span class="line">                const dep = new SingleEntryDependency(e);</span><br><span class="line">                dep.loc = &#123;</span><br><span class="line">                    name: this.name,</span><br><span class="line">                    index: idx</span><br><span class="line">                &#125;;</span><br><span class="line">                return dep;</span><br><span class="line">            &#125;),</span><br><span class="line">            this.name</span><br><span class="line">        ),</span><br><span class="line">        this.name,</span><br><span class="line">        callback</span><br><span class="line">    );</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>解释下为什么流程走到这里</p>
+<p>之前WebpackOptionsApply.process()初始化插件的时候，执行了compiler.hooks.entryOption.call(options.context, options.entry);</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//WebpackOptionsApply.js</span><br><span class="line">class WebpackOptionsApply extends OptionsApply &#123;</span><br><span class="line">    process(options, compiler) &#123;</span><br><span class="line">        ...</span><br><span class="line">        //这句是关键，注册entryOption钩子</span><br><span class="line">        new EntryOptionPlugin().apply(compiler);</span><br><span class="line">		compiler.hooks.entryOption.call(options.context, options.entry);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是entryOption钩子 又是在哪里注册的呢？<br>答：在EntryOptionPlugin中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">compiler.hooks.entryOption.tap(&quot;EntryOptionPlugin&quot;, (context, entry) =&gt; &#123;</span><br><span class="line">    if (typeof entry === &quot;string&quot; || Array.isArray(entry)) &#123;</span><br><span class="line">        itemToPlugin(context, entry, &quot;main&quot;).apply(compiler);</span><br><span class="line">    &#125; else if (typeof entry === &quot;object&quot;) &#123;</span><br><span class="line">        for (const name of Object.keys(entry)) &#123;</span><br><span class="line">            itemToPlugin(context, entry[name], name).apply(compiler);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else if (typeof entry === &quot;function&quot;) &#123;</span><br><span class="line">        new DynamicEntryPlugin(context, entry).apply(compiler);</span><br><span class="line">    &#125;</span><br><span class="line">    return true;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>itemToPlugin =&gt; new SingleEntryPlugin(context, item, name)<br> =&gt; </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//SingleEntryPlugin</span><br><span class="line">compilation.dependencyFactories</span><br></pre></td></tr></table></figure>
+<p>=&gt; compilation.addEntry(context, dep, name, callback);(这就到了构建莫板块)</p>
+<p>流弊<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">各种插件穿梭</span><br></pre></td></tr></table></figure></p>
+<h3 id="7-构建模块"><a href="#7-构建模块" class="headerlink" title="7. 构建模块"></a>7. 构建模块</h3><p>compilation.addEntry中执行 _addModuleChain() (下面有代码)这个方法主要做了两件事情。</p>
+<p>一是根据模块的类型获取对应的模块工厂并创建模块，二是构建模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//Compilation.js</span><br><span class="line">addEntry(context, entry, name, callback) &#123;</span><br><span class="line">    const slot = &#123;</span><br><span class="line">        name: name,</span><br><span class="line">        request: entry.request,</span><br><span class="line">        module: null</span><br><span class="line">    &#125;;</span><br><span class="line">    this._preparedEntrypoints.push(slot);</span><br><span class="line">    this._addModuleChain(</span><br><span class="line">        context,</span><br><span class="line">        entry,</span><br><span class="line">        module =&gt; &#123;</span><br><span class="line">            this.entries.push(module);</span><br><span class="line">        &#125;,</span><br><span class="line">        (err, module) =&gt; &#123;</span><br><span class="line">            if (err) &#123;</span><br><span class="line">                return callback(err);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (module) &#123;</span><br><span class="line">                slot.module = module;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                const idx = this._preparedEntrypoints.indexOf(slot);</span><br><span class="line">                this._preparedEntrypoints.splice(idx, 1);</span><br><span class="line">            &#125;</span><br><span class="line">            return callback(null, module);</span><br><span class="line">        &#125;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">=&gt; addModule(module, cacheGroup) =&gt; compilation.addModuleDependencies =&gt; </span><br><span class="line">后面是对于各个模块的解析等</span><br></pre></td></tr></table></figure>
+<p>然后通过 ModuleFactory.create方法创建模块，比如创建了NormalModual(里面有loaders等)</p>
+<p>然后调用里面的doBuild方法=》 runLoaders() (在这里面有个而loader-runner。这是webpack的loader运行器。) </p>
+<p>打个断点</p>
+<p>插播一下loader的运行总体流程</p>
+<ul>
+<li>使用loaderResolver解析loader模块路径</li>
+<li>根据rule.modules创建RulesSet规则集</li>
+<li>使用loader-runner运行loader</li>
+</ul>
+<p>继续断点~</p>
+<p>然后对模块使用的loader进行加载。调用 acorn 解析经 loader 处理后的源文件生成抽象语法树 AST。遍历 AST，构建该模块所依赖的模块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//NormalModual.js</span><br><span class="line">//产生source，生成语法树</span><br><span class="line">this._source = this.createSource(</span><br><span class="line">    this.binary ? asBuffer(source) : asString(source),</span><br><span class="line">    resourceBuffer,</span><br><span class="line">    sourceMap</span><br><span class="line">);</span><br><span class="line">this._ast =</span><br><span class="line">    typeof extraInfo === &quot;object&quot; &amp;&amp;</span><br><span class="line">    extraInfo !== null &amp;&amp;</span><br><span class="line">    extraInfo.webpackAST !== undefined</span><br><span class="line">        ? extraInfo.webpackAST</span><br><span class="line">        : null;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//NormalModual.js</span><br><span class="line">//调用相应的loader对resource进行加工，生成一段js代码后交给acorn解析生成AST.所以不管是css文件，还是jpg文件，还是html模版，最终经过loader处理会变成一个module：一段js代码。</span><br><span class="line">return this.doBuild(options, compilation, resolver, fs, err =&gt; &#123;</span><br><span class="line">    //回调里面解析ast</span><br><span class="line">    try &#123;</span><br><span class="line">        // 有个Parse类，本质还是acorn</span><br><span class="line">        const result = this.parser.parse(</span><br><span class="line">            this._ast || this._source.source(),</span><br><span class="line">            &#123;</span><br><span class="line">                current: this,</span><br><span class="line">                module: this,</span><br><span class="line">                compilation: compilation,</span><br><span class="line">                options: options</span><br><span class="line">            &#125;,</span><br><span class="line">            (err, result) =&gt; &#123;</span><br><span class="line">                if (err) &#123;</span><br><span class="line">                    handleParseError(err);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    handleParseResult(result);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        );</span><br><span class="line">        if (result !== undefined) &#123;</span><br><span class="line">            // parse is sync</span><br><span class="line">            handleParseResult(result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">        handleParseError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="使用acorn生成AST，并遍历AST收集依赖"><a href="#使用acorn生成AST，并遍历AST收集依赖" class="headerlink" title="使用acorn生成AST，并遍历AST收集依赖"></a>使用acorn生成AST，并遍历AST收集依赖</h4><p>webpack使用acorn解析每一个经loader处理过的source，并且成AST</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const ast = acornParser.parse(source, &#123;</span><br><span class="line">    ranges: true,</span><br><span class="line">    locations: true,</span><br><span class="line">    ecmaVersion: 2019,</span><br><span class="line">    sourceType: &quot;module&quot;,</span><br><span class="line">    onComment: comments</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用 loaders 对模块的原始代码进行编译，转换成标准的JS代码</li>
+<li>调用 acorn 对JS代码进行语法分析，然后收集其中的依赖关系。每个模块都会记录自己的依赖关系，从而形成一颗关系树</li>
+</ul>
+<h3 id="8-封装构建结果（seal）"><a href="#8-封装构建结果（seal）" class="headerlink" title="8. 封装构建结果（seal）"></a>8. 封装构建结果（seal）</h3><p>webpack 会监听 seal事件调用各插件对构建后的结果进行封装，要逐次对每个 module 和 chunk 进行整理，生成编译后的源码，合并，拆分，生成 hash。webpack会根据不同的插件，如MinChunkSizePlugin,LimitChunkCountPlugin 将不同的module整理到不同的chunk里，每个chunk最终对应一个输出文件。 同时这是我们在开发时进行代码优化和功能添加的关键环节。</p>
+<p>然后通过Template生成结果代码</p>
+<p>插播一下Template</p>
+<ul>
+<li>Template是用来生成结果代码的。webpack中Template有四个子类：</li>
+<li>MainTemplate.js 用于生成项目入口文件  </li>
+<li>ChunkTemplate.js 用于生成异步加载的js代码  </li>
+<li>ModuleTemplate.js 用于生成某个模块的代码  </li>
+<li>HotUpdateChunkTemplate.js</li>
+</ul>
+<p><em>Template 也是 继承自Tapable，有render方法等</em></p>
+<p>然后通过这些模板把chunk生产<strong>webpack_require</strong>的格式。</p>
+<h3 id="9-输出资源（emit）"><a href="#9-输出资源（emit）" class="headerlink" title="9. 输出资源（emit）"></a>9. 输出资源（emit）</h3><p>webpack会在Compiler的emitAssets方法里把compilation.assets里的结果写到输出文件里，在此前会先创建输出目录(把Assets输出到output的path中)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">emitAssets(compilation, callback) &#123;</span><br><span class="line">    let outputPath;</span><br><span class="line">    const emitFiles = err =&gt; &#123;</span><br><span class="line">        if (err) return callback(err);</span><br><span class="line"></span><br><span class="line">        asyncLib.forEachLimit(</span><br><span class="line">            compilation.assets,</span><br><span class="line">            15,</span><br><span class="line">            (source, file, callback) =&gt; &#123;</span><br><span class="line">                ....</span><br><span class="line">                if (targetFile.match(/\/|\\/)) &#123;</span><br><span class="line">                    const dir = path.dirname(targetFile);</span><br><span class="line">                    this.outputFileSystem.mkdirp(</span><br><span class="line">                        this.outputFileSystem.join(outputPath, dir),</span><br><span class="line">                        writeOut</span><br><span class="line">                    );</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    writeOut();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            err =&gt; &#123;</span><br><span class="line">                if (err) return callback(err);</span><br><span class="line"></span><br><span class="line">                this.hooks.afterEmit.callAsync(compilation, err =&gt; &#123;</span><br><span class="line">                    if (err) return callback(err);</span><br><span class="line"></span><br><span class="line">                    return callback();</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        );</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    this.hooks.emit.callAsync(compilation, err =&gt; &#123;</span><br><span class="line">        if (err) return callback(err);</span><br><span class="line">        outputPath = compilation.getPath(this.outputPath);</span><br><span class="line">        this.outputFileSystem.mkdirp(outputPath, emitFiles);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当要开发一些自定义的 插件要输出一些结果时，把文件放入compilation.assets里即可。</li>
+</ul>
+<h3 id="and-more"><a href="#and-more" class="headerlink" title="and more"></a>and more</h3><h4 id="memory-fs-内存文件系统"><a href="#memory-fs-内存文件系统" class="headerlink" title="memory-fs 内存文件系统"></a>memory-fs 内存文件系统</h4><p>是node原生fs模块内存版(in-memory)的完整功能实现。相比于从磁盘读写数据，memory-fs是内存缓存和快速数据处理的完美替代方案。</p>
+<ul>
+<li><p>webpack 通过自己实现的memory-fs将 bundle.js 文件打包到了内存中，访问内存中的代码文件也就更快，也减少了代码写入文件的开销。</p>
+</li>
+<li><p>memory-fs 是 webpack-dev-middleware 的一个依赖库，webpack-dev-middleware 将 webpack 原本的outputFileSystem 替换成了MemoryFileSystem实例，这样代码就将输出到内存中。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//webpack-dev-middleware 中该部分代码</span><br><span class="line">//webpack-dev-middleware/lib/Shared.js</span><br><span class="line">var isMemoryFs = !compiler.compilers &amp;&amp; compiler.outputFileSystem instanceof MemoryFileSystem;</span><br><span class="line">if(isMemoryFs) &#123;</span><br><span class="line">    fs = compiler.outputFileSystem;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    fs = compiler.outputFileSystem = new MemoryFileSystem();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>首先判断当前 fileSystem 是否已经是 MemoryFileSystem 的实例，如果不是，用 MemoryFileSystem 的实例替换 compiler 之前的 outputFileSystem。这样 bundle.js 文件代码就作为一个简单 javascript 对象保存在了内存中，当浏览器请求 bundle.js 文件时，devServer就直接去内存中找到上面保存的 javascript 对象返回给浏览器端。</li>
+</ul>
+<p>关于webpack-dev-server 的核心内容</p>
+<ul>
+<li>webpack, 负责编译代码</li>
+<li>webpack-dev-server，主要提供了 in-memory 内存文件系统，他会把webpack的outputFileSystem 替换成一个 inMemoryFileSystem，并且拦截全部的浏览器请求，从这个文件系统中把结果取出来返回。</li>
+<li>express，作为服务器</li>
+</ul>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>webpack的主要编译都按照下面的钩子调用顺序执行。</p>
+<ul>
+<li>Compiler:beforeRun 清除缓存</li>
+<li>Compiler:run 注册缓存数据钩子</li>
+<li>Compiler:beforeCompile</li>
+<li>Compiler:compile 开始编译</li>
+<li>Compiler:make 从入口分析依赖以及间接依赖模块，创建模块对象</li>
+<li>Compilation:buildModule 模块构建</li>
+<li>Compiler:normalModuleFactory 构建</li>
+<li>Compilation:seal 构建结果封装， 不可再更改</li>
+<li>Compiler:afterCompile 完成构建，缓存数据</li>
+<li>Compiler:emit 输出到dist目录</li>
+<li>一个 Compilation 对象包含了当前的模块资源、编译生成资源、变化的文件等。</li>
+</ul>
+<hr>
+<p>and~~~</p>
+<ul>
+<li><p>Compilation 对象也提供了很多事件回调供插件做扩展。</p>
+</li>
+<li><p>Compilation中比较重要的部分是assets,如果我们要借助webpack来生成文件,就要在assets上添加对应的文件信息。</p>
+</li>
+</ul>
+<p>参考：<a href="https://segmentfault.com/a/1190000017013855?utm_source=tag-newest" target="_blank" rel="noopener">干货！撸一个webpack插件(内含tapable详解+webpack流程)</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="cjv3rsv24000x0njfeexu0h9z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/30/about hexo/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          about hexo
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/29/webpackPlugin/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">webpackPlugin</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

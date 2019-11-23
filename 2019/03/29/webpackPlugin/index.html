@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>webpackPlugin | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="plugin先把中文 或英文文档看一下。 实际应用如下方代码 123456789const ProgressBarPlugin = require(&amp;apos;progress-bar-webpack-plugin&amp;apos;);module.exports = &amp;#123;    mode: &amp;apos;development&amp;apos;,    plugins:[        new Pro">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpackPlugin">
+<meta property="og:url" content="http://swingboy.github.io/2019/03/29/webpackPlugin/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="plugin先把中文 或英文文档看一下。 实际应用如下方代码 123456789const ProgressBarPlugin = require(&amp;apos;progress-bar-webpack-plugin&amp;apos;);module.exports = &amp;#123;    mode: &amp;apos;development&amp;apos;,    plugins:[        new Pro">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-23T14:31:02.621Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpackPlugin">
+<meta name="twitter:description" content="plugin先把中文 或英文文档看一下。 实际应用如下方代码 123456789const ProgressBarPlugin = require(&amp;apos;progress-bar-webpack-plugin&amp;apos;);module.exports = &amp;#123;    mode: &amp;apos;development&amp;apos;,    plugins:[        new Pro">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-webpackPlugin" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/29/webpackPlugin/" class="article-date">
+  <time datetime="2019-03-29T12:48:37.000Z" itemprop="datePublished">2019-03-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      webpackPlugin
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="plugin"><a href="#plugin" class="headerlink" title="plugin"></a>plugin</h3><p>先把<a href="https://www.webpackjs.com/concepts/" target="_blank" rel="noopener">中文</a> 或<a href="https://webpack.js.org/contribute/writing-a-plugin/" target="_blank" rel="noopener">英文</a>文档看一下。</p>
+<h3 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h3><p>如下方代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const ProgressBarPlugin = require(&apos;progress-bar-webpack-plugin&apos;);</span><br><span class="line">module.exports = &#123;</span><br><span class="line">    mode: &apos;development&apos;,</span><br><span class="line">    plugins:[</span><br><span class="line">        new ProgressBarPlugin(&#123;</span><br><span class="line">            width: 5,</span><br><span class="line">        &#125;),</span><br><span class="line">    ],  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="什么是webpack-插件"><a href="#什么是webpack-插件" class="headerlink" title="什么是webpack 插件"></a>什么是webpack 插件</h3><p>webpack plugin是一个具有 apply 属性的 JavaScript 对象。apply 属性会被 webpack compiler 调用，并且 compiler 对象可在整个编译生命周期访问。</p>
+<ul>
+<li>webpack 插件机制是整个 webpack 工具的骨架，而 webpack 本身也是利用这套插件机制构建出来的。</li>
+</ul>
+<p>一个简单的插件结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const pluginName = &apos;ConsoleLogOnBuildWebpackPlugin&apos;;</span><br><span class="line"></span><br><span class="line">class ConsoleLogOnBuildWebpackPlugin &#123;</span><br><span class="line">    apply(compiler) &#123;</span><br><span class="line">        compiler.hooks.run.tap(pluginName, compilation =&gt; &#123;</span><br><span class="line">            console.log(&quot;webpack 构建过程开始！&quot;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看一个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function HelloCompilationPlugin(options) &#123;&#125;</span><br><span class="line"></span><br><span class="line">HelloCompilationPlugin.prototype.apply = function(compiler) &#123;</span><br><span class="line"></span><br><span class="line">  // 设置回调来访问 compilation 对象：</span><br><span class="line">  compiler.plugin(&quot;compilation&quot;, function(compilation) &#123;</span><br><span class="line"></span><br><span class="line">    // 现在，设置回调来访问 compilation 中的步骤：</span><br><span class="line">    compilation.plugin(&quot;optimize&quot;, function() &#123;</span><br><span class="line">      console.log(&quot;Assets are being optimized.&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">module.exports = HelloCompilationPlugin;</span><br></pre></td></tr></table></figure>
+<p>有什么特点呢？ </p>
+<p>我们看到了都有个Compiler 和 Compilation</p>
+<h3 id="不得不说的-Compiler-和-Compilation"><a href="#不得不说的-Compiler-和-Compilation" class="headerlink" title="不得不说的 Compiler 和 Compilation"></a>不得不说的 Compiler 和 Compilation</h3><p>在插件开发中最重要的两个资源就是 compiler 和 compilation 对象。</p>
+<h4 id="区别与联系"><a href="#区别与联系" class="headerlink" title="区别与联系"></a>区别与联系</h4><p>compiler 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当在 webpack 环境中应用一个插件时，插件将收到此 compiler 对象的引用。可以使用它来访问 webpack 的主环境。</p>
+<p>而compilation 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。</p>
+<ul>
+<li>这两个组件是任何 webpack 插件不可或缺的部分（特别是 compilation）</li>
+</ul>
+<p>看看他们的代码会有很多收获  </p>
+<p><a href="https://github.com/webpack/webpack/blob/master/lib/Compilation.js" target="_blank" rel="noopener">Compilation</a></p>
+<p><a href="https://github.com/webpack/webpack/blob/master/lib/Compiler.js" target="_blank" rel="noopener">Compiler</a></p>
+<h4 id="Compiler"><a href="#Compiler" class="headerlink" title="Compiler"></a>Compiler</h4><p>Compiler暴露了和webpack整个生命周期相关的钩子，通过如下的方式访问:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//基本写法</span><br><span class="line">compiler.hooks.someHook.tap(...)</span><br><span class="line">//如果希望在entry配置完毕后执行某个功能</span><br><span class="line">compiler.hooks.entryOption.tap(...)</span><br><span class="line">//如果希望在生成的资源输出到output指定目录之前执行某个功能</span><br><span class="line">compiler.hooks.emit.tap(...)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>webpack中有complier对象，代表webpack实例。有编译的具体参数。</li>
+<li>complation代表本次编译，有打包的文件等信息</li>
+</ul>
+<h4 id="complication"><a href="#complication" class="headerlink" title="complication"></a>complication</h4><p><a href="https://www.webpackjs.com/api/compilation-hooks/" target="_blank" rel="noopener">对应钩子</a></p>
+<p>buildModule – 在模块构建开始之前触发</p>
+<p>failedModule – 模块构建失败时执行</p>
+<p>seal – 编译(compilation)停止接收新模块时触发。</p>
+<p>optimize – 优化阶段开始时触发。</p>
+<p>…</p>
+<h3 id="Tapable"><a href="#Tapable" class="headerlink" title="Tapable"></a>Tapable</h3><p>说到 compiler 和 compilation 对象更不得不提 Tapable</p>
+<p>tapable是webpack的核心框架，是一个基于事件流的框架，或者叫做发布订阅模式，或观察者模式。webpack 中许多对象扩展自 Tapable 类。</p>
+<p>tapable 这个类暴露 tap, tapAsync 和 tapPromise 方法，可以使用这些方法，注入自定义的构建步骤，这些步骤将在整个编译过程中不同时机触发。</p>
+<p><a href>先看下看另一篇</a></p>
+<h3 id="插件类型-plugin-types"><a href="#插件类型-plugin-types" class="headerlink" title="插件类型(plugin types)"></a>插件类型(plugin types)</h3><p>根据所使用的 钩子(hook) 和 tap 方法，插件可以以多种不同的方式运行。这个工作方式与 Tapable 提供的 hooks 密切相关。compiler hooks 分别记录了 Tapable 内在的钩子，指出哪些 tap 方法可用。</p>
+<p>因此，根据你触发到 tap 事件，插件可能会以不同的方式运行。例如，当钩入 compile 阶段时，只能使用同步的 tap 方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">compiler.hooks.compile.tap(&apos;MyPlugin&apos;, params =&gt; &#123;</span><br><span class="line">  console.log(&apos;以同步方式触及 compile 钩子。&apos;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>然而，对于能够使用了 AsyncHook(异步钩子) 的 run，我们可以使用 tapAsync 或 tapPromise（以及 tap）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">compiler.hooks.run.tapAsync(&apos;MyPlugin&apos;, (compiler, callback) =&gt; &#123;</span><br><span class="line">  console.log(&apos;以异步方式触及 run 钩子。&apos;)</span><br><span class="line">  callback()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">compiler.hooks.run.tapPromise(&apos;MyPlugin&apos;, compiler =&gt; &#123;</span><br><span class="line">  return new Promise(resolve =&gt; setTimeout(resolve, 1000)).then(() =&gt; &#123;</span><br><span class="line">    console.log(&apos;以具有延迟的异步方式触及 run 钩子&apos;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可以有多种方式将 hook 钩入到 compiler 中，可以让各种插件都以合适的方式去运行。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Compiler extends Tapable &#123;</span><br><span class="line">	constructor(context) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.hooks = &#123;</span><br><span class="line">			/** @type &#123;SyncBailHook&lt;Compilation&gt;&#125; */</span><br><span class="line">			shouldEmit: new SyncBailHook([&quot;compilation&quot;]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;Stats&gt;&#125; */</span><br><span class="line">			done: new AsyncSeriesHook([&quot;stats&quot;]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;&gt;&#125; */</span><br><span class="line">			additionalPass: new AsyncSeriesHook([]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;Compiler&gt;&#125; */</span><br><span class="line">			beforeRun: new AsyncSeriesHook([&quot;compiler&quot;]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;Compiler&gt;&#125; */</span><br><span class="line">			run: new AsyncSeriesHook([&quot;compiler&quot;]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;Compilation&gt;&#125; */</span><br><span class="line">			emit: new AsyncSeriesHook([&quot;compilation&quot;]),</span><br><span class="line">			/** @type &#123;AsyncSeriesHook&lt;Compilation&gt;&#125; */</span><br><span class="line">			afterEmit: new AsyncSeriesHook([&quot;compilation&quot;]),</span><br></pre></td></tr></table></figure>
+<h4 id="自定义的钩子函数-custom-hooks"><a href="#自定义的钩子函数-custom-hooks" class="headerlink" title="自定义的钩子函数(custom hooks)"></a>自定义的钩子函数(custom hooks)</h4><p>为了给其他插件的编译添加一个新的钩子，来 tap(触及) 到这些插件的内部，直接从 tapable 中 require 所需的钩子类(hook class)，然后创建：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const SyncHook = require(&apos;tapable&apos;).SyncHook;</span><br><span class="line"></span><br><span class="line">// 具有 `apply` 方法……</span><br><span class="line">if (compiler.hooks.myCustomHook) throw new Error(&apos;Already in use&apos;);</span><br><span class="line">compiler.hooks.myCustomHook = new SyncHook([&apos;a&apos;, &apos;b&apos;, &apos;c&apos;])</span><br><span class="line"></span><br><span class="line">// 在你想要触发钩子的位置/时机下调用……</span><br><span class="line">compiler.hooks.myCustomHook.call(a, b, c);</span><br></pre></td></tr></table></figure>
+<h3 id="如何写一个plugin？"><a href="#如何写一个plugin？" class="headerlink" title="如何写一个plugin？"></a>如何写一个plugin？</h3><p>看完上面了解了一些基本内容，以及plugin的样子。怎么写一定要知道怎么样的一个东西可以称之为 webpack plugin呢？</p>
+<p>一个完整的 webpack 插件需要满足以下几点规则和特征：</p>
+<ul>
+<li>是一个独立的模块。</li>
+<li>模块对外暴露一个 js 函数。</li>
+<li>函数的原型 (prototype) 上定义了一个注入 compiler 对象的 apply 方法。</li>
+<li>apply 函数中需要有通过 compiler 对象挂载的 webpack 事件钩子，钩子的回调中能拿到当前编译的 compilation 对象，如果是异步编译插件的话可以拿到回调 callback。</li>
+<li>完成自定义子编译流程并处理 complition 对象的内部数据。</li>
+<li>如果异步编译插件的话，数据处理完成后执行 callback 回调。</li>
+</ul>
+<h3 id="两个plugin例子"><a href="#两个plugin例子" class="headerlink" title="两个plugin例子"></a>两个plugin例子</h3><p>（1）在每个chunk 中添加 个banner</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">const &#123; ConcatSource &#125; = require(&quot;webpack-sources&quot;);</span><br><span class="line">let pluginOptions = &#123;</span><br><span class="line">    name: &apos;myName&apos;,</span><br><span class="line">    stage: Infinity</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BannerPlugin &#123;</span><br><span class="line">  constructor(doneF, failF) &#123;</span><br><span class="line">    this.doneF = doneF;</span><br><span class="line">    this.failF = failF;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  apply(compiler) &#123;</span><br><span class="line">      compiler.hooks.compilation.tap(&quot;BannerTest&quot;, compilation =&gt; &#123;</span><br><span class="line">    compilation.hooks.optimizeChunkAssets.tap(&quot;BannerTest&quot;, (chunks, callbak)  =&gt; &#123;</span><br><span class="line">      chunks.forEach(chunk =&gt; &#123;</span><br><span class="line">                  chunk.files.forEach(file =&gt; &#123;</span><br><span class="line">                      compilation.assets[file] = new ConcatSource(</span><br><span class="line">                      &apos;\/**i am the banner-  &apos; + new Date() + &apos;-**\/&apos;,</span><br><span class="line">                      &apos;\n&apos;,</span><br><span class="line">                      compilation.assets[file]</span><br><span class="line">                      );</span><br><span class="line">                  &#125;);</span><br><span class="line">              &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);   </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = BannerPlugin;</span><br></pre></td></tr></table></figure>
+<p>（2）编译成功和失败回调</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">const &#123; ConcatSource &#125; = require(&quot;webpack-sources&quot;);</span><br><span class="line">let pluginOptions = &#123;</span><br><span class="line">    name: &apos;myName&apos;,</span><br><span class="line">    stage: Infinity</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ResultPlugin &#123;</span><br><span class="line">  constructor(doneF, failF) &#123;</span><br><span class="line">    this.doneF = doneF;</span><br><span class="line">    this.failF = failF;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  apply(compiler) &#123;</span><br><span class="line">      compiler.hooks.done.tap(pluginOptions,  (stats) =&gt; &#123;</span><br><span class="line">          this.doneF(&apos;我成功了&apos;);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      compiler.hooks.failed.tap(pluginOptions,   (err) =&gt; &#123;</span><br><span class="line">          this.failF(err);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      compiler.hooks.compilation.tap(&quot;BannerTest&quot;, compilation =&gt; &#123;</span><br><span class="line">    compilation.hooks.optimizeChunkAssets.tap(&quot;BannerTest&quot;, (chunks, callbak)  =&gt; &#123;</span><br><span class="line">      chunks.forEach(chunk =&gt; &#123;</span><br><span class="line">                  chunk.files.forEach(file =&gt; &#123;</span><br><span class="line">                      compilation.assets[file] = new ConcatSource(</span><br><span class="line">                      &apos;\/**Sweet Banner**\/&apos;,</span><br><span class="line">                      &apos;\n&apos;,</span><br><span class="line">                      compilation.assets[file]</span><br><span class="line">                      );</span><br><span class="line">                  &#125;);</span><br><span class="line">              &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;); </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = ResultPlugin;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>compiler hook 的 tap 方法的第一个参数，应该是驼峰式命名的插件名称。建议为此使用一个常量，以便它可以在所有 hook 中复用。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>webpack plugin的本质，它实际上和webpack loader一样简单，其实它只是一个带有apply方法的class。</p>
+<p>插件目的在于解决 loader 无法实现的其他事。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="cjv3rsv1z000q0njf0k6hjqcc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/29/webpack原理/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          webpack原理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/29/webpackLoader/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">webpackLoader</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

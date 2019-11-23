@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>几个简单排序 | swing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="####1.快速排序 基本思想：1）选择一个基准元素,通常选择第一个元素或者最后一个元素,2）通过一趟排序讲待排序的记录分割成独立的两部分，其中一部分记录的元素值均比基准元素值小。另一部分记录的 元素值比基准值大。3）此时基准元素在其排好序后的正确位置4）然后分别对这两部分记录用同样的方法继续进行排序，直到整个序列有序。 12345678910111213141516171819202122232">
+<meta name="keywords" content="技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="几个简单排序">
+<meta property="og:url" content="http://swingboy.github.io/2018/03/01/几个简单排序/index.html">
+<meta property="og:site_name" content="swing">
+<meta property="og:description" content="####1.快速排序 基本思想：1）选择一个基准元素,通常选择第一个元素或者最后一个元素,2）通过一趟排序讲待排序的记录分割成独立的两部分，其中一部分记录的元素值均比基准元素值小。另一部分记录的 元素值比基准值大。3）此时基准元素在其排好序后的正确位置4）然后分别对这两部分记录用同样的方法继续进行排序，直到整个序列有序。 12345678910111213141516171819202122232">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-23T14:29:40.731Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="几个简单排序">
+<meta name="twitter:description" content="####1.快速排序 基本思想：1）选择一个基准元素,通常选择第一个元素或者最后一个元素,2）通过一趟排序讲待排序的记录分割成独立的两部分，其中一部分记录的元素值均比基准元素值小。另一部分记录的 元素值比基准值大。3）此时基准元素在其排好序后的正确位置4）然后分别对这两部分记录用同样的方法继续进行排序，直到整个序列有序。 12345678910111213141516171819202122232">
+  
+    <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">swing</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://swingboy.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-几个简单排序" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/01/几个简单排序/" class="article-date">
+  <time datetime="2018-03-01T04:12:00.000Z" itemprop="datePublished">2018-03-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      几个简单排序
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>####1.快速排序</p>
+<p>基本思想：<br>1）选择一个基准元素,通常选择第一个元素或者最后一个元素,<br>2）通过一趟排序讲待排序的记录分割成独立的两部分，其中一部分记录的元素值均比基准元素值小。另一部分记录的 元素值比基准值大。<br>3）此时基准元素在其排好序后的正确位置<br>4）然后分别对这两部分记录用同样的方法继续进行排序，直到整个序列有序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function quickSort(arr) &#123;</span><br><span class="line">    //如果数组&lt;=1,则直接返回</span><br><span class="line">    if (arr.length &lt;= 1) &#123; return arr; &#125;</span><br><span class="line">    var pivotIndex = Math.floor(arr.length / 2);</span><br><span class="line">    //找基准，并把基准从原数组删除</span><br><span class="line">    var pivot = arr.splice(pivotIndex, 1)[0];</span><br><span class="line">    //定义左右数组</span><br><span class="line">    var left = [];</span><br><span class="line">    var right = [];</span><br><span class="line"></span><br><span class="line">    //比基准小的放在left，比基准大的放在right</span><br><span class="line">    for (var i = 0; i &lt; arr.length; i++) &#123;</span><br><span class="line">        if (arr[i] &lt;= pivot) &#123;</span><br><span class="line">            left.push(arr[i]);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            right.push(arr[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //递归</span><br><span class="line">    return quickSort(left).concat([pivot], quickSort(right));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a = quickSort([0, 33, 43, 32, 39, 2]);</span><br><span class="line">// console.log(a);</span><br></pre></td></tr></table></figure>
+<p>2 插入排序<br>基本思想:<br>将一个记录插入到已排序好的有序表中，从而得到一个新，记录数增1的有序表。即：先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，直至整个序列有序为止。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">function sort(elements) &#123;</span><br><span class="line">    //假设第0个元素是一个有序的数列，第1个以后的是无序的序列，</span><br><span class="line">    //所以从第1个元素开始将无序数列的元素插入到有序数列中</span><br><span class="line">    for (var i = 1; i &lt; elements.length; i++) &#123;</span><br><span class="line">        //升序</span><br><span class="line">        if (elements[i] &lt; elements[i - 1]) &#123;</span><br><span class="line">            //取出无序数列中的第i个作为被插入元素</span><br><span class="line">            var guard = elements[i];</span><br><span class="line">            //记住有序数列的最后一个位置，并且将有序数列位置扩大一个</span><br><span class="line">            var j = i - 1;</span><br><span class="line">            elements[i] = elements[j];</span><br><span class="line"></span><br><span class="line">            //比大小，找到被插入元素所在的位置</span><br><span class="line">            while (j &gt;= 0 &amp;&amp; guard &lt; elements[j]) &#123;</span><br><span class="line">                elements[j + 1] = elements[j];</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            // console.log(j + 1, &apos;ssss&apos;)</span><br><span class="line">            //插入</span><br><span class="line">            elements[j + 1] = guard;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var elements = [10, 9, 8, 7, 6, 5];</span><br><span class="line"></span><br><span class="line">// 8 9 10   9</span><br><span class="line">// 8 9 10 10</span><br><span class="line">// console.log(&apos;before: &apos; + elements);</span><br><span class="line">// sort(elements);</span><br><span class="line">// console.log(&apos; after: &apos; + elements);</span><br></pre></td></tr></table></figure>
+<p>####3.选择排序<br>选择排序（Selection sort）是一种简单直观的排序算法。它的工作原理是每一次从待排序的数据元素中选出最小（或最大）的一个元素，存放在序列的起始位置，直到全部待排序的数据元素排完。 选择排序是不稳定的排序方法（比如序列[5， 5， 3]第一次就将第一个[5]与[3]交换，导致第一个5挪动到第二个5后面）。</p>
+<p><code></code><br>var example = [8, 94, 15, 88, 55, 76, 21, 39];<br>function selectSort(arr) {<br>    var len = arr.length;<br>    var minIndex, temp;<br>    // console.time(‘选择排序耗时’);<br>    for (i = 0; i &lt; len - 1; i++) {<br>        minIndex = i;<br>        for (j = i + 1; j &lt; len; j++) {<br>            if (arr[j] &lt; arr[minIndex]) {<br>                minIndex = j;<br>            }<br>        }<br>        temp = arr[i];<br>        arr[i] = arr[minIndex];<br>        arr[minIndex] = temp;<br>    }<br>    // console.timeEnd(‘选择排序耗时’);<br>    return arr;<br>}<br>// console.log(selectSort(example));<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">####4.希尔排序</span><br><span class="line">希尔(Shell)排序又称为缩小增量排序，它是一种插入排序。它是直接插入排序算法的加强版。</span><br><span class="line">希尔排序的基本思想：</span><br><span class="line">把记录按步长 gap 分组，对每组记录采用直接插入排序方法进行排序。</span><br><span class="line">随着步长逐渐减小，所分成的组包含的记录越来越多，当步长的值减小到 1 时，整个数据合成为一组，构成一组有序记录，则完成排序。</span><br><span class="line"></span><br><span class="line">希尔排序：http://blog.csdn.net/morewindows/article/details/6668714</span><br></pre></td></tr></table></figure></p>
+<p>var arr1 = [2, 5, 1, 9, 0];<br>function shellSort(arr) {<br>    var gap = Math.floor(arr.length / 2);<br>    while (gap &gt;= 1) {<br>        for (var i = gap; i &lt; arr.length; i++) {<br>            var j, temp = arr[i];<br>            for (j = i - gap; j &gt;= 0 &amp;&amp; temp &lt; arr[j]; j = j - gap) {<br>                arr[j + gap] = arr[j];<br>            }<br>            arr[j + gap] = temp;<br>        }<br>        // console.log(“gap=” + gap);<br>        // console.log(arr);<br>        gap = Math.floor(gap / 2);<br>    }<br>}<br>shellSort(arr1);</p>
+<p>var arr1 = [2, 5, 1, 9, 0, 10];<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">#### 5.归并排序</span><br><span class="line">归并操作(merge)，也叫归并算法，指的是将两个顺序序列合并成一个顺序序列的方法。</span><br><span class="line">如　设有数列&#123;6，202，100，301，38，8，1&#125;</span><br><span class="line">初始状态：6,202,100,301,38,8,1</span><br><span class="line">第一次归并后：&#123;6,202&#125;,&#123;100,301&#125;,&#123;8,38&#125;,&#123;1&#125;，比较次数：3；</span><br><span class="line">第二次归并后：&#123;6,100,202,301&#125;，&#123;1,8,38&#125;，比较次数：4；</span><br><span class="line">第三次归并后：&#123;1,6,8,38,100,202,301&#125;,比较次数：4；</span><br><span class="line">总的比较次数为：3+4+4=11,；</span><br><span class="line">逆序数为14；</span><br></pre></td></tr></table></figure></p>
+<p>function mergeSort(arr) {  //采用自上而下的递归方法<br>    var len = arr.length;<br>    if(len &lt; 2) {<br>        return arr;<br>    }<br>    var middle = Math.floor(len / 2),<br>        left = arr.slice(0, middle),<br>        right = arr.slice(middle);<br>    return merge(mergeSort(left), mergeSort(right));<br>}</p>
+<p>function merge(left, right){<br>    var result = [];<br>    while (left.length&gt;0 &amp;&amp; right.length&gt;0) {<br>        if (left[0] &lt;= right[0]) {<br>            result.push(left.shift());<br>        } else {<br>            result.push(right.shift());<br>        }<br>    }<br>    // console.log(left.length, ‘left’)<br>    console.log(right.length, ‘right’)<br>    while (left.length)<br>        result.push(left.shift());</p>
+<pre><code>while (right.length)
+    result.push(right.shift());
+
+return result;
+</code></pre><p>}<br>var a = mergeSort(arr1);<br>console.log(‘a’, a)<br><code>`</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2018/03/01/几个简单排序/" data-id="cjv3rsv1c00050njfh4r2c6bg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/03/05/visual-dom/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          visual dom
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/27/数组排序几种方法/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">数组排序几种方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/技术/">技术</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/技术/" style="font-size: 20px;">技术</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/04/30/about hexo/">about hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpack原理/">webpack原理</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackPlugin/">webpackPlugin</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/29/about-tapable/">about tapable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 火柴人<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
