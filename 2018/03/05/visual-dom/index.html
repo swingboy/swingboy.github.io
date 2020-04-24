@@ -15,18 +15,18 @@
 <meta property="og:site_name" content="swing">
 <meta property="og:description" content="####引言我们知道，DOM 操作真正的问题在于每次操作都会触发布局的改变、DOM树的修改和渲染。所以，当你一个接一个地去修改30个节点的时候，就会引起N次（潜在的）布局重算，N次（潜在的）重绘，等等。 二、什么是虚拟DOM？虚拟DOM是在DOM的基础上建立了一个抽象层，对数据和状态所做的任何改动，都会被自动且高效的同步到虚拟DOM，最后再批量同步到DOM中。 Virtual DOM 实际上没有使">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/20170504161311010.png">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/20170504161319670.png">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/20170504161331322.png">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/6d64b0b7889e7f020bb020aea5947a09_hd.jpg">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/c4ba535164d29fd46383d19512c37349_hd.jpg">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/0909000.png">
-<meta property="og:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/0909001.png">
-<meta property="og:updated_time" content="2019-11-23T14:30:50.852Z">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/20170504161311010.png">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/20170504161319670.png">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/20170504161331322.png">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/6d64b0b7889e7f020bb020aea5947a09_hd.jpg">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/c4ba535164d29fd46383d19512c37349_hd.jpg">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/0909000.png">
+<meta property="og:image" content="http://swingboy.github.io/imgs/visualdom/0909001.png">
+<meta property="og:updated_time" content="2020-04-24T03:18:29.987Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="visual dom">
 <meta name="twitter:description" content="####引言我们知道，DOM 操作真正的问题在于每次操作都会触发布局的改变、DOM树的修改和渲染。所以，当你一个接一个地去修改30个节点的时候，就会引起N次（潜在的）布局重算，N次（潜在的）重绘，等等。 二、什么是虚拟DOM？虚拟DOM是在DOM的基础上建立了一个抽象层，对数据和状态所做的任何改动，都会被自动且高效的同步到虚拟DOM，最后再批量同步到DOM中。 Virtual DOM 实际上没有使">
-<meta name="twitter:image" content="http://swingboy.github.io/2018/03/05/visual-dom/imgs/20170504161311010.png">
+<meta name="twitter:image" content="http://swingboy.github.io/imgs/visualdom/20170504161311010.png">
   
     <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
   
@@ -99,7 +99,7 @@
 <h4 id="二、什么是虚拟DOM？"><a href="#二、什么是虚拟DOM？" class="headerlink" title="二、什么是虚拟DOM？"></a>二、什么是虚拟DOM？</h4><p>虚拟DOM是在DOM的基础上建立了一个抽象层，对数据和状态所做的任何改动，都会被自动且高效的同步到虚拟DOM，最后再批量同步到DOM中。</p>
 <p>Virtual DOM 实际上没有使用什么全新的技术，仅仅是把 “ 双缓冲（double buffering）” 技术应用到了DOM上面。<br>这样一来，当你在这个单独的虚拟的DOM树上也一个接一个地修改30个节点的时候，它不会每次都去触发重绘，所以修改节点的开销就变小了。<br>之后，一旦你要把这些改动传递给真实DOM，之前所有的改动就会整合成一次DOM操作。这一次DOM操作引起的布局计算和重绘可能会更大，但是相比而言，整合起来的改动只做一次，减少了（多次）计算。</p>
 <p>虚拟DOM是React等的一大亮点，具有batching(批处理)和高效的Diff算法。这让我们可以无需担心性能问题而”毫无顾忌”的随时“刷新”整个页面，由虚拟DOM来确保只对界面上真正变化的部分进行实际的DOM操作。</p>
-<p><img src="./imgs/20170504161311010.png" alt><br><br><br><br><br><img src="./imgs/20170504161319670.png" alt></p>
+<p><img src="/imgs/visualdom/20170504161311010.png" alt><br><br><br><br><br><img src="/imgs/visualdom/20170504161319670.png" alt></p>
 <p><br></p>
 <p>innerHTML：render html字符串 + 重新创建所有 DOM 元素</p>
 <p>虚拟DOM：render 虚拟DOM + diff + 更新必要的 DOM 元素</p>
@@ -107,12 +107,12 @@
 <h4 id="虚拟DOM的优点："><a href="#虚拟DOM的优点：" class="headerlink" title="虚拟DOM的优点："></a>虚拟DOM的优点：</h4><p>最终表现在DOM上的修改只是变更的部分，可以保证非常高效的渲染。</p>
 <p>####虚拟DOM的缺点：<br>首次渲染大量DOM时，由于多了一层虚拟DOM的计算，会比innerHTML插入慢。</p>
 <h4 id="原理"><a href="#原理" class="headerlink" title="原理:"></a>原理:</h4><p>React会在内存中维护一个虚拟DOM树，对这个树进行读或写，实际上是对虚拟DOM进行。当数据变化时，会自动更新虚拟DOM，然后将新的虚拟DOM和旧的虚拟DOM进行对比，找到变更的部分，得出一个diff，然后将diff放到一个队列里，最终批量更新这些diff到DOM中。</p>
-<h6 id="步骤一：用JS对象模拟DOM树"><a href="#步骤一：用JS对象模拟DOM树" class="headerlink" title="步骤一：用JS对象模拟DOM树 "></a>步骤一：用JS对象模拟DOM树 <br></h6><h6 id="步骤二：比较两棵虚拟DOM树的差异"><a href="#步骤二：比较两棵虚拟DOM树的差异" class="headerlink" title="步骤二：比较两棵虚拟DOM树的差异"></a>步骤二：比较两棵虚拟DOM树的差异<br></h6><h6 id="步骤三：把差异应用到真正的DOM树上"><a href="#步骤三：把差异应用到真正的DOM树上" class="headerlink" title="步骤三：把差异应用到真正的DOM树上 "></a>步骤三：把差异应用到真正的DOM树上 <br></h6><p><img src="./imgs/20170504161331322.png" alt></p>
+<h6 id="步骤一：用JS对象模拟DOM树"><a href="#步骤一：用JS对象模拟DOM树" class="headerlink" title="步骤一：用JS对象模拟DOM树 "></a>步骤一：用JS对象模拟DOM树 <br></h6><h6 id="步骤二：比较两棵虚拟DOM树的差异"><a href="#步骤二：比较两棵虚拟DOM树的差异" class="headerlink" title="步骤二：比较两棵虚拟DOM树的差异"></a>步骤二：比较两棵虚拟DOM树的差异<br></h6><h6 id="步骤三：把差异应用到真正的DOM树上"><a href="#步骤三：把差异应用到真正的DOM树上" class="headerlink" title="步骤三：把差异应用到真正的DOM树上 "></a>步骤三：把差异应用到真正的DOM树上 <br></h6><p><img src="/imgs/visualdom/20170504161331322.png" alt></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">//模拟dom</span><br><span class="line">function Element(tagName, props, children) &#123;</span><br><span class="line">  this.tagName = tagName</span><br><span class="line">  this.props = props</span><br><span class="line">  this.children = children</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = function (tagName, props, children) &#123;</span><br><span class="line">  return new Element(tagName, props, children)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//渲染</span><br><span class="line">Element.prototype.render = function () &#123;</span><br><span class="line">  var el = document.createElement(this.tagName) // 根据tagName构建</span><br><span class="line">  var props = this.props</span><br><span class="line"></span><br><span class="line">  for (var propName in props) &#123; // 设置节点的DOM属性</span><br><span class="line">    var propValue = props[propName]</span><br><span class="line">    el.setAttribute(propName, propValue)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  var children = this.children || []</span><br><span class="line"></span><br><span class="line">  children.forEach(function (child) &#123;</span><br><span class="line">    var childEl = (child instanceof Element)</span><br><span class="line">      ? child.render() // 如果子节点也是虚拟DOM，递归构建DOM节点</span><br><span class="line">      : document.createTextNode(child) // 如果字符串，只构建文本节点</span><br><span class="line">    el.appendChild(childEl)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  return el</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p></p><p style="color:blue;">例如上面的 DOM 结构就可以简单的表示：</p><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var el = require(&apos;./element&apos;);</span><br><span class="line">var ul = el(&apos;ul&apos;, &#123;id: &apos;list&apos;&#125;, [</span><br><span class="line">  el(&apos;li&apos;, &#123;class: &apos;item&apos;&#125;, [&apos;Item 1&apos;]),</span><br><span class="line">  el(&apos;li&apos;, &#123;class: &apos;item&apos;&#125;, [&apos;Item 2&apos;]),</span><br><span class="line">  el(&apos;li&apos;, &#123;class: &apos;item&apos;&#125;, [&apos;Item 3&apos;])</span><br><span class="line">])</span><br></pre></td></tr></table></figure><p></p>
 <p>注：在前端当中，你很少会跨越层级地移动DOM元素。所以 Virtual DOM 只会对同一个层级的元素进行对比，上面的div只会和同一层级的div对比，第二层级的只会跟第二层级对比。这样算法复杂度就可以达到 O(n)。</p>
-<p><img src="./imgs/6d64b0b7889e7f020bb020aea5947a09_hd.jpg" alt></p>
-<h4 id="1-深度优先遍历，记录差异"><a href="#1-深度优先遍历，记录差异" class="headerlink" title="(1)深度优先遍历，记录差异"></a>(1)深度优先遍历，记录差异</h4><p><img src="./imgs/c4ba535164d29fd46383d19512c37349_hd.jpg" alt></p>
+<p><img src="/imgs/visualdom/6d64b0b7889e7f020bb020aea5947a09_hd.jpg" alt></p>
+<h4 id="1-深度优先遍历，记录差异"><a href="#1-深度优先遍历，记录差异" class="headerlink" title="(1)深度优先遍历，记录差异"></a>(1)深度优先遍历，记录差异</h4><p><img src="/imgs/visualdom/c4ba535164d29fd46383d19512c37349_hd.jpg" alt></p>
 <p>在深度优先遍历的时候，每遍历到一个节点就把该节点和新的的树进行对比。如果有差异的话就记录到一个对象里面。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">// diff 函数，对比两棵树</span><br><span class="line">function diff (oldTree, newTree) &#123;</span><br><span class="line">  var index = 0 // 当前节点的标志</span><br><span class="line">  var patches = &#123;&#125; // 用来记录每个节点差异的对象</span><br><span class="line">  dfsWalk(oldTree, newTree, index, patches)</span><br><span class="line">  return patches</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 对两棵树进行深度优先遍历</span><br><span class="line">function dfsWalk (oldNode, newNode, index, patches) &#123;</span><br><span class="line">  // 对比oldNode和newNode的不同，记录下来</span><br><span class="line">  patches[index] = [...]</span><br><span class="line"></span><br><span class="line">  diffChildren(oldNode.children, newNode.children, index, patches)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 遍历子节点</span><br><span class="line">function diffChildren (oldChildren, newChildren, index, patches) &#123;</span><br><span class="line">  var leftNode = null</span><br><span class="line">  var currentNodeIndex = index</span><br><span class="line">  oldChildren.forEach(function (child, i) &#123;</span><br><span class="line">    var newChild = newChildren[i]</span><br><span class="line">    currentNodeIndex = (leftNode &amp;&amp; leftNode.count) // 计算节点的标识</span><br><span class="line">      ? currentNodeIndex + leftNode.count + 1</span><br><span class="line">      : currentNodeIndex + 1</span><br><span class="line">    dfsWalk(child, newChild, currentNodeIndex, patches) // 深度遍历子节点</span><br><span class="line">    leftNode = child</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>#####(2)差异类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//替换</span><br><span class="line">var REPLACE = 0;</span><br><span class="line">//排序</span><br><span class="line">var REORDER = 1;</span><br><span class="line">//属性变化</span><br><span class="line">var PROPS = 2;</span><br><span class="line">//文本</span><br><span class="line">var TEXT = 3;</span><br></pre></td></tr></table></figure></p>
@@ -120,11 +120,11 @@
 <p>疑问：什么是DOM Diff算法 ？<br>Web界面由DOM树来构成，当其中某一部分发生变化时，其实就是对应的某个DOM节点发生了变化。在React中，构建UI界面的思路是由当前状态决定界面。前后两个状态就对应两套界面，然后由React来比较两个界面的区别，这就需要对DOM树进行Diff算法分析。</p>
 <p>即给定任意两棵树，找到最少的转换步骤。但是标准的的Diff算法复杂度需要O(n^3)，这显然无法满足性能要求。要达到每次界面都可以整体刷新界面的目的，势必需要对算法进行优化。这看上去非常有难度，然而Facebook工程师却做到了，他们结合Web界面的特点做出了两个简单的假设，使得Diff算法复杂度直接降低到O(n)</p>
 <p>1、两个相同组件产生类似的DOM结构，不同的组件产生不同的DOM结构；<br>2、对于同一层次的一组子节点，它们可以通过唯一的id进行区分。</p>
-<p></p><h4>逐层进行节点比较</h4><br>在React中，树的算法其实非常简单，那就是两棵树只会对同一层次的节点进行比较.<br><img src="./imgs/0909000.png" alt><p></p>
+<p></p><h4>逐层进行节点比较</h4><br>在React中，树的算法其实非常简单，那就是两棵树只会对同一层次的节点进行比较.<br><img src="/imgs/visualdom/0909000.png" alt><p></p>
 <p>React只会对相同颜色方框内的DOM节点进行比较，即同一个父节点下的所有子节点。当发现节点已经不存在，则该节点及其子节点会被完全删除掉，不会用于进一步的比较。这样只需要对树进行一次遍历，便能完成整个DOM树的比较。</p>
 <h3>例如：</h3>
 
-<p><img src="./imgs/0909001.png" alt></p>
+<p><img src="/imgs/visualdom/0909001.png" alt></p>
 <p>A节点被整个移动到D节点下，直观的考虑DOM Diff操作应该是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A.parent.remove(A); </span><br><span class="line">D.append(A);</span><br></pre></td></tr></table></figure>
 <p>但因为React只会简单的考虑同层节点的位置变换，对于不同层的节点，只有简单的创建和删除。当根节点发现子节点中A不见了，就会直接销毁A；而当D发现自己多了一个子节点A，则会创建一个新的A作为子节点。因此对于这种结构的转变的实际操作是：</p>
@@ -165,7 +165,7 @@ var moves = diff(oldList, newList, &quot;id&quot;);
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/03/05/visual-dom/" data-id="ck9dm2p5j00128po7ikpry2z2" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/03/05/visual-dom/" data-id="ck9dm4wgc0011dco70puviwsb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>

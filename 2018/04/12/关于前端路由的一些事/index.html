@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="swing">
 <meta property="og:description" content="##关于前端路由的一些事 路由实现一、hashchange回忆基础知识： 1、hash即URL中”#”字符后面的部分。(location.hash 看下) 　　①使用浏览器访问网页时，如果网页URL中带有hash，页面就会定位到id（或name）与hash值一样的元素的位置； 　　②hash还有另一个特点，它的改变不会导致页面重新加载； 　　③hash值浏览器是不会随请求发送到服务器端的； 　　④">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://swingboy.github.io/2018/04/12/关于前端路由的一些事/imgs/pipeiguize.png">
-<meta property="og:image" content="http://swingboy.github.io/2018/04/12/关于前端路由的一些事/imgs/match.png">
-<meta property="og:updated_time" content="2019-11-23T14:29:26.793Z">
+<meta property="og:image" content="http://swingboy.github.io/imgs/关于前端路由的一些事/pipeiguize.png">
+<meta property="og:image" content="http://swingboy.github.io/imgs/关于前端路由的一些事/match.png">
+<meta property="og:updated_time" content="2020-04-24T03:09:35.960Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于前端路由的一些事">
 <meta name="twitter:description" content="##关于前端路由的一些事 路由实现一、hashchange回忆基础知识： 1、hash即URL中”#”字符后面的部分。(location.hash 看下) 　　①使用浏览器访问网页时，如果网页URL中带有hash，页面就会定位到id（或name）与hash值一样的元素的位置； 　　②hash还有另一个特点，它的改变不会导致页面重新加载； 　　③hash值浏览器是不会随请求发送到服务器端的； 　　④">
-<meta name="twitter:image" content="http://swingboy.github.io/2018/04/12/关于前端路由的一些事/imgs/pipeiguize.png">
+<meta name="twitter:image" content="http://swingboy.github.io/imgs/关于前端路由的一些事/pipeiguize.png">
   
     <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
   
@@ -148,7 +148,7 @@
 </blockquote>
 <p>path（string）: 路由匹配路径。（没有path属性的Route 总是会 匹配）；<br>exact（bool）：为true时，则要求路径与location.pathname必须完全匹配；<br>strict（bool）：true的时候，有结尾斜线的路径只能匹配有斜线的location.pathname；</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;Route path=&quot;/hello/:name&quot;&gt;</span><br><span class="line">// 匹配 /hello/michael</span><br><span class="line">// 匹配 /hello/ryan</span><br><span class="line"></span><br><span class="line">&lt;Route path=&quot;/hello(/:name)&quot;&gt;</span><br><span class="line">// 匹配 /hello</span><br><span class="line">// 匹配 /hello/michael</span><br><span class="line">// 匹配 /hello/ryan</span><br><span class="line"></span><br><span class="line">&lt;Route path=&quot;/files/*.*&quot;&gt;</span><br><span class="line">// 匹配 /files/hello.jpg</span><br><span class="line">// 匹配 /files/hello.html</span><br><span class="line"></span><br><span class="line">&lt;Route path=&quot;/files/*&quot;&gt;</span><br><span class="line">// 匹配 /files/ </span><br><span class="line">// 匹配 /files/a</span><br><span class="line">// 匹配 /files/a/b</span><br><span class="line"></span><br><span class="line">&lt;Route path=&quot;/**/*.jpg&quot;&gt;</span><br><span class="line">// 匹配 /files/hello.jpg</span><br><span class="line">// 匹配 /files/path/to/file.jpg</span><br></pre></td></tr></table></figure>
-<p><img src="./imgs/pipeiguize.png" alt></p>
+<p><img src="/imgs/关于前端路由的一些事/pipeiguize.png" alt></p>
 <h5 id="匹配路径"><a href="#匹配路径" class="headerlink" title="匹配路径"></a>匹配路径</h5><p>path-to-regexp包用来决定route元素的path参数与当前location是否匹配。它将路径字符串编译成正则表达式，并与当前location的路径名进行匹配比较。<br>当路由地址匹配成功后，会创建一个含有以下属性的match对象：</p>
 <blockquote>
 <p>url ：与当前location路径名所匹配部分</p>
@@ -195,7 +195,7 @@
 <blockquote>
 <p>通过Route路由的组件，可以拿到一个match参数，这个参数是一个对象，其中包含几个数据：<br><br>isExact：刚才已经说过这个关键字，表示是为作全等匹配<br>params：path中包含的一些额外数据<br>path：Route组件path属性的值<br>url：实际url的hash值</p>
 </blockquote>
-<p><img src="./imgs/match.png" alt></p>
+<p><img src="/imgs/关于前端路由的一些事/match.png" alt></p>
 <p><br></p>
 <p>###v3 与 v4 的一些区别<br>在react-router v3中，仅有一个Router 组件，需要提供 history 对象作为他的属性 (prop)。</p>
 <p>此外，可以使用 routes 作为 Router 的属性 (prop) 或者作为 children 的方式来定义程序的路由结构。</p>
@@ -212,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/04/12/关于前端路由的一些事/" data-id="ck9dm2p5u001k8po77mgj7da1" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/04/12/关于前端路由的一些事/" data-id="ck9dm4wgp001hdco7rre7ycas" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
