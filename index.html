@@ -92,7 +92,7 @@
 <p>loader 文件转换器，例如把es6转换为es5，scss转换为css。</p>
 <p>plugin 插件，用于扩展webpack的功能，在webpack构建生命周期的节点上加入扩展hook为webpack添加功能。  </p>
 <h3 id="webpack-模块？"><a href="#webpack-模块？" class="headerlink" title="webpack 模块？"></a>webpack 模块？</h3><p>对比 Node.js 模块，webpack 模块能够以各种方式表达它们的依赖关系，几个例子如下：</p>
-<p>ES2015 import 语句<br>CommonJS require() 语句<br>AMD define 和 require 语句<br>css/sass/less 文件中的 @import 语句<br>样式(url(…))或 HTML 文件(\<img src="/.io//...">)中的图片链接(image url) </p>
+<p>ES2015 import 语句<br>CommonJS require() 语句<br>AMD define 和 require 语句<br>css/sass/less 文件中的 @import 语句<br>样式(url(…))或 HTML 文件(\<img src="...\">)中的图片链接(image url) </p>
 <h3 id="支持的模块类型"><a href="#支持的模块类型" class="headerlink" title="支持的模块类型"></a>支持的模块类型</h3><p>webpack 通过 loader 可以支持各种语言和预处理器编写模块。loader 描述了 webpack 如何处理 非 JavaScript(non-JavaScript) 模块，并且在bundle中引入这些依赖。 webpack 社区已经为各种流行语言和语言处理器构建了 loader，包括：</p>
 <ul>
 <li>CoffeeScript</li>
@@ -258,7 +258,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9dloq1m001kwao7pi07sejc" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9dm2p5t001i8po70e5ns67k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -364,7 +364,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9dloq1a0018wao7g1tn61w1" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9dm2p5k00148po7xwcuoytt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -462,7 +462,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9dloq180014wao7iny3g334" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9dm2p5m001a8po7u4hzh1zi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -524,7 +524,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9dloq040002wao7h5ujbmn3" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9dm2p4s00028po7svodjg92" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -719,7 +719,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9dloq1c001cwao7x6q5rtco" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9dm2p5m001c8po7wfd4u7rl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -755,7 +755,7 @@
       
         <h3 id="什么是CSRF"><a href="#什么是CSRF" class="headerlink" title="什么是CSRF"></a>什么是CSRF</h3><p>CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。</p>
 <h5 id="一个典型的CSRF攻击流程："><a href="#一个典型的CSRF攻击流程：" class="headerlink" title="一个典型的CSRF攻击流程："></a>一个典型的CSRF攻击流程：</h5><p>受害者登录a.com，并保留了登录凭证（Cookie）。<br>攻击者引诱受害者访问了b.com。<br>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带a.com的Cookie。<br>a.com接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。<br>a.com以受害者的名义执行了act=xx。<br>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让a.com执行了自己定义的操作。  </p>
-<p><img src="/.io//CSRF攻击.jpg" alt="avatar"></p>
+<p><img src="./img/CSRF攻击.jpg" alt="avatar"></p>
 <h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><h4 id="GET类型的CSRF"><a href="#GET类型的CSRF" class="headerlink" title="GET类型的CSRF"></a>GET类型的CSRF</h4><p>GET类型的CSRF利用非常简单，只需要一个HTTP请求，一般会这样利用：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=&quot;http://bank.example/withdraw?amount=10000&amp;for=hacker&quot; &gt;</span><br></pre></td></tr></table></figure>
 <p>在受害者访问含有这个img的页面后，浏览器会自动向<a href="http://bank.example/withdraw?account=xiaoming&amp;amount=10000&amp;for=hacker发出一次HTTP请求。bank.example就会收到包含受害者登录信息的一次跨域请求。" target="_blank" rel="noopener">http://bank.example/withdraw?account=xiaoming&amp;amount=10000&amp;for=hacker发出一次HTTP请求。bank.example就会收到包含受害者登录信息的一次跨域请求。</a></p>
@@ -883,7 +883,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9dloq0z000twao7woix6v2o" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9dm2p5f000t8po7z1v36tpn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -919,7 +919,7 @@
       
         <h4 id="什么是XSS"><a href="#什么是XSS" class="headerlink" title="什么是XSS"></a>什么是XSS</h4><p>XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞。</p>
 <p>XSS是指恶意攻击者利用网站没有对用户提交数据进行转义处理或者过滤不足的缺点，进而添加一些代码，嵌入到web页面中去。使别的用户访问都会执行相应的嵌入代码。从而盗取用户资料、利用用户身份进行某种动作或者对访问者进行病毒侵害的一种攻击方式。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。</p>
-<h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p><img src="/.io//xss危害.png" alt></p>
+<h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p><img src="./img/xss危害.png" alt></p>
 <p>这么多~~</p>
 <h4 id="有哪些注入的方法和途径："><a href="#有哪些注入的方法和途径：" class="headerlink" title="有哪些注入的方法和途径："></a>有哪些注入的方法和途径：</h4><ul>
 <li>在 HTML 中内嵌的文本中，恶意内容以 script 标签形成注入。</li>
@@ -992,7 +992,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9dloq12000wwao7ik0xbmxt" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9dm2p5g000w8po773bbujfp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1035,7 +1035,7 @@
 </ul>
 <h2 id="MVC（Model-View-Controller）"><a href="#MVC（Model-View-Controller）" class="headerlink" title="MVC（Model-View-Controller）"></a>MVC（Model-View-Controller）</h2><p>MVC除了把应用程序分成View、Model层，还额外的加了一个Controller层，它的职责为进行Model和View之间的协作（路由、输入预处理等）的应用逻辑；Model进行处理业务逻辑。</p>
 <p>Model、View、Controller三个层次的依赖关系如下：</p>
-<p><img src="/.io//mvc.png" alt></p>
+<p><img src="/MV-模式/mvc.png" alt></p>
 <p>大体流程：  </p>
 <ul>
 <li>View 传送指令到 Controller  </li>
@@ -1062,7 +1062,7 @@
 <p>MVP 模式将 Controller 改名为 Presenter，同时改变了通信方向。</p>
 <p>MVP打破了View原来对于Model的依赖，其余的依赖关系和MVC模式一致。</p>
 <p>图示：</p>
-<p><img src="/.io//mvp.png" alt></p>
+<p><img src="/MV-模式/mvp.png" alt></p>
 <p>1、各部分之间的通信，都是双向的。<br>2.、View 与 Model 不发生联系，都通过 Presenter 传递。<br>3、View 非常薄，不部署任何业务逻辑，称为”被动视图”（Passive View），即没有任何主动性，而 Presenter非常厚，所有逻辑都部署在那里。</p>
 <p>和MVC模式一样，用户对View的操作都会从View交移给Presenter。Presenter会执行相应的应用程序逻辑，并且对Model进行相应的操作；而这时候Model执行完业务逻辑以后，也是通过观察者模式把自己变更的消息传递出去，但是是传给Presenter而不是View。Presenter获取到Model变更的消息以后，通过View提供的接口更新界面。</p>
 <p>关键点：</p>
@@ -1081,9 +1081,9 @@
 <p><a href="https://github.com/riot/riot" target="_blank" rel="noopener">Riot.js</a></p>
 <h2 id="MVVM（Model-View-ViewModel）"><a href="#MVVM（Model-View-ViewModel）" class="headerlink" title="MVVM（Model-View-ViewModel）"></a>MVVM（Model-View-ViewModel）</h2><p>MVVM 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。MVVM可以看作是一种特殊的MVP（Passive View）模式，或者说是对MVP模式的一种改良。</p>
 <p>唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然.</p>
-<p>图示：<br><img src="/.io//mvvm.png" alt></p>
+<p>图示：<br><img src="/MV-模式/mvvm.png" alt></p>
 <h4 id="MVVM的调用关系"><a href="#MVVM的调用关系" class="headerlink" title="MVVM的调用关系"></a>MVVM的调用关系</h4><p>MVVM的调用关系和MVP一样。但是，在ViewModel当中会有一个叫Binder。以前全部由Presenter负责的View和Model之间数据同步操作交由给Binder处理。你只需要在View的模版语法当中，指令式地声明View上的显示的内容是和Model的哪一块数据绑定的。当ViewModel对进行Model更新的时候，Binder会自动把数据更新到View上去，当用户对View进行操作（例如表单输入），Binder也会自动把数据更新到Model上去。这种方式称为：双向数据绑定。</p>
-<p>来张图再：<br><img src="/.io//mvvm_binder.png" alt></p>
+<p>来张图再：<br><img src="/MV-模式/mvvm_binder.png" alt></p>
 <p>MVVM把View和Model的同步逻辑自动化了。以前Presenter负责的View和Model同步不再手动地进行操作，而是交由框架所提供的Binder进行负责。只需要告诉Binder，View显示的数据对应的是Model哪一部分即可。(重点区别)</p>
 <h4 id="MVVM的优点："><a href="#MVVM的优点：" class="headerlink" title="MVVM的优点："></a>MVVM的优点：</h4><p>提高可维护性。解决了MVP大量的手动View和Model同步的问题，提供双向绑定机制。提高了代码的可维护性。<br>简化测试。因为同步逻辑是交由Binder做的，View跟着Model同时变更，所以只需要保证Model的正确性，View就正确。大大减少了对View同步更新的测试。</p>
 <h4 id="MVVM的缺点"><a href="#MVVM的缺点" class="headerlink" title="MVVM的缺点"></a>MVVM的缺点</h4><p>过于简单的图形界面不适用，或说牛刀杀鸡。<br>对于大型的图形应用程序，视图状态较多，ViewModel的构建和维护的成本都会比较高。<br>数据绑定的声明是指令式地写在View的模版当中的，这些内容是没办法去打断点debug的。  </p>
@@ -1099,7 +1099,7 @@
 <p>Flux存在多种实现（至少15种）</p>
 </blockquote>
 <p>图示：</p>
-<p><img src="/.io//flux.png" alt></p>
+<p><img src="/MV-模式/flux.png" alt></p>
 <h5 id="基本概念（组成部分）："><a href="#基本概念（组成部分）：" class="headerlink" title="基本概念（组成部分）："></a>基本概念（组成部分）：</h5><ul>
 <li>View：视图层  </li>
 <li>Action（动作）：视图层发出的消息（比如mouseClick）  </li>
@@ -1115,9 +1115,9 @@
 <li>View 收到”change”事件后，更新页面 </li>
 </ul>
 <p>上面过程中，数据总是”单向流动”，任何相邻的部分都不会发生数据的”双向流动”。这保证了流程的清晰。</p>
-<p><img src="/.io//flux-abstract.png" alt></p>
+<p><img src="/MV-模式/flux-abstract.png" alt></p>
 <p>对比MVC  </p>
-<p><img src="/.io//MVC_bad.png" alt></p>
+<p><img src="/MV-模式/MVC_bad.png" alt></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>MV* 的目的是把应用程序的数据、业务逻辑和界面展示部分这三块解耦，分离关注点，不仅利于团队协作和测试，更有利于维护和管理。业务逻辑不再关心底层数据的读写，而这些数据又以对象的形式呈现给业务逻辑层。从MVC-&gt;MVP-&gt;MVVM，就像一个打怪升级的过程。后者解决了前者遗留的问题，把前者的缺点优化成了优点。它们都是在MVC的基础上随着时代和应用环境的发展衍变而来的。</p>
 <p><a href="https://github.com/livoras/blog/issues/11" target="_blank" rel="noopener">界面之下的：还原真实的MV*模式</a></p>
 <p><a href="https://www.cnblogs.com/fliu/articles/5245923.html" target="_blank" rel="noopener">Flux架构入门</a></p>
@@ -1125,7 +1125,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9dloq1k001fwao76tv6mk2y" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9dm2p5s001f8po7jcqjkijr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1175,8 +1175,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * Overview of React and the event system:</span><br><span class="line"> *</span><br><span class="line"> * +------------+    .</span><br><span class="line"> * |    DOM     |    .</span><br><span class="line"> * +------------+    .</span><br><span class="line"> *       |           .</span><br><span class="line"> *       v           .</span><br><span class="line"> * +------------+    .</span><br><span class="line"> * | ReactEvent |    .</span><br><span class="line"> * |  Listener  |    .</span><br><span class="line"> * +------------+    .                         +-----------+</span><br><span class="line"> *       |           .               +--------+|SimpleEvent|</span><br><span class="line"> *       |           .               |         |Plugin     |</span><br><span class="line"> * +-----|------+    .               v         +-----------+</span><br><span class="line"> * |     |      |    .    +--------------+                    +------------+</span><br><span class="line"> * |     +-----------.---&gt;|EventPluginHub|                    |    Event   |</span><br><span class="line"> * |            |    .    |              |     +-----------+  | Propagators|</span><br><span class="line"> * | ReactEvent |    .    |              |     |TapEvent   |  |------------|</span><br><span class="line"> * |  Emitter   |    .    |              |&lt;---+|Plugin     |  |other plugin|</span><br><span class="line"> * |            |    .    |              |     +-----------+  |  utilities |</span><br><span class="line"> * |     +-----------.---&gt;|              |                    +------------+</span><br><span class="line"> * |     |      |    .    +--------------+</span><br><span class="line"> * +-----|------+    .                ^        +-----------+</span><br><span class="line"> *       |           .                |        |Enter/Leave|</span><br><span class="line"> *       +           .                +-------+|Plugin     |</span><br><span class="line"> * +-------------+   .                         +-----------+</span><br><span class="line"> * | application |   .</span><br><span class="line"> * |-------------|   .</span><br><span class="line"> * |             |   .</span><br><span class="line"> * |             |   .</span><br><span class="line"> * +-------------+   .</span><br><span class="line"> *                   .</span><br><span class="line"> *    React Core     .  General Purpose Event Plugin System</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
 <h4 id="SyntheticEvent"><a href="#SyntheticEvent" class="headerlink" title="SyntheticEvent"></a>SyntheticEvent</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * @param &#123;object&#125; dispatchConfig Configuration used to dispatch this event.</span><br><span class="line"> * @param &#123;*&#125; targetInst Marker identifying the event target.</span><br><span class="line"> * @param &#123;object&#125; nativeEvent Native browser event.</span><br><span class="line"> * @param &#123;DOMEventTarget&#125; nativeEventTarget Target node.</span><br><span class="line">* /</span><br><span class="line">function SyntheticEvent(dispatchConfig, targetInst, nativeEvent, nativeEventTarget) &#123;</span><br><span class="line"></span><br><span class="line">  this.dispatchConfig = dispatchConfig;</span><br><span class="line">  this._targetInst = targetInst;</span><br><span class="line">  this.nativeEvent = nativeEvent;</span><br><span class="line"></span><br><span class="line">  var Interface = this.constructor.Interface;</span><br><span class="line">  for (var propName in Interface) &#123;</span><br><span class="line">    if (!Interface.hasOwnProperty(propName)) &#123;</span><br><span class="line">      continue;</span><br><span class="line">    &#125;</span><br><span class="line">    var normalize = Interface[propName];</span><br><span class="line">    if (normalize) &#123;</span><br><span class="line">      this[propName] = normalize(nativeEvent);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      if (propName === &apos;target&apos;) &#123;</span><br><span class="line">        this.target = nativeEventTarget;</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        this[propName] = nativeEvent[propName];</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  var defaultPrevented = nativeEvent.defaultPrevented != null ? nativeEvent.defaultPrevented : nativeEvent.returnValue === false;</span><br><span class="line">  if (defaultPrevented) &#123;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsFalse;</span><br><span class="line">  &#125;</span><br><span class="line">  this.isPropagationStopped = emptyFunction.thatReturnsFalse;</span><br><span class="line">  return this;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">_assign(SyntheticEvent.prototype, &#123;</span><br><span class="line">  preventDefault: function () &#123;</span><br><span class="line">    this.defaultPrevented = true;</span><br><span class="line">    var event = this.nativeEvent;</span><br><span class="line">    if (!event) &#123;</span><br><span class="line">      return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (event.preventDefault) &#123;</span><br><span class="line">      event.preventDefault();</span><br><span class="line">    &#125; else if (typeof event.returnValue !== &apos;unknown&apos;) &#123;</span><br><span class="line">      event.returnValue = false;</span><br><span class="line">    &#125;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  stopPropagation: function () &#123;</span><br><span class="line">    var event = this.nativeEvent;</span><br><span class="line">    if (!event) &#123;</span><br><span class="line">      return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (event.stopPropagation) &#123;</span><br><span class="line">      event.stopPropagation();</span><br><span class="line">    &#125; else if (typeof event.cancelBubble !== &apos;unknown&apos;) &#123;</span><br><span class="line">      event.cancelBubble = true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.isPropagationStopped = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  destructor: function () &#123;</span><br><span class="line">    var Interface = this.constructor.Interface;</span><br><span class="line">    for (var propName in Interface) &#123;</span><br><span class="line">      &#123;</span><br><span class="line">        Object.defineProperty(this, propName, getPooledWarningPropertyDefinition(propName, Interface[propName]));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    for (var i = 0; i &lt; shouldBeReleasedProperties.length; i++) &#123;</span><br><span class="line">      this[shouldBeReleasedProperties[i]] = null;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">SyntheticEvent.Interface = EventInterface;</span><br><span class="line"></span><br><span class="line">新建事件对象时，会重写stopPropagation（阻止冒泡） 和 preventDefault（阻止默认行为）这样的原生事件。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//我们所熟知事件接口 ，nativeEvent对象属性</span><br><span class="line">var EventInterface = &#123;</span><br><span class="line">  type: null,</span><br><span class="line">  target: null,</span><br><span class="line">  currentTarget: emptyFunction.thatReturnsNull,</span><br><span class="line">  eventPhase: null,</span><br><span class="line">  bubbles: null,</span><br><span class="line">  cancelable: null,</span><br><span class="line">  timeStamp: function (event) &#123;</span><br><span class="line">    return event.timeStamp || Date.now();</span><br><span class="line">  &#125;,</span><br><span class="line">  defaultPrevented: null,</span><br><span class="line">  isTrusted: null</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>还有下面的这些合成对象，这些对于事件类别不同，而有不同的属性<br>MouseEvent,AnimationEvent, UIEvent, InputEvent, CompositionEvent, ClipboardEvent, FocusEvent, KeyboardEvent, DragEvent, TouchEvent, TransitionEvent, WheelEvent上述的EventInterface基础上再添加</p>
-<h3 id="简单看下过程"><a href="#简单看下过程" class="headerlink" title="简单看下过程"></a>简单看下过程</h3><p><img src="/.io//imgs/.png" alt></p>
-<p><img src="/.io//触发.png" alt></p>
+<h3 id="简单看下过程"><a href="#简单看下过程" class="headerlink" title="简单看下过程"></a>简单看下过程</h3><p><img src=".绑定/imgs/.png" alt></p>
+<p><img src="./imgs/触发.png" alt></p>
 <h4 id="事件注册"><a href="#事件注册" class="headerlink" title="事件注册"></a>事件注册</h4><p>事件的绑定在completeWork阶段</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">function completeWork(current, workInProgress, renderExpirationTime) &#123;</span><br><span class="line">    // ...</span><br><span class="line">    var _instance = createInstance(type, newProps, rootContainerInstance, _currentHostContext, workInProgress);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //接着</span><br><span class="line">    if (finalizeInitialChildren(_instance, type, newProps, rootContainerInstance, _currentHostContext)) &#123;</span><br><span class="line">              markUpdate(workInProgress);</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">    //.....</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) &#123;</span><br><span class="line">  var parentNamespace = void 0;</span><br><span class="line">  &#123;</span><br><span class="line">    var hostContextDev = hostContext;</span><br><span class="line">    validateDOMNesting$1(type, null, hostContextDev.ancestorInfo);</span><br><span class="line">    if (typeof props.children === &apos;string&apos; || typeof props.children === &apos;number&apos;) &#123;</span><br><span class="line">      var string = &apos;&apos; + props.children;</span><br><span class="line">      var ownAncestorInfo = updatedAncestorInfo(hostContextDev.ancestorInfo, type, null);</span><br><span class="line">      validateDOMNesting$1(null, string, ownAncestorInfo);</span><br><span class="line">    &#125;</span><br><span class="line">    parentNamespace = hostContextDev.namespace;</span><br><span class="line">  &#125;</span><br><span class="line">  debugger;</span><br><span class="line">  var domElement = createElement(type, props, rootContainerInstance, parentNamespace);</span><br><span class="line">  precacheFiberNode$1(internalInstanceHandle, domElement);</span><br><span class="line">  updateFiberProps$1(domElement, props);</span><br><span class="line">  return domElement;</span><br><span class="line">&#125;</span><br><span class="line">/*</span><br><span class="line">domElement等于真实创建的dom，里面调用的就是我们熟悉的createElement。而precacheFiberNode和updateFiberProps两个方法分别给domElement(真实dom)添加了两个属性。所有react16项目中的dom都会拥有这两个属性，并且这个两个属性的属性名在同一个项目中是一致的。</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">//修改属性</span><br><span class="line">function getFiberCurrentPropsFromNode$1(node) &#123;</span><br><span class="line">  return node[internalEventHandlersKey] || null;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//sck 更新属性 </span><br><span class="line">//这里的props就是 所绑定元素的属性props</span><br><span class="line">function updateFiberProps(node, props) &#123;</span><br><span class="line">  // debugger;</span><br><span class="line">  node[internalEventHandlersKey] = props;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后呢，就是监听document或者fragment上的事件</p>
@@ -1194,7 +1194,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/07/26/React-v16-4-0-事件原理/" data-id="ck9dloq11000uwao7dxwoeadj" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/07/26/React-v16-4-0-事件原理/" data-id="ck9dm2p5f000u8po737buoh14" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1271,7 +1271,7 @@
 </blockquote>
 <h3 id="3、模块化的推进与繁荣"><a href="#3、模块化的推进与繁荣" class="headerlink" title="3、模块化的推进与繁荣"></a>3、模块化的推进与繁荣</h3><p><a href="https://blog.csdn.net/Real_Bird/article/details/54869066" target="_blank" rel="noopener">各种现代模块推演</a></p>
 <p>js模块化编程，已经成为一个迫切的需求。理想情况下，开发者只需要实现核心的业务逻辑，其他都可以加载别人已经写好的模块。</p>
-<h4 id="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"><a href="#各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）" class="headerlink" title="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"></a>各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）</h4><p><img src="/.io//module_pic.png" alt></p>
+<h4 id="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"><a href="#各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）" class="headerlink" title="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"></a>各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）</h4><p><img src="关于js模块化/module_pic.png" alt></p>
 <h4 id="3-1-commonJS-Node"><a href="#3-1-commonJS-Node" class="headerlink" title="3.1 commonJS(Node)"></a>3.1 commonJS(Node)</h4><p><a href="http://javascript.ruanyifeng.com/nodejs/module.html" target="_blank" rel="noopener">阮老师 commonJS module</a></p>
 <p>CommonJS是一个更偏向于服务器端的规范。CommonJS的一个模块就是一个脚本文件。require命令第一次加载该脚本时就会执行整个脚本，然后在内存中生成一个对象(如下)。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  id: &apos;...&apos;,</span><br><span class="line">  exports: &#123; ... &#125;,</span><br><span class="line">  loaded: true,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1372,7 +1372,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/07/14/关于js模块化/" data-id="ck9dloq190016wao7wzmyzg5z" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/07/14/关于js模块化/" data-id="ck9dm2p5k00168po7sowq5fp9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>

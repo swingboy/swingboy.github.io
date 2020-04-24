@@ -15,18 +15,18 @@
 <meta property="og:site_name" content="swing">
 <meta property="og:description" content="MV* 模式三个非常重要的架构模式：1、MVC (Model(模型)-View(视图)-Controller(控制器))2、MVP (Model(模型)-View(视图)-Presenter(中介者))3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型))  过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://swingboy.github.io/.io//mvc.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//mvp.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//mvvm.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//mvvm_binder.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//flux.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//flux-abstract.png">
-<meta property="og:image" content="http://swingboy.github.io/.io//MVC_bad.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/mvc.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/mvp.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/mvvm.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/mvvm_binder.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/flux.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/flux-abstract.png">
+<meta property="og:image" content="http://swingboy.github.io/MV-模式/MVC_bad.png">
 <meta property="og:updated_time" content="2020-04-24T02:51:26.643Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MV* 模式">
 <meta name="twitter:description" content="MV* 模式三个非常重要的架构模式：1、MVC (Model(模型)-View(视图)-Controller(控制器))2、MVP (Model(模型)-View(视图)-Presenter(中介者))3、MVVM (Model(模型)-View(视图)-ViewModel(视图模型))  过去，这些模式已经被大量用于构建桌面和服务器端的应用程序，但它只是在最近一些年才被应用到JavaScript">
-<meta name="twitter:image" content="http://swingboy.github.io/.io//mvc.png">
+<meta name="twitter:image" content="http://swingboy.github.io/MV-模式/mvc.png">
   
     <link rel="alternate" href="/atom.xml" title="swing" type="application/atom+xml">
   
@@ -104,7 +104,7 @@
 </ul>
 <h2 id="MVC（Model-View-Controller）"><a href="#MVC（Model-View-Controller）" class="headerlink" title="MVC（Model-View-Controller）"></a>MVC（Model-View-Controller）</h2><p>MVC除了把应用程序分成View、Model层，还额外的加了一个Controller层，它的职责为进行Model和View之间的协作（路由、输入预处理等）的应用逻辑；Model进行处理业务逻辑。</p>
 <p>Model、View、Controller三个层次的依赖关系如下：</p>
-<p><img src="/.io//mvc.png" alt></p>
+<p><img src="/MV-模式/mvc.png" alt></p>
 <p>大体流程：  </p>
 <ul>
 <li>View 传送指令到 Controller  </li>
@@ -131,7 +131,7 @@
 <p>MVP 模式将 Controller 改名为 Presenter，同时改变了通信方向。</p>
 <p>MVP打破了View原来对于Model的依赖，其余的依赖关系和MVC模式一致。</p>
 <p>图示：</p>
-<p><img src="/.io//mvp.png" alt></p>
+<p><img src="/MV-模式/mvp.png" alt></p>
 <p>1、各部分之间的通信，都是双向的。<br>2.、View 与 Model 不发生联系，都通过 Presenter 传递。<br>3、View 非常薄，不部署任何业务逻辑，称为”被动视图”（Passive View），即没有任何主动性，而 Presenter非常厚，所有逻辑都部署在那里。</p>
 <p>和MVC模式一样，用户对View的操作都会从View交移给Presenter。Presenter会执行相应的应用程序逻辑，并且对Model进行相应的操作；而这时候Model执行完业务逻辑以后，也是通过观察者模式把自己变更的消息传递出去，但是是传给Presenter而不是View。Presenter获取到Model变更的消息以后，通过View提供的接口更新界面。</p>
 <p>关键点：</p>
@@ -150,9 +150,9 @@
 <p><a href="https://github.com/riot/riot" target="_blank" rel="noopener">Riot.js</a></p>
 <h2 id="MVVM（Model-View-ViewModel）"><a href="#MVVM（Model-View-ViewModel）" class="headerlink" title="MVVM（Model-View-ViewModel）"></a>MVVM（Model-View-ViewModel）</h2><p>MVVM 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。MVVM可以看作是一种特殊的MVP（Passive View）模式，或者说是对MVP模式的一种改良。</p>
 <p>唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然.</p>
-<p>图示：<br><img src="/.io//mvvm.png" alt></p>
+<p>图示：<br><img src="/MV-模式/mvvm.png" alt></p>
 <h4 id="MVVM的调用关系"><a href="#MVVM的调用关系" class="headerlink" title="MVVM的调用关系"></a>MVVM的调用关系</h4><p>MVVM的调用关系和MVP一样。但是，在ViewModel当中会有一个叫Binder。以前全部由Presenter负责的View和Model之间数据同步操作交由给Binder处理。你只需要在View的模版语法当中，指令式地声明View上的显示的内容是和Model的哪一块数据绑定的。当ViewModel对进行Model更新的时候，Binder会自动把数据更新到View上去，当用户对View进行操作（例如表单输入），Binder也会自动把数据更新到Model上去。这种方式称为：双向数据绑定。</p>
-<p>来张图再：<br><img src="/.io//mvvm_binder.png" alt></p>
+<p>来张图再：<br><img src="/MV-模式/mvvm_binder.png" alt></p>
 <p>MVVM把View和Model的同步逻辑自动化了。以前Presenter负责的View和Model同步不再手动地进行操作，而是交由框架所提供的Binder进行负责。只需要告诉Binder，View显示的数据对应的是Model哪一部分即可。(重点区别)</p>
 <h4 id="MVVM的优点："><a href="#MVVM的优点：" class="headerlink" title="MVVM的优点："></a>MVVM的优点：</h4><p>提高可维护性。解决了MVP大量的手动View和Model同步的问题，提供双向绑定机制。提高了代码的可维护性。<br>简化测试。因为同步逻辑是交由Binder做的，View跟着Model同时变更，所以只需要保证Model的正确性，View就正确。大大减少了对View同步更新的测试。</p>
 <h4 id="MVVM的缺点"><a href="#MVVM的缺点" class="headerlink" title="MVVM的缺点"></a>MVVM的缺点</h4><p>过于简单的图形界面不适用，或说牛刀杀鸡。<br>对于大型的图形应用程序，视图状态较多，ViewModel的构建和维护的成本都会比较高。<br>数据绑定的声明是指令式地写在View的模版当中的，这些内容是没办法去打断点debug的。  </p>
@@ -168,7 +168,7 @@
 <p>Flux存在多种实现（至少15种）</p>
 </blockquote>
 <p>图示：</p>
-<p><img src="/.io//flux.png" alt></p>
+<p><img src="/MV-模式/flux.png" alt></p>
 <h5 id="基本概念（组成部分）："><a href="#基本概念（组成部分）：" class="headerlink" title="基本概念（组成部分）："></a>基本概念（组成部分）：</h5><ul>
 <li>View：视图层  </li>
 <li>Action（动作）：视图层发出的消息（比如mouseClick）  </li>
@@ -184,9 +184,9 @@
 <li>View 收到”change”事件后，更新页面 </li>
 </ul>
 <p>上面过程中，数据总是”单向流动”，任何相邻的部分都不会发生数据的”双向流动”。这保证了流程的清晰。</p>
-<p><img src="/.io//flux-abstract.png" alt></p>
+<p><img src="/MV-模式/flux-abstract.png" alt></p>
 <p>对比MVC  </p>
-<p><img src="/.io//MVC_bad.png" alt></p>
+<p><img src="/MV-模式/MVC_bad.png" alt></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>MV* 的目的是把应用程序的数据、业务逻辑和界面展示部分这三块解耦，分离关注点，不仅利于团队协作和测试，更有利于维护和管理。业务逻辑不再关心底层数据的读写，而这些数据又以对象的形式呈现给业务逻辑层。从MVC-&gt;MVP-&gt;MVVM，就像一个打怪升级的过程。后者解决了前者遗留的问题，把前者的缺点优化成了优点。它们都是在MVC的基础上随着时代和应用环境的发展衍变而来的。</p>
 <p><a href="https://github.com/livoras/blog/issues/11" target="_blank" rel="noopener">界面之下的：还原真实的MV*模式</a></p>
 <p><a href="https://www.cnblogs.com/fliu/articles/5245923.html" target="_blank" rel="noopener">Flux架构入门</a></p>
@@ -194,7 +194,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9dloq1k001fwao76tv6mk2y" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9dm2p5s001f8po7jcqjkijr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
