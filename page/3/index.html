@@ -65,6 +65,172 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-js实现文件上传的几种方式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/12/js实现文件上传的几种方式/" class="article-date">
+  <time datetime="2017-10-12T05:17:21.000Z" itemprop="datePublished">2017-10-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/12/js实现文件上传的几种方式/">js实现文件上传的几种方式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##文件上传</p>
+<p>###准备：</p>
+<p><a href="https://imququ.com/post/four-ways-to-post-data-in-http.html" target="_blank" rel="noopener">四种常见的 POST 提交数据方式</a></p>
+<p>form可以用以下四种方式发送：<br></p>
+<p>POST方法，并设置enctype 属性为 application/x-www-form-urlencoded <br><br>post方法设置 enctype 属性为 text/plain<br><br>post方法，并设置 enctype 属性为 multipart/form-data<br><br>使用get方法<br><br><br></p>
+<h3 id="文件、图片上传方式方法与相关。"><a href="#文件、图片上传方式方法与相关。" class="headerlink" title="文件、图片上传方式方法与相关。"></a>文件、图片上传方式方法与相关。</h3><p>###一、传统形式<br>图片、文件上传的传统形式，是使用表单元素file。<br><img src="./filebiaodan.png" alt></p>
+<h4 id="二、iframe上传"><a href="#二、iframe上传" class="headerlink" title="二、iframe上传"></a>二、iframe上传</h4><p>思路:<br>    1: 点击”提交”时的瞬间,生成一个iframe对象,插入body中<br><br>    2: 修改form的target ,为iframe的name值<br><br>    3: 给iframe加1个事件 ,onload<br></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;div id=&quot;progress&quot;&gt;&lt;/div&gt;</span><br><span class="line">&lt;form action=&quot;/upload&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot; target=&quot;upfile&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;file&quot; name=&quot;pic&quot; /&gt;</span><br><span class="line">    &lt;br/&gt;</span><br><span class="line">    &lt;input type=&quot;button&quot; value=&quot;提交&quot;/&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+<p>####注意：</p>
+<p>1、需要设置iframe的name值与form的target属性值一样，就是把form表单上传文件的刷新转嫁到iframe里去了；</p><br><p>2、form表单的enctype属性值必须设置成multipart/form-data，将文件转换成文件流供后端接收；</p>
+
+
+<h4 id="三、ajax上传"><a href="#三、ajax上传" class="headerlink" title="三、ajax上传"></a>三、ajax上传</h4><p>HTML5提出了XMLHttpRequest对象的第二版，从此ajax能够上传文件了。这是真正的”异步上传”。用iframe上传，可以用作老式浏览器的替代方案。该方案主要用的是FormData对象，它能够构建类似表单的键值对。用FormData的最大优点就是我们可以异步上传一个二进制文件。</p>
+<h6 id="与普通的-Ajax-相比，使用-FormData的最大优点就是我们可以异步上传二进制文件。类似序列化对象"><a href="#与普通的-Ajax-相比，使用-FormData的最大优点就是我们可以异步上传二进制文件。类似序列化对象" class="headerlink" title="与普通的 Ajax 相比，使用 FormData的最大优点就是我们可以异步上传二进制文件。类似序列化对象"></a>与普通的 Ajax 相比，使用 FormData的最大优点就是我们可以异步上传二进制文件。类似序列化对象</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=&quot;/upload&quot; id=&quot;form&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;file&quot; id=&quot;File&quot; name=&quot;name1&quot;&gt;</span><br><span class="line">    &lt;div&gt;&lt;input type=&quot;submit&quot;&gt;&lt;/div&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    var fd = new FormData(document.getElementById(&quot;File&quot;));</span><br><span class="line">    fd.append(&quot;CustomField&quot;, &quot;This is some extra data&quot;);</span><br><span class="line">    $.ajax(&#123;</span><br><span class="line">        url: &quot;/upload&quot;,</span><br><span class="line">        type: &quot;POST&quot;,</span><br><span class="line">        data: fd,</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="—-图片上传时，可能会用到一些其他的api"><a href="#—-图片上传时，可能会用到一些其他的api" class="headerlink" title="-—- 图片上传时，可能会用到一些其他的api"></a>-—- 图片上传时，可能会用到一些其他的api</h3><p>###关于FileReader<br>FileReader是html5为我们提供的读取文件的api。它的作用就是把文本流按指定格式读取到缓存，以供js调用。</p>
+<p>FileReader有四种读取文件的方式：<br><br>1.readAsBinaryString读取为二进制码<br><br>2.readAsDataURL读取为DataURL<br><br>3.readAsText读取为文本<br><br>4.readAsArrayBuffer<br></p>
+<p><img src="./doc.png" alt></p>
+<p>#####举例，预览图片<br><img src="./reader.png" alt></p>
+<p>文件一旦开始读取，无论成功或失败，实例的 result 属性都会被填充。如果读取失败，则 result 的值为 null ，否则即是读取的结果</p>
+<p>#####举例，其他类型文件，实现进度条</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=&quot;/upload&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot;&gt;</span><br><span class="line">    &lt;fieldset&gt;</span><br><span class="line">        &lt;legend&gt;读取文件：&lt;/legend&gt;</span><br><span class="line">        &lt;input type=&quot;file&quot; id=&quot;File&quot; name=&quot;name1&quot;&gt;</span><br><span class="line">        &lt;input type=&quot;button&quot; value=&quot;中断&quot; id=&quot;Abort&quot;&gt;</span><br><span class="line">        &lt;p&gt;</span><br><span class="line">            &lt;lable&gt;读取进度：&lt;/lable&gt;</span><br><span class="line">            &lt;progress id=&quot;Progress&quot; value=&quot;0&quot; max=&quot;100&quot;&gt;&lt;/progress&gt;</span><br><span class="line">        &lt;/p&gt;</span><br><span class="line">    &lt;/fieldset&gt;</span><br><span class="line">    &lt;div&gt;&lt;input type=&quot;submit&quot;&gt;&lt;/div&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line"></span><br><span class="line">    var progress = document.getElementById(&apos;Progress&apos;);</span><br><span class="line">    var events = &#123;</span><br><span class="line">        load: function () &#123;</span><br><span class="line">            console.log(&apos;loaded&apos;);</span><br><span class="line">        &#125;,</span><br><span class="line">        progress: function (percent) &#123;</span><br><span class="line">            console.log(percent);</span><br><span class="line">            progress.value = percent;</span><br><span class="line">        &#125;,</span><br><span class="line">        success: function () &#123;</span><br><span class="line">            console.log(&apos;success&apos;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    var loader;</span><br><span class="line"></span><br><span class="line">    // 选择好要上传的文件后触发onchange事件</span><br><span class="line">    document.getElementById(&apos;File&apos;).onchange = function (e) &#123;</span><br><span class="line">        var file = this.files[0];</span><br><span class="line">        loader = new FileLoader(file, events);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    document.getElementById(&apos;Abort&apos;).onclick = function () &#123;</span><br><span class="line">        loader.abort();</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="相关："><a href="#相关：" class="headerlink" title="相关："></a>相关：</h4><p><a href="https://github.com/bgrins/filereader.js" target="_blank" rel="noopener">FileReader.js</a></p>
+<p>#####关于上传：<br>AjaxFileUpload实现ajax文件上传。<br>react-fileupload<br>jQuery插件AjaxFileUpload实现ajax文件上传<br>jQuery File Upload支持多文件上传、取消、删除，上传前缩略图预览、列表显示图片大小，支持上传进度条显示。</p>
+<h4 id="问题1：文件下载的实现方式，每种方式的区别与优劣。"><a href="#问题1：文件下载的实现方式，每种方式的区别与优劣。" class="headerlink" title="问题1：文件下载的实现方式，每种方式的区别与优劣。"></a>问题1：文件下载的实现方式，每种方式的区别与优劣。</h4><h4 id="问题2：HTTP协议下文件上传断点续传的实现。"><a href="#问题2：HTTP协议下文件上传断点续传的实现。" class="headerlink" title="问题2：HTTP协议下文件上传断点续传的实现。"></a>问题2：HTTP协议下文件上传断点续传的实现。</h4><p><a href="https://github.com/swingboy/upload" target="_blank" rel="noopener">github</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2017/10/12/js实现文件上传的几种方式/" data-id="ck9duf06e0003n1o706ns3scq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ajax和XMLHttpRequest" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/16/ajax和XMLHttpRequest/" class="article-date">
+  <time datetime="2017-07-16T06:44:03.000Z" itemprop="datePublished">2017-07-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/16/ajax和XMLHttpRequest/">ajax和XMLHttpRequest</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Ajax and XMLHttpRequest</p>
+<p>ajax是一种技术方案，但并不是一种新技术。它依赖的是现有的CSS/HTML/Javascript，而其中最核心的依赖是浏览器提供的XMLHttpRequest对象，是这个对象使得浏览器可以发出HTTP请求与接收HTTP响应。</p>
+<p>XMLHttpRequest一开始只是微软浏览器提供的一个接口，后来各大浏览器纷纷效仿也提供了这个接口，再后来W3C对它进行了标准化，提出了XMLHttpRequest标准。XMLHttpRequest标准又分为Level 1和Level 2。</p>
+<p>XMLHttpRequest Level 1主要存在以下缺点：<br>  ● 受同源策略的限制，不能发送跨域请求；<br>  ● 不能发送二进制文件（如图片、视频、音频等），只能发送纯文本数据；<br>  ● 在发送和获取数据的过程中，无法实时获取进度信息，只能判断是否完成；</p>
+<p>Level 2对Level 1进行了改进，XMLHttpRequest Level 2中新增了以下功能：<br>  ● 可以发送跨域请求，在服务端允许的情况下；<br>  ● 支持发送和接收二进制数据；<br>  ● 新增formData对象，支持发送表单数据；<br>  ● 发送和获取数据时，可以获取进度信息；<br>  ● 可以设置请求的超时时间；</p>
+<h6 id="下面细说XMLHttpRequest这个东西。"><a href="#下面细说XMLHttpRequest这个东西。" class="headerlink" title="下面细说XMLHttpRequest这个东西。"></a>下面细说XMLHttpRequest这个东西。</h6><p>先来一段使用XMLHttpRequest发送Ajax请求的简单示例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function ajax() &#123;</span><br><span class="line">    //构造表单数据</span><br><span class="line">    var formData = new FormData();</span><br><span class="line">    formData.append(&apos;aaa&apos;, &apos;bbb&apos;);</span><br><span class="line">    //创建xhr对象 </span><br><span class="line">    var xhr = new XMLHttpRequest();</span><br><span class="line">    //设置xhr请求的超时时间</span><br><span class="line">    xhr.timeout = 3000;</span><br><span class="line">    //设置响应返回的数据格式</span><br><span class="line">    xhr.responseType = &quot;&quot;;</span><br><span class="line">    //创建一个 post 请求，采用异步</span><br><span class="line">    xhr.open(&apos;POST&apos;, &apos;/xxx&apos;, true);</span><br><span class="line">    //注册相关事件回调处理函数</span><br><span class="line">    xhr.onload = function(e) &#123; </span><br><span class="line">        if(this.status == 200||this.status == 304)&#123;</span><br><span class="line">            console.log(this.responseText);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    xhr.ontimeout = function(e) &#123; &#125;;</span><br><span class="line">    xhr.onerror = function(e) &#123;  &#125;;</span><br><span class="line">    xhr.upload.onprogress = function(e) &#123;&#125;;</span><br><span class="line">    //发送数据</span><br><span class="line">    xhr.send(formData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="说说你平时可能忽略的知识点："><a href="#说说你平时可能忽略的知识点：" class="headerlink" title="说说你平时可能忽略的知识点："></a>说说你平时可能忽略的知识点：</h5><p>*如何设置request header<br>在发送Ajax请求时，我们可能需要设置一些请求头部信息。<br>比如content-type、connection、cookie、accept-xxx等。xhr提供了setRequestHeader来允许我们修改请求 header。<br>void setRequestHeader(DOMString header, DOMString value);</p>
+<p>注意：<br>  ● 方法的第一个参数 header 大小写不敏感，即可以写成content-type，也可以写成Content-Type，甚至写成content-Type;<br>  ● Content-Type的默认值与具体发送的数据类型有关<br>  ● setRequestHeader必须在open()方法之后，send()方法之前调用，否则会抛错；<br>  ● setRequestHeader可以调用多次，最终的值不会采用覆盖override的方式，而是采用追加append的方式。</p>
+<p>示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var client = new XMLHttpRequest();</span><br><span class="line">client.open(&apos;GET&apos;, &apos;xxx.action&apos;);</span><br><span class="line">client.setRequestHeader(&apos;X-Test&apos;, &apos;bbb&apos;);</span><br><span class="line">client.setRequestHeader(&apos;X-Test&apos;, &apos;aaa&apos;);</span><br><span class="line">//最终request header中&quot;X-Test&quot;为: bbb, aaa</span><br><span class="line">client.send();</span><br></pre></td></tr></table></figure></p>
+<p>*如何获取response header<br>xhr提供了2个用来获取响应头部的方法：getAllResponseHeaders和getResponseHeader。前者是获取 response 中的所有header 字段，后者只是获取某个指定 header 字段的值。<br>另外，getResponseHeader(header)的header参数不区分大小写。<br>DOMString getAllResponseHeaders();<br>DOMString getResponseHeader(DOMString header);</p>
+<p>注意：</p>
+<ol>
+<li>使用getResponseHeader()获取某个 header 的值时，浏览器抛错Refused to get unsafe header “XXX”<br>● 原因1：W3C的 xhr 标准中做了限制，规定客户端无法获取 response 中的 Set-Cookie、Set-Cookie2(启用)这2个字段，无论是同域还是跨域请求；<br>● 还有一些其他的限制内的字段<br>● 原因2：W3C 的 cors 标准对于跨域请求也做了限制，规定对于跨域请求，客户端允许获取的response header字段只限于“simple response header”和“Access-Control-Expose-Headers” 。</li>
+</ol>
+<p>“simple response header”包括的 header字段有：Cache-Control,Content-Language,Content-Type,Expires,Last-Modified,Pragma;</p>
+<p>“Access-Control-Expose-Headers”：首先得注意是”Access-Control-Expose-Headers”进行跨域请求时响应头部中的一个字段，对于同域请求，响应头部是没有这个字段的。这个字段中列举的 header 字段就是服务器允许暴露给客户端访问的字段。</p>
+<p>所以getAllResponseHeaders()只能拿到限制以外（即被视为safe）的header字段，而不是全部字段；而调用getResponseHeader(header)方法时，header参数必须是限制以外的header字段，否则调用就会报Refused to get unsafe header的错误。</p>
+<p>*如何指定xhr.response的数据类型<br>有些时候我们希望xhr.response返回的就是我们想要的数据类型。比如：响应返回的数据是纯JSON字符串，但我们期望最终通过xhr.response拿到的直接就是一个 js 对象，该怎么实现？</p>
+<p>有2种方法可以实现，一个是level 1就提供的overrideMimeType()方法，另一个是level 2提供的xhr.responseType属性。</p>
+<p>xhr.overrideMimeType()<br>overrideMimeType是xhr level 1就有的方法，所以浏览器兼容性良好。这个方法的作用就是用来重写response的content-type.</p>
+<p>这样做有什么意义呢？比如：server 端给客户端返回了一份document或者是 xml文档，我们希望最终通过xhr.response拿到的就是一个DOM对象，那么就可以用xhr.overrideMimeType(‘text/xml; charset = utf-8’)来实现。</p>
+<p>xhr.responseType</p>
+<p>responseType是xhr level 2新增的属性，用来指定xhr.response的数据类型，目前还存在些兼容性问题那么responseType可以设置为哪些格式呢，如下：<br>值 xhr.response 数据类型 说明<br>“” String字符串 默认值(在不设置responseType时)<br>“text” String字符串<br>“document” Document对象 希望返回 XML 格式数据时使用<br>“json” javascript 对象 存在兼容性问题，IE10/IE11不支持<br>“blob” Blob对象<br>“arrayBuffer” ArrayBuffer对象   </p>
+<p>下面是同样是获取一张图片的代码示例，相比xhr.overrideMimeType,用xhr.response来实现简单得多。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&apos;GET&apos;, &apos;/path/to/image.png&apos;, true);</span><br><span class="line">//可以将`xhr.responseType`设置为`&quot;blob&quot;`也可以设置为`&quot; arrayBuffer&quot;`</span><br><span class="line">//xhr.responseType = &apos;arrayBuffer&apos;;</span><br><span class="line">xhr.responseType = &apos;blob&apos;;</span><br><span class="line"></span><br><span class="line">xhr.onload = function(e) &#123;</span><br><span class="line">  if (this.status == 200) &#123;</span><br><span class="line">    var blob = this.response;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">xhr.send();</span><br></pre></td></tr></table></figure></p>
+<h4 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h4><p>虽然在xhr level 2中，2者是共同存在的。xhr.responseType功能更强大，xhr.overrideMimeType()能做到的xhr.responseType都能做到。所以我们现在完全可以摒弃使用xhr.overrideMimeType()了。</p>
+<p>*如何获取response数据<br>xhr提供了3个属性来获取请求返回的数据，分别是：xhr.response、xhr.responseText、xhr.responseXML<br>  ● xhr.response<br>      ○ 默认值：空字符串””<br>      ○ 当请求完成时，此属性才有正确的值<br>      ○ 请求未完成时，此属性的值可能是””或者 null，具体与 xhr.responseType有关：当responseType为””或”text”时，值为””；responseType为其他值时，值为 null<br>  ● xhr.responseText<br>      ○ 默认值为空字符串””<br>      ○ 只有当 responseType 为”text”、””时，xhr对象上才有此属性，此时才能调用xhr.responseText，否则抛错<br>      ○ 只有当请求成功时，才能拿到正确值。以下2种情况下值都为空字符串””：请求未完成、请求失败<br>  ● xhr.responseXML<br>      ○ 默认值为 null<br>      ○ 只有当 responseType 为”text”、””、”document”时，xhr对象上才有此属性，此时才能调用xhr.responseXML，否则抛错<br>      ○ 只有当请求成功且返回数据被正确解析时，才能拿到正确值。以下3种情况下值都为null：请求未完成、请求失败、请求成功但返回数据无法被正确解析时</p>
+<p>*如何追踪ajax请求的当前状态<br>在发一个ajax请求后，如果想追踪请求当前处于哪种状态，该怎么做呢？<br>用xhr.readyState这个属性即可追踪到。这个属性是只读属性，总共有5种可能值，分别对应xhr不同的不同阶段。每次xhr.readyState的值发生变化时，都会触发xhr.onreadystatechange事件，我们可以在这个事件中进行相关状态判断。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">xhr.onreadystatechange = function () &#123;</span><br><span class="line">  switch(xhr.readyState)&#123;</span><br><span class="line">    case 1://OPENED</span><br><span class="line">      //do something</span><br><span class="line">          break;</span><br><span class="line">    case 2://HEADERS_RECEIVED</span><br><span class="line">      //do something</span><br><span class="line">      break;</span><br><span class="line">    case 3://LOADING</span><br><span class="line">      //do something</span><br><span class="line">      break;</span><br><span class="line">    case 4://DONE</span><br><span class="line">      //do something</span><br><span class="line">      break;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0 UNSENT (初始状态，未打开) 此时xhr对象被成功构造，open()方法还未被调用</span><br><span class="line">1 OPENED (已打开，未发送) open()方法已被成功调用，send()方法还未被调用。注意：只有xhr处于OPENED状态，才能调用xhr.setRequestHeader()和xhr.send(),否则会报错</span><br><span class="line">2 HEADERS_RECEIVED(已获取响应头) send()方法已经被调用, 响应头和响应状态已经返回</span><br><span class="line">3 LOADING (正在下载响应体) 响应体(response entity body)正在下载中，此状态下通过xhr.response可能已经有了响应数据</span><br><span class="line">4 DONE (整个数据传输过程结束) 整个数据传输过程结束，不管本次请求是成功还是失败</span><br></pre></td></tr></table></figure>
+<p>*如何设置请求的超时时间<br>如果请求过了很久还没有成功，为了不会白白占用的网络资源，我们一般会主动终止请求。XMLHttpRequest提供了timeout属性来允许设置请求的超时时间。<br>xhr.timeout<br>单位：milliseconds 毫秒<br>默认值：0，即不设置超时<br>我们知道从请求开始 算起，若超过 timeout 时间请求还没有结束（包括成功/失败），则会触发ontimeout事件，主动结束该请求。</p>
+<p>那么到底什么时候才算是请求开始 ？<br>——xhr.onloadstart事件触发的时候，也就是调用xhr.send()方法的时候。</p>
+<p>因为xhr.open()只是创建了一个连接，但并没有真正开始数据的传输，而xhr.send()才是真正开始了数据的传输过程。只有调用了xhr.send()，才会触发xhr.onloadstart 。</p>
+<p>那么什么时候才算是请求结束 ？<br>—— xhr.loadend事件触发的时候。</p>
+<p>另外，还有2个需要注意：</p>
+<ol>
+<li>可以在 send()之后再设置此xhr.timeout，但计时起始点仍为调用xhr.send()方法的时刻。</li>
+<li>当xhr为一个sync同步请求时，xhr.timeout必须置为0，否则会抛错。</li>
+</ol>
+<p>为什么会报错？ 继续</p>
+<p>如何发一个同步请求<br>xhr默认发的是异步请求，也支持发同步请求。由xhr.open（）传入的async参数决定。<br>open(method, url [, async = true [, username = null [, password = null]]])<br>  ● method: 请求的方式，如GET/POST/HEADER等，这个参数不区分大小写<br>  ● url: 请求的地址，可以是相对地址如xxx.action，这个相对是相对于当前网页的url路径；也可以是绝对地址如<a href="http://www.example.com/xxx.action" target="_blank" rel="noopener">http://www.example.com/xxx.action</a><br>  ● async: 默认值为true，即为异步请求，若async=false，则为同步请求</p>
+<p>同步请求和异步请求只是阻塞和非阻塞的区别?  其他什么事件触发、参数设置应该是一样的?<br>事实证明并不是。</p>
+<p>当xhr为同步请求时，有如下限制：<br>  ● xhr.timeout必须为0<br>  ● xhr.withCredentials必须为 false (xhr2 就不用设置了)<br>  ● xhr.responseType必须为””（注意置为”text”也不允许）<br>  ●<br>若上面任何一个限制不满足，都会抛错，而对于异步请求，则没有这些参数设置上的限制。<br>之前说过页面中应该尽量避免使用sync同步请求，为什么呢？</p>
+<p>因为我们无法设置请求超时时间（xhr.timeout为0，即不限时）。在不限制超时的情况下，有可能同步请求一直处于pending状态，服务端迟迟不返回响应，这样整个页面就会一直阻塞，无法响应用户的其他交互。<br>另外，标准中并没有提及同步请求时事件触发的限制。在 chrome中，当xhr为同步请求时，在xhr.readyState由2变成3时，并不会触发 onreadystatechange事件，xhr.upload.onprogress和 xhr.onprogress事件也不会触发。</p>
+<p>???</p>
+<p>如何获取上传、下载的进度<br>在上传或者下载比较大的文件时，实时显示当前的上传、下载进度是很普遍的需求。<br>我们可以通过onprogress事件来实时显示进度，默认情况下这个事件每50ms触发一次。<br>需要注意的是，上传过程和下载过程触发的是不同对象的onprogress事件：<br>  ● 上传触发的是xhr.upload对象的 onprogress事件<br>  ● 下载触发的是xhr对象的onprogress事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">xhr.onprogress = updateProgress;</span><br><span class="line"></span><br><span class="line">xhr.upload.onprogress = updateProgress;</span><br><span class="line">function updateProgress(event) &#123;</span><br><span class="line">    if (event.lengthComputable) &#123;</span><br><span class="line">      var completedPercent = event.loaded / event.total;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以发送什么类型的数据<br>void send(data);<br>xhr.send(data)的参数data可以是以下几种类型：<br>  ● ArrayBuffer<br>  ● Blob<br>  ● Document<br>  ● DOMString<br>  ● FormData<br>  ● null</p>
+<p>如果是 GET/HEAD请求，send()方法一般不传参或传 null。不过即使真传入了参数，参数也最终被忽略，xhr.send(data)中的data会被置为 null.<br>xhr.send(data)中data参数的数据类型会影响请求头部content-type的默认值：<br>  ● 如果data是 Document 类型，同时也是HTML Document类型，则content-type默认值为text/html;charset=UTF-8;否则为application/xml;charset=UTF-8；<br>  ● 如果data是 DOMString 类型，content-type默认值为text/plain;charset=UTF-8；<br>  ● 如果data是 FormData 类型，content-type默认值为multipart/form-data; boundary=[xxx]<br>  ● 如果data是其他类型，则不会设置content-type的默认值<br>当然这些只是content-type的默认值，但如果用xhr.setRequestHeader()手动设置了中content-type的值，以上默认值就会被覆盖。</p>
+<p>另外需要注意的是，若在断网状态下调用xhr.send(data)方法，则会抛错：Uncaught NetworkError: Failed to execute ‘send’ on ‘XMLHttpRequest’。一旦程序抛出错误，如果不 catch 就无法继续执行后面的代码，所以调用 xhr.send(data)方法时，应该用 try-catch捕捉错误。<br>try{<br>    xhr.send(data)<br>  }catch(e) {<br>    //XXX…<br>  };</p>
+<p>*xhr.withCredentials与 CORS 什么关系<br>在发同域请求时，浏览器会将cookie自动加在request header中。但大家是否遇到过这样的场景：在发送跨域请求时，cookie并没有自动加在request header中。</p>
+<p>造成这个问题的原因是：在CORS标准中做了规定，默认情况下，浏览器在发送跨域请求时，不能发送任何认证信息，如”cookies”和”HTTP authentication schemes”。除非xhr.withCredentials为true.</p>
+<p>所以根本原因是cookies也是一种认证信息，在跨域请求中，client端必须手动设置xhr.withCredentials=true，且server端也必须允许request能携带认证信息（即response header中包含Access-Control-Allow-Credentials:true），这样浏览器才会自动将cookie加在request header中。<br>另外，要特别注意一点，一旦跨域request能够携带认证信息，server端一定不能将Access-Control-Allow-Origin设置为*，而必须设置为请求页面的域名。</p>
+<p>xhr相关事件</p>
+<p>xhr相关事件有很多，下面是XMLHttpRequest的部分实现代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">interface XMLHttpRequestEventTarget : EventTarget &#123;</span><br><span class="line">  // event handlers</span><br><span class="line">  attribute EventHandler onloadstart;</span><br><span class="line">  attribute EventHandler onprogress;</span><br><span class="line">  attribute EventHandler onabort;</span><br><span class="line">  attribute EventHandler onerror;</span><br><span class="line">  attribute EventHandler onload;</span><br><span class="line">  attribute EventHandler ontimeout;</span><br><span class="line">  attribute EventHandler onloadend;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">interface XMLHttpRequestUpload : XMLHttpRequestEventTarget &#123;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">interface XMLHttpRequest : XMLHttpRequestEventTarget &#123;</span><br><span class="line">  // event handler</span><br><span class="line">  attribute EventHandler onreadystatechange;</span><br><span class="line">  readonly attribute XMLHttpRequestUpload upload;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h5 id="从代码中我们可以看出："><a href="#从代码中我们可以看出：" class="headerlink" title="从代码中我们可以看出："></a>从代码中我们可以看出：</h5><ol>
+<li>XMLHttpRequestEventTarget接口定义了7个事件：<br> ○ onloadstart<br> ○ onprogress<br> ○ onabort<br> ○ ontimeout<br> ○ onerror<br> ○ onload<br> ○ onloadend</li>
+<li>每一个XMLHttpRequest里面都有一个upload属性，而upload是一个XMLHttpRequestUpload对象</li>
+<li>XMLHttpRequest和XMLHttpRequestUpload都继承了同一个XMLHttpRequestEventTarget接口，所以xhr和xhr.upload都有第一条列举的7个事件</li>
+<li>onreadystatechange是XMLHttpRequest独有的事件</li>
+</ol>
+<p>所以这么一看就很清晰了：<br>xhr一共有8个相关事件：7个XMLHttpRequestEventTarget事件+1个独有的onreadystatechange事件；而xhr.upload只有7个XMLHttpRequestEventTarget事件。</p>
+<p>事件触发条件：<br>onreadystatechange 每当xhr.readyState改变时触发；但xhr.readyState由非0值变为0时不触发。<br>onloadstart 调用xhr.send()方法后立即触发，若xhr.send()未被调用则不会触发此事件。<br>onprogress xhr.upload.onprogress在上传阶段(即xhr.send()之后，xhr.readystate=2之前)触发，每50ms触发一次；xhr.onprogress在下载阶段（即xhr.readystate=3时）触发，每50ms触发一次。<br>onload 当请求成功完成时触发，此时xhr.readystate=4<br>onloadend 当请求结束（包括请求成功和请求失败）时触发<br>onabort 当调用xhr.abort()后触发<br>ontimeout xhr.timeout不等于0，由请求开始即onloadstart开始算起，当到达xhr.timeout所设置时间请求还未结束即onloadend，则触发此事件。<br>onerror 在请求过程中，若发生Network error则会触发此事件（若发生Network error时，上传还没有结束，则会先触发xhr.upload.onerror，再触发xhr.onerror；若发生Network error时，上传已经结束，则只会触发xhr.onerror）。注意，只有发生了网络层级别的异常才会触发此事件，对于应用层级别的异常，如响应返回的xhr.statusCode是4xx时，并不属于Network error，所以不会触发onerror事件，而是会触发onload事件。</p>
+<p>*在哪个xhr事件中注册成功回调？</p>
+<p>从上面介绍的事件中，可以知道若xhr请求成功，就会触发xhr.onreadystatechange和xhr.onload两个事件。 那么我们到底要将成功回调注册在哪个事件中呢？<br>是xhr.onload事件，因为xhr.onreadystatechange是每次xhr.readyState变化时都会触发，而不是xhr.readyState=4时才触发。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">xhr.onload = function () &#123;</span><br><span class="line">    //如果请求成功</span><br><span class="line">    if(xhr.status == 200)&#123;</span><br><span class="line">        //do successCallback</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的示例代码是很常见的写法：先判断http状态码是否是200，如果是，则认为请求是成功的，接着执行成功回调。这样的判断是有坑儿的，比如当返回的http状态码不是200，而是201时，请求虽然也是成功的，但并没有执行成功回调逻辑。所以更靠谱的判断方法应该是：当http状态码为2xx或304时才认为成功。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">xhr.onload = function () &#123;</span><br><span class="line">    //如果请求成功</span><br><span class="line">    if((xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 300) || xhr.status == 304)&#123;</span><br><span class="line">        //do successCallback</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2017/07/16/ajax和XMLHttpRequest/" data-id="ck9duf07s001gn1o72mcmaffu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-还是没有暖起来" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/11/13/还是没有暖起来/" class="article-date">
@@ -112,7 +278,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/11/13/还是没有暖起来/" data-id="ck9dm4wfg000hdco7u6gbk0kg" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/11/13/还是没有暖起来/" data-id="ck9duf06r000nn1o7csbpagj2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
@@ -170,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/06/14/美好的怀念/" data-id="ck9dm4wfe000fdco74zj9tw0h" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/06/14/美好的怀念/" data-id="ck9duf06m000cn1o7sx26888d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
@@ -214,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/05/30/setTimeout使用时用到的问题/" data-id="ck9dm4wf50004dco7r1tw7vim" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/05/30/setTimeout使用时用到的问题/" data-id="ck9duf06i0006n1o7dgy4faem" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -266,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/05/27/我有话说/" data-id="ck9dm4wfa0008dco71wfwqik4" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/05/27/我有话说/" data-id="ck9duf06o000fn1o7jxfe3ewg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
@@ -318,7 +484,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/04/26/这世界该是诗意的/" data-id="ck9dm4wfj000kdco7fxevf48b" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/04/26/这世界该是诗意的/" data-id="ck9duf06r000ln1o7x28hsag5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
@@ -368,7 +534,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2016/02/16/如果有一天，我突然离开了/" data-id="ck9dm4wfb000adco712neyodr" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2016/02/16/如果有一天，我突然离开了/" data-id="ck9duf06l000an1o701d3axfd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
@@ -415,7 +581,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2015/10/12/about hexo/" data-id="ck9dm4wf00001dco77505vqc2" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2015/10/12/about hexo/" data-id="ck9duf0690000n1o7d9vcia3o" class="article-share-link">Share</a>
       
       
     </footer>
@@ -462,7 +628,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
     </div>
   </div>
 
@@ -475,6 +641,14 @@
       <ul>
         
           <li>
+            <a href="/2020/01/24/react性能优化/">react性能优化</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/10/关于前端性能优化的一些事/">关于前端性能优化的一些事</a>
+          </li>
+        
+          <li>
             <a href="/2019/03/29/webpack原理/">webpack原理</a>
           </li>
         
@@ -484,14 +658,6 @@
         
           <li>
             <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/29/about-tapable/">about tapable</a>
-          </li>
-        
-          <li>
-            <a href="/2018/11/23/聊聊前端安全/">聊聊前端安全</a>
           </li>
         
       </ul>

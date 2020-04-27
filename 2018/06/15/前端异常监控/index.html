@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="swing">
 <meta property="og:description" content="###前言: JS异常处理简介 每天调试会看到控制台各种各式的红色错误代码。 JavaScript错误是怎么输出到控制台的  ——  JavaScript的错误处理原理。 当抛出异常时，JavaScript解释器会立即停下当前正在执行的逻辑，并且跳到最近的异常处理程序（可以参考冒泡与变量作用域的相关概念。一句话简单理解：儿子犯了错误，找老子，一层一层往上找，直到找到能够承担错误的对象为止）。如果在">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-24T02:36:41.482Z">
+<meta property="og:updated_time" content="2020-04-27T13:22:29.047Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端异常监控">
 <meta name="twitter:description" content="###前言: JS异常处理简介 每天调试会看到控制台各种各式的红色错误代码。 JavaScript错误是怎么输出到控制台的  ——  JavaScript的错误处理原理。 当抛出异常时，JavaScript解释器会立即停下当前正在执行的逻辑，并且跳到最近的异常处理程序（可以参考冒泡与变量作用域的相关概念。一句话简单理解：儿子犯了错误，找老子，一层一层往上找，直到找到能够承担错误的对象为止）。如果在">
@@ -137,6 +137,11 @@
 <blockquote>
 <p>crossOrigin参数 跳过跨域限制<br>image 和 script 标签都有此参数，它的作用就是告诉浏览器，我要加载一个外域的资源，并且我信任这个资源。</p>
 </blockquote>
+<h5 id="try-catch-拦截非同域的脚本错误（跨域脚本错误）"><a href="#try-catch-拦截非同域的脚本错误（跨域脚本错误）" class="headerlink" title="try catch 拦截非同域的脚本错误（跨域脚本错误）"></a>try catch 拦截非同域的脚本错误（跨域脚本错误）</h5><ul>
+<li>首先：浏览器不会对try-catch起来的异常进行拦截</li>
+</ul>
+<p>所以，劫持原生方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const nativeAddEventListener = EventTarget.prototype.addEventListener;</span><br><span class="line">EventTarget.prototype.addEventListener = function (type, func, options) &#123; // 重写原生方法</span><br><span class="line">    const wrappedFunc = function (...args) &#123; // 将回调函数包裹一层try catch</span><br><span class="line">        try &#123; </span><br><span class="line">            return func.apply(this, args);</span><br><span class="line">        &#125; catch (e) &#123;</span><br><span class="line">            const errorObj = &#123;</span><br><span class="line">                ...</span><br><span class="line">                error_name: e.name || &apos;&apos;,</span><br><span class="line">                error_msg: e.message || &apos;&apos;,</span><br><span class="line">                error_stack: e.stack || (e.error &amp;amp;&amp;amp; e.error.stack),</span><br><span class="line">                error_native: e,</span><br><span class="line">                ...</span><br><span class="line">            &#125;;</span><br><span class="line">            // 接下来可以将errorObj统一进行处理。</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return nativeAddEventListener.call(this, type, wrappedFunc, options); // 调用原生的方法，保证addEventListener正确执行</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="async-await-和捕获异常"><a href="#async-await-和捕获异常" class="headerlink" title="async/await 和捕获异常"></a>async/await 和捕获异常</h5><p>作为异步的中级方案，catch异常也是很简单的：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">var sleep = function (time) &#123;</span><br><span class="line">    return new Promise(function (resolve, reject) &#123;</span><br><span class="line">        setTimeout(function () &#123;</span><br><span class="line">            reject(&apos;error&apos;);</span><br><span class="line">        &#125;, time);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var func = async function () &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        console.log(&apos;start&apos;);</span><br><span class="line">        await sleep(1000); // 这里得到了一个返回错误</span><br><span class="line">        </span><br><span class="line">        // 所以以下代码不会被执行了</span><br><span class="line">        console.log(&apos;end&apos;);</span><br><span class="line">    &#125; catch (err) &#123;</span><br><span class="line">        console.log(&apos;catch内容：&apos;, err); // 这里捕捉到错误 `error`</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">func();</span><br></pre></td></tr></table></figure>
 <p>#####有iframe的页面怎么监听？</p>
@@ -191,7 +196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/06/15/前端异常监控/" data-id="ck9dm4wge0017dco73tgpqm8b" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/06/15/前端异常监控/" data-id="ck9duf07i0018n1o7m4f10d5v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -252,7 +257,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
     </div>
   </div>
 
@@ -265,6 +270,14 @@
       <ul>
         
           <li>
+            <a href="/2020/01/24/react性能优化/">react性能优化</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/10/关于前端性能优化的一些事/">关于前端性能优化的一些事</a>
+          </li>
+        
+          <li>
             <a href="/2019/03/29/webpack原理/">webpack原理</a>
           </li>
         
@@ -274,14 +287,6 @@
         
           <li>
             <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/29/about-tapable/">about tapable</a>
-          </li>
-        
-          <li>
-            <a href="/2018/11/23/聊聊前端安全/">聊聊前端安全</a>
           </li>
         
       </ul>

@@ -65,6 +65,292 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-react性能优化" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/24/react性能优化/" class="article-date">
+  <time datetime="2020-01-24T06:56:12.000Z" itemprop="datePublished">2020-01-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/24/react性能优化/">react性能优化</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2020/01/24/react性能优化/" data-id="ck9duf06h0005n1o7cutej2l4" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-关于前端性能优化的一些事" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/12/10/关于前端性能优化的一些事/" class="article-date">
+  <time datetime="2019-12-10T12:25:37.000Z" itemprop="datePublished">2019-12-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/12/10/关于前端性能优化的一些事/">关于前端性能优化的一些事</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>前端性能优化零碎知识点的一些东西，可能相对比较不太成”体统“简单理下，零碎的但必要的知识点。<br>从“输入 URL 到页面加载完成，发生了什么”的角度简单梳理一遍</p>
+</li>
+<li><p>DNS 解析</p>
+</li>
+<li>TCP 连接</li>
+<li>HTTP 请求发送</li>
+<li>服务端处理请求，响应返回</li>
+<li>浏览器拿到响应数据，解析响应内容，把解析的结果展示给用户</li>
+</ul>
+<p>稍微详细点儿：</p>
+<ul>
+<li>回车url到cpu中断，响应键盘操作</li>
+<li>浏览器解析url到开启网络请求线程</li>
+<li>DNS解析域名映射对应的ip地址， arp地址解析，实现IP地址到MAC地址的转换。 </li>
+<li>开启网络线程到发出一个完整的http请求</li>
+<li>从服务器接收到请求到对应后台接收到请求</li>
+<li>后台和前台的http交互</li>
+<li>浏览器接收到http数据包后的解析流程（解析html-词法分析然后解析成dom树、解析css生成css规则树、合并成render树，然后layout、painting渲染、复合图层的合成、GPU绘制、外链资源的处理、loaded和domcontentloaded等）</li>
+<li>JS引擎解析过程（JS的解释阶段，预处理阶段，执行阶段生成执行上下文，VO，作用域链、回收机制等等）</li>
+</ul>
+<h2 id="DNS查询"><a href="#DNS查询" class="headerlink" title="DNS查询"></a>DNS查询</h2><p>我们知道dns解析是耗时的。</p>
+<p>对于页面请求域名，如果DNS Lookup 时间过长会引起白屏的时间过长<br>对于图片对应的域名，如果DNS Lookup 时间过长，白图的时间也会过长</p>
+<p>如果解析域名过多，会让首屏加载变得过慢。</p>
+<p>dns解析成IP，大致流程：</p>
+<p>如果浏览器有缓存，直接使用浏览器缓存，否则使用本机缓存，再没有的话就是用host<br>如果本地没有，就向dns域名服务器查询（中间可能还会经过路由器、ISP 的缓存），查询到对应的IP</p>
+<ul>
+<li>域名查询时有可能是经过了CDN调度器的（如果有cdn存储功能的话）</li>
+</ul>
+<h2 id="DNS优化"><a href="#DNS优化" class="headerlink" title="DNS优化"></a>DNS优化</h2><p>DNS Prefetch，即DNS预解析就是根据浏览器定义的规则，提前解析之后可能会用到的域名，使解析结果缓存到系统缓存中，缩短DNS解析时间，来提高网站的访问速度。</p>
+<blockquote>
+<p>当然还有设置合理的TTL时间、DNS多点就近部署架构升级、基于Anycast的DNS解析架构（未来DNS的优化方向）</p>
+</blockquote>
+<p><strong><em> 打开和关闭DNS预读取  </em></strong> </p>
+<p>可以通过在服务器端发送 X-DNS-Prefetch-Control 报头，或是在文档中使用值为 http-equiv 的标签：<br>&lt;meta http-equiv=”x-dns-prefetch-control” content=”off”&gt;</p>
+<p>强制查询特定主机名<br>你可以通过使用 rel 属性值为 link type 中的 dns-prefetch 的 标签来对特定域名进行预读取：<br>&lt;link rel=”dns-prefetch” href=”<a href="http://www.xxx.com/&quot;" target="_blank" rel="noopener">http://www.xxx.com/&quot;</a>&gt;</p>
+<h2 id="HttpDNS"><a href="#HttpDNS" class="headerlink" title="HttpDNS"></a>HttpDNS</h2><p>我们知道，DNS一定会存在的问题就是：域名更新问题、解析延迟。那HTTPDns就登场了</p>
+<ul>
+<li>定义：不走传统的DNS解析，而是自己搭建基于HTTP协议的DNS服务器集群，分布在多个地点和多个运营商，当客户端需要DNS解析的时候，直接通过HTTP协议进行请求这个服务器集群，获得就近的地址。</li>
+</ul>
+<p>HttpDNS是通过ip直接请求http获取服务器A记录地址，不存在向本地运营商询问domain解析过程，所以从根本避免了劫持问题。同时由于是ip直接访问省掉了一次domain解析过程，可以在一定程度上降低平均访问延迟。</p>
+<h2 id="http"><a href="#http" class="headerlink" title="http"></a>http</h2><p>http耗时 = TCP握手 通过三次握手建立连接（四次挥手）<br>https耗时 = TCP握手 + SSL握手</p>
+<p>http请求过程（请求应答模式）：<br>第一次: CLIENT—-syn—–&gt;SERVER<br>第二次: SERVER—-ack,syn—-&gt;CLIENT<br>第三次: CLIENT—-ack—–&gt;SERVER<br>这样，从client—-&gt;server, server—-&gt;client各自通过一次syn,ack形成闭环，理论上形成了一个近似可靠的通信。</p>
+<p>类似于TCP的三次握手，四次挥手的四步：<br>Client—fin,ack—&gt;Server<br>Server—ack—-&gt;Clinet<br>Server—fin,ack—&gt;Client<br>Client—-ack—–&gt;Server</p>
+<ul>
+<li>SYN：同步序列编号（Synchronize Sequence Numbers）。是TCP/IP建立连接时使用的握手信号。在客户机和服务器之间建立正常的TCP网络连接时，客户机首先发出一个SYN消息，服务器使用SYN+ACK应答表示接收到了这个消息，最后客户机再以ACK消息响应。这样在客户机和服务器之间才能建立起可靠的TCP连接，数据才可以在客户机和服务器之间传递。</li>
+<li>ACK (Acknowledgement）即是确认字符，在数据通信中，接收站发给发送站的一种传输类控制字符。表示发来的数据已确认接收无误。<br>在TCP/IP协议中，如果接收方成功的接收到数据，那么会回复一个ACK数据。通常ACK信号有自己固定的格式,长度大小,由接收方回复给发送方。</li>
+</ul>
+<h2 id="http1-0、1-1、2-0区别与联系"><a href="#http1-0、1-1、2-0区别与联系" class="headerlink" title="http1.0、1.1、2.0区别与联系"></a>http1.0、1.1、2.0区别与联系</h2><p>http1.1与http1.0 的最大区别就是：长链接、节约带宽、HOST域<br>与性能相关的是：长链接。HTTP 1.0需要使用keep-alive参数来告知服务器端要建立一个长连接，而HTTP1.1默认支持长连接。<br>节约带宽：HTTP 1.1支持只发送header信息(不带任何body信息)，如果服务器认为客户端有权限请求服务器，则返回100，否则返回401。客户端如果接受到100，才开始把请求body发送到服务器。这样当服务器返回401的时候，客户端就可以不用发送请求body了，节约了带宽。另外HTTP还支持传送内容的一部分。这样当客户端已经有一部分的资源后，只需要跟服务器请求另外的部分资源即可。这是支持文件断点续传的基础。</p>
+<p>哪怕如此，HTTP1.1还是存在效率问题。单个 TCP 连接在同一时刻只能处理一个请求，是说：两个请求的生命周期不能重叠，任意两个 HTTP 请求从开始到结束的时间在同一个 TCP 连接里不能重叠。（虽然有了管道机制pipelining，在同一个TCP链接里，客户端可以发送多个请求，但是服务器还是按照顺序，先回应前面的，完成后，在回应后面的）</p>
+<p>问题一：串行的文件传输。当请求a文件时，b文件只能等待，等待a连接到服务器、服务器处理文件、服务器返回文件，这三个步骤。我们假设这三步用时都是1秒，那么a文件用时为3秒，b文件传输完成用时为6秒，依此类推。（注：此项计算有一个前提条件，就是浏览器和服务器是单通道传输）<br>问题二：连接数过多。我们假设Apache设置了最大并发数为300，因为浏览器限制，浏览器发起的最大请求数为6，也就是服务器能承载的最高并发为50，当第51个人访问时，就需要等待前面某个请求处理完成。</p>
+<p>然后http2.0 来了 解决这些问题</p>
+<p>解决第一个：在HTTP1.1的协议中，我们传输的request和response都是基本于文本的，这样就会引发一个问题：所有的数据必须按顺序传输，比如需要传输：hello world，只能从h到d一个一个的传输，不能并行传输，因为接收端并不知道这些字符的顺序，所以并行传输在HTTP1.1是不能实现的。</p>
+<ul>
+<li>HTTP/2引入二进制数据帧和流的概念，其中帧对数据进行顺序标识，这样浏览器收到数据之后，就可以按照序列对数据进行合并，而不会出现合并后数据错乱的情况。同样是因为有了序列，服务器就可以并行的传输数据，这就是流所做的事情。</li>
+</ul>
+<p>解决第二个问题：HTTP/2对同一域名下所有请求都是基于流，也就是说同一域名不管访问多少文件，也只建立一路连接。同样Apache的最大连接数为300，因为有了这个新特性，最大的并发就可以提升到300，比原来提升了6倍！</p>
+<p>综上HTTP1.1与HTTP 2.0的主要区别</p>
+<ul>
+<li>多路复用</li>
+<li>二进制分帧</li>
+<li>首部压缩</li>
+<li>服务器推送</li>
+</ul>
+<p>HTTP 2.0 采用 HTTPS ，HTTPS 基于 SSL/TLS。现在绝大部分的站点都会采用https，也就会引入hsts。</p>
+<p>HSTS的作用是强制客户端（如浏览器）使用HTTPS与服务器创建连接。HSTS 的作用是为了在用户通过 HTTP 访问网站时不需要服务器做 301/302 跳转，直接一个 307 本地强制使用 HTTPS 访问网站，这可以防止用户在第一次发出请求时被劫持，也减少了一次请求。</p>
+<h2 id="https过程"><a href="#https过程" class="headerlink" title="https过程"></a>https过程</h2><p>如何如何加密、解密。为什么要对称和非对称</p>
+<h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><p>nginx实现负载均衡的几种方式</p>
+<h2 id="响应"><a href="#响应" class="headerlink" title="响应"></a>响应</h2><h3 id="http-缓存"><a href="#http-缓存" class="headerlink" title="http 缓存"></a>http 缓存</h3><p>服务端返回结果，缓存</p>
+<p>返回结果，给到客户端</p>
+<p>强缓存<br>协商缓存</p>
+<h3 id="页面解析"><a href="#页面解析" class="headerlink" title="页面解析"></a>页面解析</h3><p>浏览器内核拿到内容后，渲染步骤大致可以分为以下几步：</p>
+<ol>
+<li>解析HTML，构建DOM树</li>
+<li>解析CSS，生成CSS规则树</li>
+<li>合并DOM树和CSS规则，生成render树</li>
+<li>布局render树（Layout/reflow），负责各元素尺寸、位置的计算（从根节点递归调用，计算每一个元素的大小、位置等）</li>
+<li>绘制render树（paint），绘制页面像素信息。（在这一步中浏览器会根据我们的 DOM 代码结果，把每一个页面图层转换为像素，并对所有的媒体文件进行解码。）</li>
+<li>浏览器会将各层的信息发送给GPU，GPU会将各层合成（composite），显示在屏幕上</li>
+</ol>
+<h3 id="HTML解析，构建DOM"><a href="#HTML解析，构建DOM" class="headerlink" title="HTML解析，构建DOM"></a>HTML解析，构建DOM</h3><p>渲染树（Render-Tree）的关键渲染路径中，要求同时具有 DOM 和 CSSOM，之后才会构建渲染树。即，HTML 和 CSS 都是阻塞渲染的资源。</p>
+<p>减少DOM元素的数量、而且尽量少用iframe更要杜绝404</p>
+<h3 id="解析CSS"><a href="#解析CSS" class="headerlink" title="解析CSS"></a>解析CSS</h3><p>CSS下载时异步，不会阻塞浏览器构建DOM树.但是会阻塞渲染，也就是在构建render时，会等到css下载解析完毕后才进行（这点与浏览器优化有关，防止css规则不断改变，避免了重复的构建）<br>CSS 是阻塞渲染的资源。需要将它尽早、尽快地下载到客户端，以便缩短首次渲染的时间。</p>
+<ul>
+<li>media query声明的CSS是不会阻塞渲染的<br>精简 CSS 并尽快提供它.除此之外，还可以用媒体类型（media type）和媒体查询（media query）来解除对渲染的阻塞。<br><link href="index.css" rel="stylesheet"><br><link href="print.css" rel="stylesheet" media="print"><link href="other.css" rel="stylesheet" media="(min-width: 30em) and (orientation: landscape)">
+
+
+</li>
+</ul>
+<p>1、为什么一再强调css放在头部 ？<br>其实现代浏览器为了更好的用户体验,渲染引擎将尝试尽快在屏幕上显示的内容。它不会等到所有HTML解析之前开始构建和布局渲染树。部分的内容将被解析并显示。也就是说浏览器能够渲染不完整的dom树和cssom，尽快的减少白屏的时间。假如我们将js放在header，js将阻塞解析dom，dom的内容会影响到First Paint，导致First Paint延后。所以说我们会将js放在后面，以减少First Paint的时间，但是不会减少DOMContentLoaded被触发的时间。</p>
+<p>2、css 逆向匹配为什么会提高匹配效率？<br>HTML 结构变复杂，CSS 规则表变庞大，那么，逆向匹配的优势就远大于正向匹配了，因为匹配的情况远远低于不匹配的情况。另外，如果在选择器结尾加上通配符「*」，那么「逆向匹配」的优势就大打折扣了，这也就是很多优化原则提到的「尽量避免在选择器末尾添加通配符」的原因。</p>
+<h3 id="js-引擎的解析流程"><a href="#js-引擎的解析流程" class="headerlink" title="js 引擎的解析流程"></a>js 引擎的解析流程</h3><p>JS脚本资源的处理有几个特点：</p>
+<ul>
+<li>阻塞浏览器的解析，也就是说发现一个外链脚本时，需等待脚本下载完成并执行后才会继续解析HTML</li>
+<li>浏览器的优化，一般现代浏览器有优化，在脚本阻塞时，也会继续下载其它资源（当然有并发上限），但是虽然脚本可以并行下载，解析过程仍然是阻塞的，也就是说必须这个脚本执行完毕后才会接下来的解析，并行下载只是一种优化而已</li>
+</ul>
+<p>前面有提到遇到JS脚本时，会等到它的执行，实际上是需要引擎解析的</p>
+<p>减少闭包、tree shaking减少多余的代码<br>js脚本也会阻塞渲染。所以，不管外链还是内部脚本，都应当尽量放在页面底部。</p>
+<p>但是可以加上defer或async属性，这样脚本就变成异步的了，可以等到解析完毕后再执行</p>
+<ul>
+<li>defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。</li>
+<li>即：defer是“渲染完再执行”，async是“下载完就执行”。</li>
+<li>另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。</li>
+<li>注意 async 与 defer 属性对于 inline-script 都是无效的。</li>
+</ul>
+<h4 id="JS的解释阶段"><a href="#JS的解释阶段" class="headerlink" title="JS的解释阶段"></a>JS的解释阶段</h4><p>JS是解释型语音，所以它无需提前编译，而是由解释器实时运行</p>
+<p>JIT编译器将源码编译成机器码运行</p>
+<h4 id="JS的解释阶段-1"><a href="#JS的解释阶段-1" class="headerlink" title="JS的解释阶段"></a>JS的解释阶段</h4><p>JS是解释型语言，所以它无需提前编译，而是由解释器实时运行<br>为了提高运行速度，现代浏览器一般采用即时编译（JIT-Just In Time compiler）</p>
+<p>即字节码只在运行时编译，用到哪一行就编译哪一行，并且把编译结果缓存（inline cache）<br>这样整个程序的运行速度能得到显著提升。<br>而且，不同浏览器策略可能还不同，有的浏览器就省略了字节码的翻译步骤，直接转为机器码（如chrome的v8）<br>总结起来可以认为是： 核心的JIT编译器将源码编译成机器码运行</p>
+<h4 id="预处理阶段"><a href="#预处理阶段" class="headerlink" title="预处理阶段"></a>预处理阶段</h4><p>1、分号补全<br>2、变量提升<br>3、…</p>
+<h3 id="JS的执行阶段"><a href="#JS的执行阶段" class="headerlink" title="JS的执行阶段"></a>JS的执行阶段</h3><p>求值策略：<br>“传值调用”（call by value）<br>“传名调用”（call by name）</p>
+<h4 id="回收机制"><a href="#回收机制" class="headerlink" title="回收机制"></a>回收机制</h4><p>降低内存泄露的风险<br>设置定时器的回收<br>dom元素的回收<br>事件的回收<br>卸载组件之后对应内存的释放<br>通过WeakMap解决内存泄漏问题</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p>闭包是指有权访问另外一个函数作用域中的变量的函数.可以理解为(能够读取其他函数内部变量的函数)<br>闭包的作用: 正常函数执行完毕后,里面声明的变量被垃圾回收处理掉,但是闭包可以让作用域里的变量,在函数执行完之后依旧保持没有被垃圾回收处理掉。<br>应用闭包的主要场合是：设计私有的方法和变量。</p>
+<p>闭包的缺陷：闭包的缺点就是常驻内存会增大内存使用量，并且使用不当很容易造成内存泄露。如果不是因为某些特殊任务而需要闭包，在没有必要的情况下，在其它函数中创建函数是不明智的，因为闭包对脚本性能具有负面影响，包括处理速度和内存消耗。</p>
+<p>适当减少闭包的使用。</p>
+<h2 id="event-loop"><a href="#event-loop" class="headerlink" title="event loop"></a>event loop</h2><p>微任务，宏任务</p>
+<p>理解事件循环机制，巧用宏任务与微任务。</p>
+<h2 id="Flush-队列：浏览器并没有那么简单"><a href="#Flush-队列：浏览器并没有那么简单" class="headerlink" title="Flush 队列：浏览器并没有那么简单"></a>Flush 队列：浏览器并没有那么简单</h2><h2 id="简单层与复合层"><a href="#简单层与复合层" class="headerlink" title="简单层与复合层"></a>简单层与复合层</h2><h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p>遇到图片等资源时，直接就是异步下载，不会阻塞解析，下载完毕后直接用图片替换原有src的地方</p>
+<p>图片格式、大小、策略、<br>图片加载异常处理</p>
+<h2 id="服务端渲染"><a href="#服务端渲染" class="headerlink" title="服务端渲染"></a>服务端渲染</h2><p>优势<br>场景<br>缺点</p>
+<h2 id="Gzip-压缩"><a href="#Gzip-压缩" class="headerlink" title="Gzip 压缩"></a>Gzip 压缩</h2><p>Gzip 的内核就是 Deflate，目前我们压缩文件用得最多的就是 Gzip。<br>如果项目不是极端迷你的超小型文件，都建议试试Gzip。</p>
+<ul>
+<li>压缩 Gzip，服务端要花时间；解压 Gzip，浏览器要花时间。中间节省出来的传输时间，真的那么可观吗？</li>
+</ul>
+<p>答案是肯定的。如果你手上的项目是 1k、2k 的小文件，那确实不值当。但更多的时候，我们处理的都是具备一定规模的项目文件。实践证明，这种情况下压缩和解压带来的时间开销相对于传输过程中节省下的时间开销来说，可以说是微不足道的。</p>
+<h2 id="懒加载、预加载"><a href="#懒加载、预加载" class="headerlink" title="懒加载、预加载"></a>懒加载、预加载</h2><p>图片：<br>懒加载，把图片用占位符，把真正的路径存在元素“data-url”属性里。<br>预加载，提前加载图片，当用户需要查看时可直接从本地缓存中渲染。</p>
+<h2 id="动画"><a href="#动画" class="headerlink" title="动画"></a>动画</h2><p>动画的实现方式<br>通过js<br>可以通过setTimeout和setInterval方法来在脚本中实现动画，但是这样效果可能不够流畅，且会占用额外的资源</p>
+<p>也可以使用requestAnimationFrame<br>也可这个方法原理其实也就跟setTimeout/setInterval差不多，通过递归调用同一方法来不断更新画面以达到动起来的效果，但它优于setTimeout/setInterval的地方在于它是由浏览器专门为动画提供的API，在运行时浏览器会自动优化方法的调用，并且如果页面不是激活状态下的话，动画会自动暂停，有效节省了CPU开销。</p>
+<p>requestAnimationFrame与setTimeout的区别</p>
+<p>通过CSS</p>
+<p>CSS动画流畅的原因:<br>渲染线程分为main thread(主线程)和compositor thread(合成器线程)。<br>如果CSS动画只是改变transform和opacity，这时整个CSS动画得以在compositor thread完成（而JS动画则会在main thread执行，然后触发compositor进行下一步操作）<br>在JS执行一些昂贵的任务时，main thread繁忙，CSS动画由于使用了compositor thread可以保持流畅，</p>
+<p>CSS动画比JS流畅的前提：</p>
+<ul>
+<li>JS在执行一些昂贵的任务 同时CSS动画不触发layout或paint</li>
+<li>在CSS动画或JS动画触发了paint或layout时，需要main thread进行Layer树的重计算，这时CSS动画或JS动画都会阻塞后续操作。</li>
+<li>只有如下属性的修改才符合“仅触发Composite，不触发layout或paint”：</li>
+<li>backface-visibility</li>
+<li>opacity</li>
+<li>perspective</li>
+<li>perspective-origin</li>
+<li>transfrom</li>
+</ul>
+<p>所以只有用上了3D加速或修改opacity时，css3动画的优势才会体现出来。<br>(2)代码相对简单,性能调优方向固定<br>(3)对于帧速表现不好的低版本浏览器，CSS3可以做到自然降级，而JS则需要撰写额外代码</p>
+<p>requestIdleCallback和requestAnimationFrame有什么区别？<br>requestAnimationFrame的回调会在每一帧确定执行，属于高优先级任务，而requestIdleCallback的回调则不一定，属于低优先级任务。<br>我们所看到的网页，都是浏览器一帧一帧绘制出来的，通常认为FPS为60的时候是比较流畅的，而FPS为个位数的时候就属于用户可以感知到的卡顿了，</p>
+<h2 id="will-change"><a href="#will-change" class="headerlink" title="will change"></a>will change</h2><p>这是一个实验中的功能</p>
+<p>CSS 属性 will-change 为web开发者提供了一种告知浏览器该元素会有哪些变化的方法，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。 这种优化可以将一部分复杂的计算工作提前准备好，使页面的反应更为快速灵敏。</p>
+<ul>
+<li>不要将 will-change 应用到太多元素上</li>
+<li>有节制地使用</li>
+<li>不要过早应用 will-change 优化</li>
+<li>给它足够的工作时间</li>
+</ul>
+<h2 id="CDN"><a href="#CDN" class="headerlink" title="CDN"></a>CDN</h2><p>CDN其功能是将内容“发布”到离用户最近的服务器上，有效的避免网络拥塞（越远的距离越容易遇到拥塞）。CDN提供就近访问的能力，消除了由于用户离机房的距离不一样带来的体验差异。</p>
+<p>我们都知道静态资源要放在CDN上。不仅是加速访问还可以有效的环节业务服务器的压力。并且如上文所说的，如果有很多静态资源的话，每一个请求都要携带cookie，是有很大程度的浪费的。</p>
+<p>当然，CDN的使用上也会有一些问题，关于命中率的问题。CDN也有一些常用的优化策略。：静态化缓存优化、动态内容静态边缘化、动态加速优化</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>服务端缓存：<br>memcache、redis、数据库缓存<br>http缓存，如上<br>客户端缓存：<br>MemoryCache、localstorage、sessionstorage、cookie、indexdb、websql、service worker（见下）</p>
+<p>MemoryCache，是指存在内存中的缓存。从优先级上来说，它是浏览器最先尝试去命中的一种缓存。从效率上来说，它是响应速度最快的一种缓存。</p>
+<p>localStorage只要在相同的协议、相同的主机名、相同的端口下，就能读取/修改到同一份localStorage数据。<br>sessionStorage比localStorage更严苛一点，除了协议、主机名、端口外，还要求在同一窗口（也就是浏览器的标签页）下。<br>sessionStorage当会话结束（当前页面关闭的时候，自动销毁）</p>
+<p>cookie 只是我们认为可以作为存储的一种。Cookie 的本职工作并非本地存储，而是“维持状态”。<br>Cookie 是有体积上限的，它最大只能有 4KB。当 Cookie 超过 4KB 时，它将面临被裁切的命运。这样看来，Cookie 只能用来存取少量的信息。<br>而且cookie与会自动发送到相同域名下的浏览器，如果cookie 过大，会很大程度上影响性能。所以才有了。我们常说的，静态资源放在CDN上，而且CDN的域名也会有多个。（域名合并是常见的CDN优化手段之一，对于web网页来说，为了提高浏览器的并行下载能力，往往会使用多个域名。）</p>
+<p>还有些数据的请求的结果，会放在本地的数据库中。websql、indexdb</p>
+<h2 id="service-worker"><a href="#service-worker" class="headerlink" title="service worker"></a>service worker</h2><p>service worker 我们都知道有一个作用是用于离线存储<br>你可以让 Service Worker 成为监听 fetch 事件的中间人。你也可以让 Service Worker 保存某些资源在缓存里。当缓存项被请求，Service Worker 无需发出额外的请求就可以返回缓存数据。只要资源被缓存，浏览器无需网络连接就可以展示内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 简单实例</span><br><span class="line">// Service Worker监听所有的网络请求，网络请求的产生触发的是fetch事件，</span><br><span class="line">// 可以在其对应的监听函数中实现对请求的拦截，进而判断是否有对应到该请求的缓存，</span><br><span class="line">// 实现从Service Worker中取到缓存的目的</span><br><span class="line">self.addEventListener(&apos;fetch&apos;, event =&gt; &#123;</span><br><span class="line">  event.respondWith(</span><br><span class="line">    // 尝试匹配该请求对应的缓存值</span><br><span class="line">    caches.match(event.request).then(res =&gt; &#123;</span><br><span class="line">      // 如果匹配到了，调用Server Worker缓存</span><br><span class="line">      if (res) &#123;</span><br><span class="line">        return res;</span><br><span class="line">      &#125;</span><br><span class="line">      // 如果没匹配到，向服务端发起这个资源请求</span><br><span class="line">      return fetch(event.request).then(response =&gt; &#123;</span><br><span class="line">        if (!response || response.status !== 200) &#123;</span><br><span class="line">          return response;</span><br><span class="line">        &#125;</span><br><span class="line">        // 请求成功的话，将请求缓存起来。</span><br><span class="line">        caches.open(cacheName).then(function(cache) &#123;</span><br><span class="line">          console.log(&apos;event.request&apos;, event.request)</span><br><span class="line">          if (event.request.method !== &apos;POST&apos; &amp;&amp; event.request.url.indexOf(&apos;sockjs-node&apos;) &lt; 0)  &#123;</span><br><span class="line">            cache.put(event.request, response);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        return response.clone();</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;)</span><br><span class="line">  );</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="Push-Cache"><a href="#Push-Cache" class="headerlink" title="Push Cache"></a>Push Cache</h2><p>1.Service Worker<br>2.Memory Cache<br>3.Disk Cache</p>
+<p>Push Cache（推送缓存）是 HTTP/2 中的内容，当以上三种缓存都没有命中时，它才会被使用。它只在会话（Session）中存在，一旦会话结束就被释放，并且缓存时间也很短暂，在Chrome浏览器中只有5分钟左右，同时它也并非严格执行HTTP头中的缓存指令。</p>
+<p><a href="https://www.jianshu.com/p/54cc04190252" target="_blank" rel="noopener">https://www.jianshu.com/p/54cc04190252</a></p>
+<h2 id="工程构建部分"><a href="#工程构建部分" class="headerlink" title="工程构建部分"></a>工程构建部分</h2><p>构建速度、包大小、抽离公用部分、CDN</p>
+<p>webpack 构建优化、react框架本身的优化visial dom。异步的setState、fiber架构</p>
+<p>webpack 优化策略。<br>1、优化Loader，配置include和exclude。同时把Babel编译过的文件缓存起来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loader: &apos;babel-loader?cacheDirectory=ture&apos;</span><br></pre></td></tr></table></figure>
+<p>2、Happy启用多线程<br>3、DllPlugin将特定的类库提前打包然后引入，极大减少打包类库的构建次数<br>4、css 抽离mini-css-extract-plugin<br>5、html-webpack-plugin压缩html，当然html-webpack-plugin不止与html的压缩<br>6、合并压缩图片<br>7、base64 转换<br>8、依赖库分离（optimization.splitChunks）<br>9、按需加载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@babel/plugin-syntax-dynamic-import</span><br><span class="line"></span><br><span class="line">import (/* webpackChunkName: &quot;authModal&quot; */ &apos;common/authModal/index&apos;).then(chunk =&gt; &#123;</span><br><span class="line">    let initAuthModal = chunk.default,</span><br><span class="line">        nick = rcl.get(&apos;seller_nick&apos;, &apos;session&apos;);</span><br><span class="line">    let isSubNick = nick.includes(&apos;:&apos;);</span><br><span class="line">    initAuthModal(isSubNick);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>10、删除冗余代码 ，针对于支持es6模块化的自动开启tree shaking<br>11、alias<br>12、noParse<br>13、优化模块查找路径<br>14、preload-webpack-plugin 获取代码拆分的路径</p>
+<p>preload与prefetch 区别：<br>preload 是声明式的 fetch，可以强制浏览器请求资源，同时不阻塞文档 onload 事件。<br>Prefetch 提示浏览器这个资源将来可能需要，但是把决定是否和什么时间加载这个资源的决定权交给浏览器。</p>
+<p>preload 提前加载<br>preload 顾名思义就是一种预加载的方式，它通过声明向浏览器声明一个需要提交加载的资源，当资源真正被使用的时候立即执行，就无需等待网络的消耗。</p>
+<p>prefetch 预判加载<br>prefetch 跟 preload 不同，它的作用是告诉浏览器未来可能会使用到的某个资源，浏览器就会在闲时去加载对应的资源，若能预测到用户的行为，比如懒加载，点击到其它页面等则相当于提前预加载了需要的资源。它的用法跟 preload 是一样的：</p>
+<p>什么时候该用 <link rel="”preload”"> ？ 什么时候又该用 <link rel="”prefetch”"> ?<br>对于当前页面很有必要的资源使用 preload，对于可能在将来的页面中使用的资源使用 prefetch。<br>preload 是对浏览器指示预先请求当前页需要的资源（关键的脚本，字体，主要图片）。<br>prefetch 应用场景稍微又些不同 —— 用户将来可能在其他部分（比如视图或页面）使用到的资源。如果 A 页面发起一个 B 页面的 prefetch 请求，这个资源获取过程和导航请求可能是同步进行的，而如果我们用 preload 的话，页面 A 离开时它会立即停止。<br>使用 preload和 prefetch，我们有了对当前页面和将来页面加载关键资源的解决办法。</p>
+<h2 id="节流、防抖"><a href="#节流、防抖" class="headerlink" title="节流、防抖"></a>节流、防抖</h2><p>throttle函数与debounce函数区别:<br>防抖 (debounce): 将多次高频操作优化为只在最后一次执行，通常使用的场景是：用户输入，只需再输入完成后做一次输入校验即可。<br>节流(throttle): 每隔一段时间后执行一次，也就是降低频率，将高频操作优化成低频操作，通常使用场景: 滚动条事件 或者 resize 事件，通常每隔 100~500 ms执行一次即可。</p>
+<p>连续操作：两个操作之间的时间间隔小于设定的阀值，这样子的一连串操作视为连续操作。<br>debounce（防抖）：一个连续操作中的处理，只触发一次，从而实现防抖动。<br>throttle：一个连续操作中的处理，按照阀值时间间隔进行触发，从而实现节流。（throttle 可以限制函数调⽤用的频率,常⽤用来防⽌止按钮被重复点击。）</p>
+<ul>
+<li>“节流”与“防抖”的本质:这两个东西都以闭包的形式存在。它们通过对事件对应的回调函数进行包裹、以自由变量的形式缓存时间信息，最后用 setTimeout 来控制事件的触发频率。</li>
+<li>throttle 的中心思想在于：在某段时间内，不管你触发了多少次回调，我都只认第一次，并在计时结束时给予响应。</li>
+<li>防抖(debounce)的中心思想在于：我会等你到底。在某段时间内，不管你触发了多少次回调，我都只认最后一次。</li>
+</ul>
+<p>throttle函数与debounce函数的区别就是：throttle函数在触发后会马上执行，而debounce函数会在一定延迟后才执行。从触发开始到延迟结束，只执行函数一次</p>
+<h3 id="debounce-的问题"><a href="#debounce-的问题" class="headerlink" title="debounce 的问题"></a>debounce 的问题</h3><p>debounce 的问题在于它“太有耐心了”。如果用户的操作十分频繁——他每次都不等 debounce 设置的 delay 时间结束就进行下一次操作，于是每次 debounce 都为该用户重新生成定时器，回调函数被延迟了不计其数次。频繁的延迟会导致用户迟迟得不到响应，用户同样会产生“这个页面卡死了”的观感。</p>
+<ul>
+<li>用 Throttle 来优化 Debounce</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">// fn是我们需要包装的事件回调, delay是时间间隔的阈值</span><br><span class="line">function throttle(fn, delay) &#123;</span><br><span class="line">  // last为上一次触发回调的时间, timer是定时器</span><br><span class="line">  let last = 0, timer = null</span><br><span class="line">  // 将throttle处理结果当作函数返回</span><br><span class="line">  </span><br><span class="line">  return function () &#123; </span><br><span class="line">    // 保留调用时的this上下文</span><br><span class="line">    let context = this</span><br><span class="line">    // 保留调用时传入的参数</span><br><span class="line">    let args = arguments</span><br><span class="line">    // 记录本次触发回调的时间</span><br><span class="line">    let now = +new Date()</span><br><span class="line">    </span><br><span class="line">    // 判断上次触发的时间和本次触发的时间差是否小于时间间隔的阈值</span><br><span class="line">    if (now - last &lt; delay) &#123;</span><br><span class="line">    // 如果时间间隔小于我们设定的时间间隔阈值，则为本次触发操作设立一个新的定时器</span><br><span class="line">       clearTimeout(timer)</span><br><span class="line">       timer = setTimeout(function () &#123;</span><br><span class="line">          last = now</span><br><span class="line">          fn.apply(context, args)</span><br><span class="line">        &#125;, delay)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        // 如果时间间隔超出了我们设定的时间间隔阈值，那就不等了，无论如何要反馈给用户一次响应</span><br><span class="line">        last = now</span><br><span class="line">        fn.apply(context, args)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 用新的throttle包装scroll的回调</span><br><span class="line">const better_scroll = throttle(() =&gt; console.log(&apos;触发了滚动事件&apos;), 1000)</span><br><span class="line"></span><br><span class="line">document.addEventListener(&apos;scroll&apos;, better_scroll)</span><br></pre></td></tr></table></figure>
+<h2 id="性能检测与分析"><a href="#性能检测与分析" class="headerlink" title="性能检测与分析"></a>性能检测与分析</h2><p>YSlow、PageSpeed、lightHouse（可以通过npm安装、安装chrome插件，chrome的Audits）、performance</p>
+<p><strong><em>运行时性能瓶颈分析</em></strong></p>
+<h2 id="雅虎军规35条"><a href="#雅虎军规35条" class="headerlink" title="雅虎军规35条"></a>雅虎军规35条</h2><h3 id="内容部分"><a href="#内容部分" class="headerlink" title="内容部分"></a>内容部分</h3><p>1.尽量减少HTTP请求数<br>2.减少DNS查找<br>3.避免重定向<br>4.让Ajax可缓存<br>5.延迟加载组件<br>6.预加载组件<br>7.减少DOM元素的数量<br>8.跨域分离组件<br>9.尽量少用iframe<br>10.杜绝404</p>
+<h3 id="css部分"><a href="#css部分" class="headerlink" title="css部分"></a>css部分</h3><p>11.避免使用CSS表达式<br>12.选择舍弃@import<br>13.避免使用滤镜<br>14.把样式表放在顶部 </p>
+<h3 id="js部分"><a href="#js部分" class="headerlink" title="js部分"></a>js部分</h3><p>15.去除重复脚本<br>16.尽量减少DOM访问<br>17.用智能的事件处理器<br>18.把脚本放在底部 </p>
+<p>javascript, css<br>19.把JavaScript和CSS放到外面<br>20.压缩JavaScript和CSS </p>
+<h3 id="图片-1"><a href="#图片-1" class="headerlink" title="图片"></a>图片</h3><p>21.优化图片<br>22.优化CSS Sprite<br>23.不要用HTML缩放图片<br>24.用小的可缓存的favicon.ico（P.S. 收藏夹图标） </p>
+<h3 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h3><p>25.给Cookie减肥 </p>
+<h3 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h3><p>34.使用CDN（内容分发网络）<br>35.添上Expires或者Cache-Control HTTP头 </p>
+<h2 id="高性能网站建设指南"><a href="#高性能网站建设指南" class="headerlink" title="高性能网站建设指南"></a>高性能网站建设指南</h2><p>《高性能网站建设指南》 总结了12条基本规则</p>
+<ul>
+<li>尽量减少http请求</li>
+<li>使用CDN</li>
+<li>静态资源使用cahce</li>
+<li>启用Gzip压缩</li>
+<li>JavaScript脚本尽量放在页面底部</li>
+<li>CSS 表达式放在顶部</li>
+<li>避免CSS表达式</li>
+<li>减少内联Javascript和css 的使用，尽可能使用外部的js和css文件</li>
+<li>减少DNS查询</li>
+<li>精简js</li>
+<li>避免重定向</li>
+<li>删除重复的脚本<br>s</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ck9if8gvt0000usjbool8688f" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-webpack原理" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/29/webpack原理/" class="article-date">
@@ -258,7 +544,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9dm4wgp001fdco7g4p2ikgl" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9duf07t001in1o7xhoh4v0p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -364,7 +650,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9dm4wgd0013dco7vbvsg896" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9duf07h0016n1o781h0wazn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -462,7 +748,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9dm4wgb000zdco7wjeq6381" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9duf07g0014n1o7utprupr3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -524,7 +810,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9dm4wew0000dco79uclf3pg" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9duf06d0002n1o77am4h6am" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -719,7 +1005,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9dm4wgf0019dco73h55i01u" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9duf07j001cn1o75pdjeyns" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -883,7 +1169,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9dm4wg3000qdco722mwo8xg" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9duf079000tn1o7wcvngkae" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -992,7 +1278,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9dm4wg5000tdco763ni1ofe" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9duf07b000wn1o78qwvyx6f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1125,254 +1411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9dm4wgn001cdco7wnz03dzw" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-React-v16-4-0-事件原理" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/07/26/React-v16-4-0-事件原理/" class="article-date">
-  <time datetime="2018-07-26T10:54:20.000Z" itemprop="datePublished">2018-07-26</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/26/React-v16-4-0-事件原理/">React v16.4.0 事件原理</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>（针对v16.4.0）</p>
-<h3 id="原生事件系统"><a href="#原生事件系统" class="headerlink" title="原生事件系统"></a>原生事件系统</h3><p>我们通常监听真实DOM。举🌰来说，我们想监听按钮的点击事件，那么我们在按钮DOM上绑定事件和对应的回调函数即可。</p>
-<blockquote>
-<p>遗憾的是若页面复杂且事件处理频率高，那么对网页性能是个考验。</p>
-</blockquote>
-<h3 id="React事件系统"><a href="#React事件系统" class="headerlink" title="React事件系统"></a>React事件系统</h3><p>react的事件处理再眼花缭乱终究还是要回归原生的事件系统。</p>
-<h3 id="react事件绑定"><a href="#react事件绑定" class="headerlink" title="react事件绑定"></a>react事件绑定</h3><p>react 中的事件是根据 nativeEvent 对象修改后的合成对象，对于事件采用事件委托，将事件绑定在顶层 document 对象上。对于全局 dom 元素中所涉及的事件， react 都会处理。对于冒泡事件，是在 document 对象的冒泡阶段触发。对于非冒泡事件，是在 document 对象的捕获阶段触发。最后在 dispatchEvent 中决定真正回调函数的执行。</p>
-<h3 id="合成事件"><a href="#合成事件" class="headerlink" title="合成事件"></a>合成事件</h3><p>事件处理程序通过 合成事件（SyntheticEvent）的实例传递，SyntheticEvent 是浏览器原生事件跨浏览器的封装。SyntheticEvent 和浏览器原生事件一样有 stopPropagation()、preventDefault() 接口，而且这些接口夸浏览器兼容。</p>
-<p>如果出于某些原因想使用浏览器原生事件，可以使用 nativeEvent 属性获取。每个和成事件（SyntheticEvent）对象都有以下属性：</p>
-<p>boolean bubbles<br>boolean cancelable<br>DOMEventTarget currentTarget<br>boolean defaultPrevented<br>Number eventPhase<br>boolean isTrusted<br>DOMEvent nativeEvent<br>void preventDefault()<br>void stopPropagation()<br>DOMEventTarget target<br>Date timeStamp<br>String type</p>
-<p>React实现了SyntheticEvent层处理事件</p>
-<p>详细来说，React并不像原生事件一样将事件和DOM一一对应，而是将所有的事件都绑定在网页的document，通过统一的事件监听器处理并分发，找到对应的回调函数并执行。按照官方文档的说法，事件处理程序将传递SyntheticEvent的实例。</p>
-<h3 id="react提出统一事件处理的目的主要是："><a href="#react提出统一事件处理的目的主要是：" class="headerlink" title="react提出统一事件处理的目的主要是："></a>react提出统一事件处理的目的主要是：</h3><p>1.浏览器兼容性<br>2.改善性能<br>在复杂的UI系统中，越多的事件处理意味着应用需要消耗的内存越多。手动解决这个问题并不是很麻烦，但是在冗长的过程中，你需要尝试去给在来源于同一个父节点的事件进行分组。很难权衡。而React就帮我们解决了这个问题。<br>React不是直接的将事件挂在dom上，它在document的根部用一个事件处理去监听和调用相应的事件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * Overview of React and the event system:</span><br><span class="line"> *</span><br><span class="line"> * +------------+    .</span><br><span class="line"> * |    DOM     |    .</span><br><span class="line"> * +------------+    .</span><br><span class="line"> *       |           .</span><br><span class="line"> *       v           .</span><br><span class="line"> * +------------+    .</span><br><span class="line"> * | ReactEvent |    .</span><br><span class="line"> * |  Listener  |    .</span><br><span class="line"> * +------------+    .                         +-----------+</span><br><span class="line"> *       |           .               +--------+|SimpleEvent|</span><br><span class="line"> *       |           .               |         |Plugin     |</span><br><span class="line"> * +-----|------+    .               v         +-----------+</span><br><span class="line"> * |     |      |    .    +--------------+                    +------------+</span><br><span class="line"> * |     +-----------.---&gt;|EventPluginHub|                    |    Event   |</span><br><span class="line"> * |            |    .    |              |     +-----------+  | Propagators|</span><br><span class="line"> * | ReactEvent |    .    |              |     |TapEvent   |  |------------|</span><br><span class="line"> * |  Emitter   |    .    |              |&lt;---+|Plugin     |  |other plugin|</span><br><span class="line"> * |            |    .    |              |     +-----------+  |  utilities |</span><br><span class="line"> * |     +-----------.---&gt;|              |                    +------------+</span><br><span class="line"> * |     |      |    .    +--------------+</span><br><span class="line"> * +-----|------+    .                ^        +-----------+</span><br><span class="line"> *       |           .                |        |Enter/Leave|</span><br><span class="line"> *       +           .                +-------+|Plugin     |</span><br><span class="line"> * +-------------+   .                         +-----------+</span><br><span class="line"> * | application |   .</span><br><span class="line"> * |-------------|   .</span><br><span class="line"> * |             |   .</span><br><span class="line"> * |             |   .</span><br><span class="line"> * +-------------+   .</span><br><span class="line"> *                   .</span><br><span class="line"> *    React Core     .  General Purpose Event Plugin System</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
-<h4 id="SyntheticEvent"><a href="#SyntheticEvent" class="headerlink" title="SyntheticEvent"></a>SyntheticEvent</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * @param &#123;object&#125; dispatchConfig Configuration used to dispatch this event.</span><br><span class="line"> * @param &#123;*&#125; targetInst Marker identifying the event target.</span><br><span class="line"> * @param &#123;object&#125; nativeEvent Native browser event.</span><br><span class="line"> * @param &#123;DOMEventTarget&#125; nativeEventTarget Target node.</span><br><span class="line">* /</span><br><span class="line">function SyntheticEvent(dispatchConfig, targetInst, nativeEvent, nativeEventTarget) &#123;</span><br><span class="line"></span><br><span class="line">  this.dispatchConfig = dispatchConfig;</span><br><span class="line">  this._targetInst = targetInst;</span><br><span class="line">  this.nativeEvent = nativeEvent;</span><br><span class="line"></span><br><span class="line">  var Interface = this.constructor.Interface;</span><br><span class="line">  for (var propName in Interface) &#123;</span><br><span class="line">    if (!Interface.hasOwnProperty(propName)) &#123;</span><br><span class="line">      continue;</span><br><span class="line">    &#125;</span><br><span class="line">    var normalize = Interface[propName];</span><br><span class="line">    if (normalize) &#123;</span><br><span class="line">      this[propName] = normalize(nativeEvent);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      if (propName === &apos;target&apos;) &#123;</span><br><span class="line">        this.target = nativeEventTarget;</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        this[propName] = nativeEvent[propName];</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  var defaultPrevented = nativeEvent.defaultPrevented != null ? nativeEvent.defaultPrevented : nativeEvent.returnValue === false;</span><br><span class="line">  if (defaultPrevented) &#123;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsFalse;</span><br><span class="line">  &#125;</span><br><span class="line">  this.isPropagationStopped = emptyFunction.thatReturnsFalse;</span><br><span class="line">  return this;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">_assign(SyntheticEvent.prototype, &#123;</span><br><span class="line">  preventDefault: function () &#123;</span><br><span class="line">    this.defaultPrevented = true;</span><br><span class="line">    var event = this.nativeEvent;</span><br><span class="line">    if (!event) &#123;</span><br><span class="line">      return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (event.preventDefault) &#123;</span><br><span class="line">      event.preventDefault();</span><br><span class="line">    &#125; else if (typeof event.returnValue !== &apos;unknown&apos;) &#123;</span><br><span class="line">      event.returnValue = false;</span><br><span class="line">    &#125;</span><br><span class="line">    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  stopPropagation: function () &#123;</span><br><span class="line">    var event = this.nativeEvent;</span><br><span class="line">    if (!event) &#123;</span><br><span class="line">      return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (event.stopPropagation) &#123;</span><br><span class="line">      event.stopPropagation();</span><br><span class="line">    &#125; else if (typeof event.cancelBubble !== &apos;unknown&apos;) &#123;</span><br><span class="line">      event.cancelBubble = true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.isPropagationStopped = emptyFunction.thatReturnsTrue;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  destructor: function () &#123;</span><br><span class="line">    var Interface = this.constructor.Interface;</span><br><span class="line">    for (var propName in Interface) &#123;</span><br><span class="line">      &#123;</span><br><span class="line">        Object.defineProperty(this, propName, getPooledWarningPropertyDefinition(propName, Interface[propName]));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    for (var i = 0; i &lt; shouldBeReleasedProperties.length; i++) &#123;</span><br><span class="line">      this[shouldBeReleasedProperties[i]] = null;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">SyntheticEvent.Interface = EventInterface;</span><br><span class="line"></span><br><span class="line">新建事件对象时，会重写stopPropagation（阻止冒泡） 和 preventDefault（阻止默认行为）这样的原生事件。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//我们所熟知事件接口 ，nativeEvent对象属性</span><br><span class="line">var EventInterface = &#123;</span><br><span class="line">  type: null,</span><br><span class="line">  target: null,</span><br><span class="line">  currentTarget: emptyFunction.thatReturnsNull,</span><br><span class="line">  eventPhase: null,</span><br><span class="line">  bubbles: null,</span><br><span class="line">  cancelable: null,</span><br><span class="line">  timeStamp: function (event) &#123;</span><br><span class="line">    return event.timeStamp || Date.now();</span><br><span class="line">  &#125;,</span><br><span class="line">  defaultPrevented: null,</span><br><span class="line">  isTrusted: null</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>还有下面的这些合成对象，这些对于事件类别不同，而有不同的属性<br>MouseEvent,AnimationEvent, UIEvent, InputEvent, CompositionEvent, ClipboardEvent, FocusEvent, KeyboardEvent, DragEvent, TouchEvent, TransitionEvent, WheelEvent上述的EventInterface基础上再添加</p>
-<h3 id="简单看下过程"><a href="#简单看下过程" class="headerlink" title="简单看下过程"></a>简单看下过程</h3><p><img src=".绑定/imgs/.png" alt></p>
-<p><img src="./imgs/触发.png" alt></p>
-<h4 id="事件注册"><a href="#事件注册" class="headerlink" title="事件注册"></a>事件注册</h4><p>事件的绑定在completeWork阶段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">function completeWork(current, workInProgress, renderExpirationTime) &#123;</span><br><span class="line">    // ...</span><br><span class="line">    var _instance = createInstance(type, newProps, rootContainerInstance, _currentHostContext, workInProgress);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //接着</span><br><span class="line">    if (finalizeInitialChildren(_instance, type, newProps, rootContainerInstance, _currentHostContext)) &#123;</span><br><span class="line">              markUpdate(workInProgress);</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">    //.....</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) &#123;</span><br><span class="line">  var parentNamespace = void 0;</span><br><span class="line">  &#123;</span><br><span class="line">    var hostContextDev = hostContext;</span><br><span class="line">    validateDOMNesting$1(type, null, hostContextDev.ancestorInfo);</span><br><span class="line">    if (typeof props.children === &apos;string&apos; || typeof props.children === &apos;number&apos;) &#123;</span><br><span class="line">      var string = &apos;&apos; + props.children;</span><br><span class="line">      var ownAncestorInfo = updatedAncestorInfo(hostContextDev.ancestorInfo, type, null);</span><br><span class="line">      validateDOMNesting$1(null, string, ownAncestorInfo);</span><br><span class="line">    &#125;</span><br><span class="line">    parentNamespace = hostContextDev.namespace;</span><br><span class="line">  &#125;</span><br><span class="line">  debugger;</span><br><span class="line">  var domElement = createElement(type, props, rootContainerInstance, parentNamespace);</span><br><span class="line">  precacheFiberNode$1(internalInstanceHandle, domElement);</span><br><span class="line">  updateFiberProps$1(domElement, props);</span><br><span class="line">  return domElement;</span><br><span class="line">&#125;</span><br><span class="line">/*</span><br><span class="line">domElement等于真实创建的dom，里面调用的就是我们熟悉的createElement。而precacheFiberNode和updateFiberProps两个方法分别给domElement(真实dom)添加了两个属性。所有react16项目中的dom都会拥有这两个属性，并且这个两个属性的属性名在同一个项目中是一致的。</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">//修改属性</span><br><span class="line">function getFiberCurrentPropsFromNode$1(node) &#123;</span><br><span class="line">  return node[internalEventHandlersKey] || null;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//sck 更新属性 </span><br><span class="line">//这里的props就是 所绑定元素的属性props</span><br><span class="line">function updateFiberProps(node, props) &#123;</span><br><span class="line">  // debugger;</span><br><span class="line">  node[internalEventHandlersKey] = props;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后呢，就是监听document或者fragment上的事件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function ensureListeningTo(rootContainerElement, registrationName) &#123;</span><br><span class="line">  var isDocumentOrFragment = rootContainerElement.nodeType === DOCUMENT_NODE || rootContainerElement.nodeType === DOCUMENT_FRAGMENT_NODE;</span><br><span class="line">  //就是document</span><br><span class="line">  var doc = isDocumentOrFragment ? rootContainerElement : rootContainerElement.ownerDocument;</span><br><span class="line">  listenTo(registrationName, doc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在ensureListeningTo里调用listenTo方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">function listenTo(registrationName, mountAt) &#123;</span><br><span class="line">  debugger;</span><br><span class="line">  var isListening = getListeningForDocument(mountAt);</span><br><span class="line">  var dependencies = registrationNameDependencies[registrationName];</span><br><span class="line"></span><br><span class="line">  for (var i = 0; i &lt; dependencies.length; i++) &#123;</span><br><span class="line">    var dependency = dependencies[i];</span><br><span class="line">    if (!(isListening.hasOwnProperty(dependency) &amp;&amp; isListening[dependency])) &#123;</span><br><span class="line">      switch (dependency) &#123;</span><br><span class="line">        case TOP_SCROLL:</span><br><span class="line">          trapCapturedEvent(TOP_SCROLL, mountAt);</span><br><span class="line">          break;</span><br><span class="line">        case TOP_FOCUS:</span><br><span class="line">        case TOP_BLUR:</span><br><span class="line">          trapCapturedEvent(TOP_FOCUS, mountAt);</span><br><span class="line">          trapCapturedEvent(TOP_BLUR, mountAt);</span><br><span class="line">          // We set the flag for a single dependency later in this function,</span><br><span class="line">          // but this ensures we mark both as attached rather than just one.</span><br><span class="line">          isListening[TOP_BLUR] = true;</span><br><span class="line">          isListening[TOP_FOCUS] = true;</span><br><span class="line">          break;</span><br><span class="line">        case TOP_CANCEL:</span><br><span class="line">        case TOP_CLOSE:</span><br><span class="line">          if (isEventSupported(getRawEventName(dependency), true)) &#123;</span><br><span class="line">            trapCapturedEvent(dependency, mountAt);</span><br><span class="line">          &#125;</span><br><span class="line">          break;</span><br><span class="line">        case TOP_INVALID:</span><br><span class="line">        case TOP_SUBMIT:</span><br><span class="line">        case TOP_RESET:</span><br><span class="line">          break;</span><br><span class="line">        default:</span><br><span class="line">          var isMediaEvent = mediaEventTypes.indexOf(dependency) !== -1;</span><br><span class="line">          if (!isMediaEvent) &#123;</span><br><span class="line">            trapBubbledEvent(dependency, mountAt);</span><br><span class="line">          &#125;</span><br><span class="line">          break;</span><br><span class="line">      &#125;</span><br><span class="line">      isListening[dependency] = true;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在listenTo中调trapBubbledEvent。 其实埋点的监听的过程。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">function trapBubbledEvent(topLevelType, element) &#123;</span><br><span class="line">  if (!element) &#123;</span><br><span class="line">    return null;</span><br><span class="line">  &#125;</span><br><span class="line">  var dispatch = isInteractiveTopLevelEventType(topLevelType) ? dispatchInteractiveEvent : dispatchEvent;</span><br><span class="line"></span><br><span class="line">  // 此时的listenner还是原来的</span><br><span class="line">  addEventBubbleListener(element, getRawEventName(topLevelType),</span><br><span class="line">  // Check if interactive and wrap in interactiveUpdates</span><br><span class="line">  dispatch.bind(null, topLevelType));</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function addEventBubbleListener(element, eventType, listener) &#123;</span><br><span class="line">  debugger;</span><br><span class="line">  element.addEventListener(eventType, listener, false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>总结：completeWork-&gt;createInstance(更新属性等等)-&gt;setInitialDOMProperties-&gt;ensureListeningTo<br>-&gt;listenTo-&gt;trapBubbledEvent-&gt;addEventBubbleListener（进行我们熟悉的addEventListener）-&gt; commitAllHostEffects 最后渲染完成</p>
-<h4 id="二-事件合成"><a href="#二-事件合成" class="headerlink" title="二 事件合成"></a>二 事件合成</h4><p>有点重合，逻辑有点重合。其实是前后脚的关系。</p>
-<p>事件合成的过程，首先根据触发事件的target得到inst，然后遍历他的所有父节点,存储在局部遍历path中，记住这个path是有顺序关系的（后面可以解释react事件是如何阻止冒泡的）。得到path后进行遍历，假设遍历的组件同样注册了对应事件的listener，那么就挂载到event的_dispatchListeners和_dispatchInstances中去,这两个属性至关重要，后续的事件派发就是根据这两个属性进行的。 注意只有注册了对应事件的listener，才会挂载到event里面去。比如刚刚我们的ABC都绑定了Click，自然都会push到_dispatchListeners中去。</p>
-<h4 id="三-事件派发"><a href="#三-事件派发" class="headerlink" title="三 事件派发"></a>三 事件派发</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//callback is this func 注册事件的时候是listen的这个方法 </span><br><span class="line">function dispatchInteractiveEvent(topLevelType, nativeEvent) &#123;</span><br><span class="line">  interactiveUpdates(dispatchEvent, topLevelType, nativeEvent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">function runExtractedEventsInBatch(topLevelType, targetInst, nativeEvent, nativeEventTarget) &#123;</span><br><span class="line">  debugger;</span><br><span class="line">  //获得所有绑定的事件 看下面代码</span><br><span class="line">  var events = extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget);</span><br><span class="line">  runEventsInBatch(events, false);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function runEventsInBatch(events, simulated) &#123;</span><br><span class="line">  //(&apos;runEventsInBatch&apos;);</span><br><span class="line">  if (events !== null) &#123;</span><br><span class="line">    eventQueue = accumulateInto(eventQueue, events);</span><br><span class="line">  &#125;</span><br><span class="line">  .....</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget) &#123;</span><br><span class="line">  var events = null;</span><br><span class="line">  for (var i = 0; i &lt; plugins.length; i++) &#123;</span><br><span class="line">    // Not every plugin in the ordering may be loaded at runtime.</span><br><span class="line">    var possiblePlugin = plugins[i];</span><br><span class="line">    if (possiblePlugin) &#123;</span><br><span class="line">      var extractedEvents = possiblePlugin.extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget);</span><br><span class="line">      if (extractedEvents) &#123;</span><br><span class="line">        events = accumulateInto(events, extractedEvents);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  //此时的 event 含有_dispatchListeners 属性。。一个数组，里面有绑定的回调函数</span><br><span class="line">  return events;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在 runEventsInBatch这里面先得到 eventQueue，也就是 target 为合成事件对象的 proxy 对象。然后对数组元素挨个进行 executeDispatchesInOrder，也就是对合成事件对象的 _dispatchListeners 按序执行。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">紧接着~~~~~ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//接下来就是这一段了</span><br><span class="line">// Create a fake event type.</span><br><span class="line">var evtType = &apos;react-&apos; + (name ? name : &apos;invokeguardedcallback&apos;);</span><br><span class="line"></span><br><span class="line">// Attach our event handlers</span><br><span class="line">window.addEventListener(&apos;error&apos;, onError);</span><br><span class="line">//sck 事件创建于触发</span><br><span class="line">console.log(&apos;sck--&apos;, evtType);</span><br><span class="line">//为甚好多次？ </span><br><span class="line">// sck-- react-invokeguardedcallback</span><br><span class="line">debugger</span><br><span class="line">fakeNode.addEventListener(evtType, callCallback, false);</span><br><span class="line"></span><br><span class="line">// Synchronously dispatch our fake event. If the user-provided function</span><br><span class="line">// errors, it will trigger our global error handler.</span><br><span class="line">evt.initEvent(evtType, false, false);</span><br><span class="line">fakeNode.dispatchEvent(evt);</span><br></pre></td></tr></table></figure>
-<p>dispatchInteractiveEvent-&gt;interactiveUpdates-&gt;runExtractedEventsInBatch-&gt;runEventsInBatch-&gt;循环执行所有绑定的事件</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>React事件系统为了兼容各种版本的浏览器而做了大量工作，与原生事件不同的点，只在于React对事件进行统一而不是分散的存储与管理，捕获事件后内部生成合成事件提高浏览器的兼容度，执行回调函数后再进行销毁释放内存，从而大大提高网页的响应性能。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/07/26/React-v16-4-0-事件原理/" data-id="ck9dm4wg4000rdco7f7bk9ick" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-关于js模块化" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/07/14/关于js模块化/" class="article-date">
-  <time datetime="2018-07-14T13:52:22.000Z" itemprop="datePublished">2018-07-14</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/14/关于js模块化/">关于js模块化</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="ABOUT-JS模块"><a href="#ABOUT-JS模块" class="headerlink" title="ABOUT JS模块"></a>ABOUT JS模块</h1><h2 id="1、引言-背景"><a href="#1、引言-背景" class="headerlink" title="1、引言-背景"></a>1、引言-背景</h2><p>模块化这个问题并非一开始就存在，WWW刚刚问世的时候，html，JavaScript，CSS都是极其简单的存在，并不需要模块化。</p>
-<h4 id="1-1-模块化的需求是规模的产物"><a href="#1-1-模块化的需求是规模的产物" class="headerlink" title="1.1 模块化的需求是规模的产物"></a>1.1 模块化的需求是规模的产物</h4><p>当web page进化到web application，浏览器端处理的逻辑越来越复杂，展现的样式和动画越来越多，业务逻辑也越来越复杂，对于工程的要求也就越来越高。于是模块化的需求也就产生了。</p>
-<h4 id="1-2-什么是模块化-？"><a href="#1-2-什么是模块化-？" class="headerlink" title="1.2 什么是模块化 ？"></a>1.2 什么是模块化 ？</h4><p>模块化是一种将系统分离成独立功能部分的方法，可将系统分割成独立的功能部分，严格定义模块接口、模块间具有透明性。</p>
-<h4 id="1-3-为什么要使用模块"><a href="#1-3-为什么要使用模块" class="headerlink" title="1.3 为什么要使用模块 ?"></a>1.3 为什么要使用模块 ?</h4><p>模块化可以使你的代码低耦合，功能模块直接不相互影响。<br>模块化是工程化的需求，是为了更好的管理代码</p>
-<h2 id="2、历程（进化与类举）"><a href="#2、历程（进化与类举）" class="headerlink" title="2、历程（进化与类举）"></a>2、历程（进化与类举）</h2><h4 id="无模块"><a href="#无模块" class="headerlink" title="无模块"></a>无模块</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">if(xx)&#123;</span><br><span class="line">     //.......</span><br><span class="line">&#125;else&#123;</span><br><span class="line">     //xxxxxxxxxxx</span><br><span class="line">&#125;</span><br><span class="line">for(var i=0; i&lt;10; i++)&#123;</span><br><span class="line">     //todo</span><br><span class="line">&#125;</span><br><span class="line">element.onclick = function()&#123;</span><br><span class="line">     //todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>特点：代码简单的堆在一起，只要能从上往下依次执行就可以了。</p>
-</blockquote>
-<h4 id="模块萌芽"><a href="#模块萌芽" class="headerlink" title="模块萌芽"></a>模块萌芽</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function m1()&#123; </span><br><span class="line">　　//... </span><br><span class="line">&#125; </span><br><span class="line">function m2()&#123; </span><br><span class="line">    //... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这时的模块就是实现特定功能的一组方法。把不同的函数（以及记录状态的变量）简单地放在一起，就算是一个模块。 </p>
-</blockquote>
-<blockquote>
-<p>上面的函数m1()和m2()，组成一个模块。使用的时候，直接调用就行了。<br>缺点也很明显：”污染”了全局变量，无法保证不与其他模块发生变量名冲突，而且模块成员之间看不出直接关系。 </p>
-</blockquote>
-<h4 id="对象写法"><a href="#对象写法" class="headerlink" title="对象写法"></a>对象写法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">var module1 = new Object(&#123; </span><br><span class="line">	_count : 0, </span><br><span class="line">　　m1 : function ()&#123; </span><br><span class="line">　　	//... </span><br><span class="line">　　&#125;, </span><br><span class="line">　　m2 : function ()&#123; </span><br><span class="line">　　	//... </span><br><span class="line">　　&#125; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>上面的函数m1()和m2(），都封装在module1对象里。使用的时候，就是调用这个对象的属性。<br>但是，这样的写法会暴露所有模块成员，内部状态可以被外部改写(_count ++ 操作)（当然也包括内部的方法）。</p>
-</blockquote>
-<h4 id="立即执行函数写法"><a href="#立即执行函数写法" class="headerlink" title="立即执行函数写法"></a>立即执行函数写法</h4><p>使用”立即执行函数”，可以达到不暴露私有成员的目的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var module1 = (function()&#123; </span><br><span class="line">　　var _count = 0; </span><br><span class="line">　　var m1 = function()&#123; </span><br><span class="line">　　	//... </span><br><span class="line">　　&#125;; </span><br><span class="line">　　var m2 = function()&#123; </span><br><span class="line">　　	//... </span><br><span class="line">	&#125;; </span><br><span class="line">　　return &#123; </span><br><span class="line">　　	m1 : m1, </span><br><span class="line">　　	m2 : m2 </span><br><span class="line">　　&#125;; </span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>问题：使用上面的写法，外部代码无法读取内部的_count变量。<br>module1就是Javascript模块的基本写法。等下，再对这种写法进行加工。<br>此时的模块化思想已经成型</p>
-</blockquote>
-<h3 id="还有一些其他的写法-如："><a href="#还有一些其他的写法-如：" class="headerlink" title="还有一些其他的写法, 如："></a>还有一些其他的写法, 如：</h3><h4 id="放大模式"><a href="#放大模式" class="headerlink" title="放大模式"></a>放大模式</h4><p>如果一个模块很大，必须分成几个部分，或者一个模块需要继承另一个模块，这时就有必要采用”放大模式”（augmentation）。 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var module1New = (function (mod)&#123; </span><br><span class="line">	mod.m3 = function () &#123; </span><br><span class="line">　　	//... </span><br><span class="line">　　&#125;; </span><br><span class="line">　　return mod; </span><br><span class="line">&#125;)(module1);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>上面的代码为module1模块添加了一个新方法m3()，然后返回新的module1模块。 </p>
-</blockquote>
-<h4 id="宽放大模式"><a href="#宽放大模式" class="headerlink" title="宽放大模式"></a>宽放大模式</h4><blockquote>
-<p>在浏览器环境中，模块的各个部分通常都是从网络上获取的，有时无法知道哪个部分会先加载。如果采用上一节的写法，第一个执行的部分有可能加载一个不存在空对象，这时就要采用”宽放大模式”。 </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var module1 = ( function (mod)&#123; </span><br><span class="line">	//... </span><br><span class="line">　　return mod; </span><br><span class="line">&#125;)(window.module1 || &#123;&#125;);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>与”放大模式”相比，＂宽放大模式＂就是”立即执行函数”的参数可以是空对象。 </p>
-</blockquote>
-<h4 id="输入全局变量"><a href="#输入全局变量" class="headerlink" title="输入全局变量"></a>输入全局变量</h4><p>独立性是模块的重要特点，模块内部最好不与程序的其他部分直接交互。<br>为了在模块内部调用全局变量，必须显式地将其他变量输入模块。 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var module1 = (function ($, Tatami) &#123; </span><br><span class="line">	//... </span><br><span class="line">&#125;)(jQuery, Ttm);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>上面的module1模块需要使用jQuery和Ttm，就把这两个库（其实是两个模块）当作参数输入module1。这样做除了保证模块的独立性，还使得模块之间的依赖关系变得明显。</p>
-</blockquote>
-<h3 id="3、模块化的推进与繁荣"><a href="#3、模块化的推进与繁荣" class="headerlink" title="3、模块化的推进与繁荣"></a>3、模块化的推进与繁荣</h3><p><a href="https://blog.csdn.net/Real_Bird/article/details/54869066" target="_blank" rel="noopener">各种现代模块推演</a></p>
-<p>js模块化编程，已经成为一个迫切的需求。理想情况下，开发者只需要实现核心的业务逻辑，其他都可以加载别人已经写好的模块。</p>
-<h4 id="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"><a href="#各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）" class="headerlink" title="各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）"></a>各种标准出现了（CommonJS、AMD、CMD、UMD、ES6）</h4><p><img src="/imgs/关于js模块化/module_pic.png" alt></p>
-<h4 id="3-1-commonJS-Node"><a href="#3-1-commonJS-Node" class="headerlink" title="3.1 commonJS(Node)"></a>3.1 commonJS(Node)</h4><p><a href="http://javascript.ruanyifeng.com/nodejs/module.html" target="_blank" rel="noopener">阮老师 commonJS module</a></p>
-<p>CommonJS是一个更偏向于服务器端的规范。CommonJS的一个模块就是一个脚本文件。require命令第一次加载该脚本时就会执行整个脚本，然后在内存中生成一个对象(如下)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  id: &apos;...&apos;,</span><br><span class="line">  exports: &#123; ... &#125;,</span><br><span class="line">  loaded: true,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>以后需要用到这个模块时，就会到exports属性上取值。即使再次执行require命令，也不会再次执行该模块，而是到缓存中取值。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//math.js</span><br><span class="line">exports.add = function() &#123;</span><br><span class="line">    var sum = 0, i = 0, args = arguments, l = args.length;</span><br><span class="line">    while (i &lt; l) &#123;</span><br><span class="line">        sum += args[i++];</span><br><span class="line">    &#125;</span><br><span class="line">    return sum;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//increment.js</span><br><span class="line">var add = require(&apos;math&apos;).add;</span><br><span class="line">exports.increment = function(val) &#123;</span><br><span class="line">    return add(val, 1);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>由于CommonJS是同步加载模块，这对于服务器端不是一个问题，因为所有的模块都放在本地硬盘。等待模块时间就是硬盘读取文件时间，很小。但是，对于浏览器而言，它需要从服务器加载模块，涉及到网速，代理等原因，一旦等待时间过长，浏览器处于”假死”状态。</p>
-<p>所以在浏览器端，不适合于CommonJS规范。所以在浏览器端又出现了一个规范——AMD。</p>
-<h4 id="3-2-AMD-requireJs"><a href="#3-2-AMD-requireJs" class="headerlink" title="3.2 AMD(requireJs)"></a>3.2 AMD(requireJs)</h4><p>AMD(Asynchronous Module Definition)异步模块定义。异步强调的是，在加载模块以及模块所依赖的其它模块时，都采用异步加载的方式，避免模块加载阻塞了网页的渲染进度。</p>
-<p>模块定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define([module-name?], [array-of-dependencies?], [module-factory-or-object]);</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>id：模块的名字，如果没有提供该参数，模块的名字应该默认为模块加载器请求的指定脚本的名字；<br>dependencies：模块的依赖，已被模块定义的模块标识的数组字面量。<br>factory：模块的工厂函数，模块初始化要执行的函数或对象。  </p>
-</blockquote>
-<p>AMD也采用require命令加载模块，但是不同于CommonJS，它要求两个参数：</p>
-<p>require([module], callback);</p>
-<blockquote>
-<p>第一个参数[module]，是一个数组，里面的成员是要加载的模块，callback是加载完成后的回调函数。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// math.js</span><br><span class="line">define(function() &#123;</span><br><span class="line">  var add = function(x, y) &#123;</span><br><span class="line">    return x + y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return  &#123;</span><br><span class="line">    add: add</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">// main.js</span><br><span class="line">require([&apos;math&apos;], function(math) &#123;</span><br><span class="line">  //</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>当require()加载math模块的时候，就会先加载它依赖的模块。当有多个依赖时，就将所有的依赖都写在define()函数第一个参数数组中，所以说AMD是依赖前置的。这不同于CMD规范，它是依赖就近的。</p>
-</blockquote>
-<p><a href="https://github.com/creeperyang/amd-loader" target="_blank" rel="noopener">AMD加载的实现</a></p>
-<h4 id="3-3-CMD-seaJS"><a href="#3-3-CMD-seaJS" class="headerlink" title="3.3 CMD(seaJS)"></a>3.3 CMD(seaJS)</h4><p>CMD（即Common Module Definition通用模块定义）</p>
-<p>CMD推崇依赖就近，延迟执行。可以把你的依赖写进代码的任意一行，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define(factory)</span><br></pre></td></tr></table></figure>
-<p>factory为函数时，表示是模块的构造方法。执行该构造方法，可以得到模块向外提供的接口。factory 方法在执行时，默认会传入三个参数：require、exports 和 module.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">define(function(require, exports, module) &#123;</span><br><span class="line">  var a = require(&apos;./a&apos;);</span><br><span class="line">  a.doSomething();</span><br><span class="line">  var b = require(&apos;./b&apos;);</span><br><span class="line">  b.doSomething();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>因为CMD推崇一个文件一个模块，所以经常就用文件名作为模块id<br>CMD推崇依赖就近，所以一般不在define的参数中写依赖，在factory中写。<br>sea.js通过sea.use()来加载模块。 seajs.use(id, callback?)</p>
-</blockquote>
-<h5 id="AMD与CMD-区别联系"><a href="#AMD与CMD-区别联系" class="headerlink" title="AMD与CMD 区别联系"></a>AMD与CMD 区别联系</h5><p>SeaJS要解决的问题和requireJS一样，只不过在模块定义方式和模块加载（可以说运行、解析）时机上有所不同。</p>
-<p>AMD和CMD都是用define和require。</p>
-<p>CMD标准倾向于在使用过程中提出依赖，就是不管代码写到哪突然发现需要依赖另一个模块，那就在当前代码用require引入就可以了，规范会帮你搞定预加载，你随便写就可以了。但是AMD标准让你必须提前在头部依赖参数部分写好。</p>
-<p>虽然都是并行加载js文件，但还是有所区别，AMD是预加载，在并行加载js文件同时，还会解析执行该模块（因为还需要执行，所以在加载某个模块前，这个模块的依赖模块需要先加载完成）；而CMD是懒加载，虽然会一开始就并行加载js文件，但是不会执行，而是在需要的时候才执行。</p>
-<p>AMD优点：加载快速，尤其遇到多个大文件，因为并行解析，所以同一时间可以解析多个文件。</p>
-<p>AMD缺点：并行加载，异步处理，加载顺序不一定，可能会造成一些困扰，甚至为程序埋下大坑。</p>
-<p>CMD优点：因为只有在使用的时候才会解析执行js文件，因此，每个JS文件的执行顺序在代码中是有体现的，是可控的。</p>
-<p>CMD缺点：执行等待时间会叠加。因为每个文件执行时是同步执行（串行执行），因此时间是所有文件解析执行时间之和，尤其在文件较多较大时，这种缺点尤为明显。</p>
-<h4 id="3-4-UMD-Universal-Module-Definition-通用模块定义"><a href="#3-4-UMD-Universal-Module-Definition-通用模块定义" class="headerlink" title="3.4 UMD (Universal Module Definition 通用模块定义)"></a>3.4 UMD (Universal Module Definition 通用模块定义)</h4><p>既然CommonJs和AMD风格一样流行，似乎缺少一个统一的规范。所以产生了这样的需求，希望有支持两种风格的“通用”模式，于是通用模块规范（UMD）诞生了。</p>
-<blockquote>
-<p>UMD希望提供一个前后端跨平台的解决方案(支持AMD与CommonJS模块方式)</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">(function (root, factory) &#123;</span><br><span class="line">    if (typeof define === &apos;function&apos; &amp;&amp; define.amd) &#123;</span><br><span class="line">        // AMD</span><br><span class="line">        define([&apos;jquery&apos;, &apos;underscore&apos;], factory);</span><br><span class="line">    &#125; else if (typeof exports === &apos;object&apos;) &#123;</span><br><span class="line">        // Node, CommonJS之类的</span><br><span class="line">        module.exports = factory(require(&apos;jquery&apos;), require(&apos;underscore&apos;));</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        // 浏览器全局变量(root 即 window)</span><br><span class="line">        root.returnExports = factory(root.jQuery, root._);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;(this, function ($, _) &#123;</span><br><span class="line">    function a()&#123;&#125;; </span><br><span class="line">    function b()&#123;&#125;; </span><br><span class="line">    function c()&#123;&#125;;</span><br><span class="line">    return &#123;</span><br><span class="line">        b: b,</span><br><span class="line">        c: c</span><br><span class="line">    &#125;</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>先判断是否支持Node.js模块格式（exports是否存在），存在则使用Node.js模块格式。<br>再判断是否支持AMD（define是否存在），存在则使用AMD方式加载模块。<br>前两个都不存在，则将模块公开到全局（window或global）。  </p>
-</blockquote>
-<p>更多有关UMD的例子在Github上的<a href="https://github.com/umdjs/umd" target="_blank" rel="noopener">官方repo</a></p>
-<h4 id="3-5-ES6-终极boss"><a href="#3-5-ES6-终极boss" class="headerlink" title="3.5 ES6 终极boss"></a>3.5 ES6 终极boss</h4><p>新的、我们在用的东西、新规范、代表未来、牛逼。</p>
-<blockquote>
-<p>es6 模块新的标准在设计上是兼容已经存在的CommonJS和AMD模块的。</p>
-</blockquote>
-<p>es6通过import、export实现模块的输入输出。import命令用于输入其他模块提供的功能，export命令用于规定模块的对外接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//a.js</span><br><span class="line">export &#123;a, b, c&#125;;</span><br><span class="line"></span><br><span class="line">//b.js</span><br><span class="line">import &#123;a, b, c &#125; from &apos;a.js&apos;;</span><br><span class="line"></span><br><span class="line">//expt.js</span><br><span class="line">export function abc()&#123;&#125;//export 一个命名的function  </span><br><span class="line">export default function()&#123;&#125; //export default function  </span><br><span class="line">export num = 123 //export 一个数值  </span><br><span class="line">export obj = &#123;&#125;  </span><br><span class="line">export &#123; obj as default &#125;;</span><br><span class="line"></span><br><span class="line">//import</span><br><span class="line">import expt from &apos;expt&apos;//default export  </span><br><span class="line">import &#123;default as myModule&#125; from &apos;expt&apos; //rename  </span><br><span class="line">import &#123;abc,num,obj&#125; from &apos;expt&apos;</span><br></pre></td></tr></table></figure>
-<p>你可能要注意的地方：</p>
-<ul>
-<li>所有的import和export只能写在顶级作用域中。你不能在条件判断语句和函数作用域内使用import。</li>
-<li>所有导出的变量名必须是显式的，你不能通过遍历一个数组，动态生成一组导出名进行导出。</li>
-<li>模块对象都是被冻结的，不能通过polyfill为它添加新的特性。</li>
-<li>对于import的错误，无法进行recovery。一个应用可能依赖许多的模块，一旦有一个模块加载失败，这个应用都不会运行。你不能在try/catch中使用import。正是因为es6的模块表现得如此静态，webpack才能在编译的时候检测出代码中的错误。</li>
-<li>你没法为一个模块在加载所有依赖项之前添加钩子，这意味着一个模块没有办法控制其依赖项的加载方式</li>
-</ul>
-<p>只举一个例子  like …</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    import es6 from &apos;./es6.js&apos;;</span><br><span class="line">&#125; catch (error) &#123;</span><br><span class="line">    console.log(error);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="http://es6.ruanyifeng.com/#docs/module" target="_blank" rel="noopener">阮老师关于module</a>  </p>
-<h5 id="再看一把es6与commonjs区别"><a href="#再看一把es6与commonjs区别" class="headerlink" title="再看一把es6与commonjs区别"></a>再看一把es6与commonjs区别</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">es6 &#123;</span><br><span class="line">　　export: &apos;可以输出多个，输出方式为 &#123;&#125;&apos; ，</span><br><span class="line">　　export  default : &apos; 只能输出一个 ，可以与export 同时输出，但是不建议这么做&apos;，</span><br><span class="line">　　解析阶段确定对外输出的接口，解析阶段生成接口，</span><br><span class="line">　　模块不是对象，加载的不是对象，</span><br><span class="line">　　可以单独加载其中的某个接口（方法），</span><br><span class="line">　　静态分析，动态引用，输出的是值的引用，值改变，引用也改变，即原来模块中的值改变则该加载的值也改变，</span><br><span class="line">　　this 指向undefined</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">commonJS &#123;</span><br><span class="line">　　module.exports =  xxx : &apos;只能输出一个，且后面的会覆盖上面的&apos; ，</span><br><span class="line">　　exports.  xxx : &apos; 可以输出多个&apos;，</span><br><span class="line">　　运行阶段确定接口，运行时才会加载模块，</span><br><span class="line">　　模块是对象，加载的是该对象，</span><br><span class="line">　　加载的是整个模块，即将所有的接口全部加载进来，</span><br><span class="line">　　输出是值的拷贝，即原来模块中的值改变不会影响已经加载的该值，</span><br><span class="line">　　this 指向当前模块</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="http://caibaojian.com/es6/module.html" target="_blank" rel="noopener">commonjs与es6区别</a></p>
-<blockquote>
-<p>在结合es6模块和commonJS模块的区别之后，我们知道es6的特点是静态解析，而commonJS模块的特点是动态解析的，因此，借于es6模块的静态解析，tree-shaking的实现才能成为可能。</p>
-</blockquote>
-<h4 id="3-6-目前的我们—-少不了webpack"><a href="#3-6-目前的我们—-少不了webpack" class="headerlink" title="3.6 目前的我们—-少不了webpack"></a>3.6 目前的我们—-少不了webpack</h4><p>虽然不算是模块化规范，但是为我们解决模块问题提供了极大帮助。</p>
-<p><a href>webpack模块化原理 见下文</a></p>
-<h3 id="4、拨开云雾"><a href="#4、拨开云雾" class="headerlink" title="4、拨开云雾"></a>4、拨开云雾</h3><p>模块的本质：模块化相当于闭包开发， 接口导出就相当于将父函数（模块）内的子函数给暴漏到父函数外。</p>
-<h3 id="5、总结必备"><a href="#5、总结必备" class="headerlink" title="5、总结必备"></a>5、总结必备</h3><h4 id="5-1-模块化的优缺点："><a href="#5-1-模块化的优缺点：" class="headerlink" title="5.1 模块化的优缺点："></a>5.1 模块化的优缺点：</h4><h5 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h5><p>(1)可维护性  </p>
-<ul>
-<li>灵活架构，焦点分离  </li>
-<li>方便模块间组合、分解   </li>
-<li>方便单个模块功能调试、升级  </li>
-<li>多人协作互不干扰  </li>
-</ul>
-<p>(2)可测试性  </p>
-<ul>
-<li>可分单元测试  </li>
-</ul>
-<h5 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h5><p>性能损耗  </p>
-<ul>
-<li>系统分层，调用链会很长  </li>
-<li>模块间通信,模块间发送消息会很耗性能  </li>
-</ul>
-<h4 id="5-2-模块化的意义"><a href="#5-2-模块化的意义" class="headerlink" title="5.2 模块化的意义"></a>5.2 模块化的意义</h4><ul>
-<li>组件的复用，降低开发成本和维护成本</li>
-<li>组件单独开发，方便分工合作</li>
-<li>模块化遵循标准，方便自动化依赖管理，代码优化，部署</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/07/14/关于js模块化/" data-id="ck9dm4wgd0015dco73j7ugdvu" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9duf07s001fn1o78cg7r81k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1421,7 +1460,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/02/">二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">十月 2015</a></li></ul>
     </div>
   </div>
 
@@ -1434,6 +1473,14 @@
       <ul>
         
           <li>
+            <a href="/2020/01/24/react性能优化/">react性能优化</a>
+          </li>
+        
+          <li>
+            <a href="/2019/12/10/关于前端性能优化的一些事/">关于前端性能优化的一些事</a>
+          </li>
+        
+          <li>
             <a href="/2019/03/29/webpack原理/">webpack原理</a>
           </li>
         
@@ -1443,14 +1490,6 @@
         
           <li>
             <a href="/2019/03/29/webpackLoader/">webpackLoader</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/29/about-tapable/">about tapable</a>
-          </li>
-        
-          <li>
-            <a href="/2018/11/23/聊聊前端安全/">聊聊前端安全</a>
           </li>
         
       </ul>
