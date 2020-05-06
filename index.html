@@ -91,7 +91,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2020/01/24/react性能优化/" data-id="ck9ksblde00066ao7kpxxedfm" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2020/01/24/react性能优化/" data-id="ck9v2490p00057lo70avzijlv" class="article-share-link">Share</a>
       
       
     </footer>
@@ -434,7 +434,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loader: &apos;babel-loader?cacheDirectory=ture&apos;</span><br></pre></td></tr></table></figure>
 <p>2、Happy启用多线程(webpack4 生产模式，默认开启多个子进程（线程）由之前的一个一个压缩，变为并行压缩)<br>3、DllPlugin将特定的类库提前打包然后引入，极大减少打包类库的构建次数<br>4、css 抽离mini-css-extract-plugin<br>5、html-webpack-plugin压缩html，当然html-webpack-plugin不止与于html的压缩<br>6、合并压缩图片，转换url-loader转换图片<br>7、Scope Hoisting（尽可能的合并打包出来的模块打一个函数中去）<br>8、依赖库分离（optimization.splitChunks）<br>9、按需加载</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@babel/plugin-syntax-dynamic-import</span><br><span class="line">import (/* webpackChunkName: &quot;authModal&quot; */ &apos;common/sth/index&apos;).then(chunk =&gt; &#123;</span><br><span class="line">  let sthModal = chunk.default,</span><br><span class="line">  sthModal();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>10、Tree Shaking（webpack 4 生产环境 默认开启）<br>11、alias别名的方式来映射一个路径，能让 Webpack 更快找到路径<br>12、noParse 当确定一个文件下没有其他依赖，就可以使用该属性让 Webpack 不扫描该文件<br>13、优化模块查找路径<br>14、preload-webpack-plugin 获取代码拆分的路径</p>
+<p>10、Tree Shaking（webpack 4 生产环境 默认开启）<br>11、alias别名的方式来映射一个路径，能让 Webpack 更快找到路径<br>12、noParse 当确定一个文件下没有其他依赖，就可以使用该属性让 Webpack 不扫描该文件<br>13、优化模块查找路径<br>14、preload-webpack-plugin 获取代码拆分的路径<br>15、webpack.IgnorePlugin(/^.\/locale$/, /moment$/) 忽略部分内容</p>
+<ul>
+<li>moment这个库中，如果引用了./locale/目录的内容，就忽略掉，不会打包进去</li>
+</ul>
 <p>preload与prefetch 区别： </p>
 <ul>
 <li>preload 是声明式的 fetch，可以强制浏览器请求资源，同时不阻塞文档 onload 事件。</li>
@@ -499,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ck9ksbleq001n6ao7ejgi6zl9" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ck9v2492k001m7lo7frlf1s0a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -704,7 +707,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9ksbleh001i6ao7f6h22bcp" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ck9v24925001f7lo7cv65j0ct" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -810,7 +813,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9ksble400126ao7cp45abpr" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ck9v2491t00157lo7yqs74k7w" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -908,7 +911,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9ksble400106ao7ohdbp5iw" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ck9v2491r00117lo77ybb59ek" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -970,7 +973,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9ksbldb00046ao7a3un29w1" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ck9v2490k00027lo7f6zkzap1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1165,7 +1168,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9ksble7001a6ao7d6w618sp" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ck9v2491v00197lo74sby9br7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1329,7 +1332,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9ksble0000u6ao7v00r98qd" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ck9v2491i000r7lo76xuzbzp9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1438,7 +1441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9ksbldz000s6ao7p77yusk8" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ck9v2491n000t7lo7bmxqdwnz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1571,7 +1574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9ksblef001d6ao71076bxsw" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ck9v24923001c7lo7xne9hn4p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
