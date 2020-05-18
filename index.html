@@ -210,9 +210,13 @@
 <ul>
 <li>useMemo和useCallback都会在组件第一次渲染的时候执行，之后会在其依赖的变量发生改变时再次执行；并且这两个hooks都返回缓存的值，useMemo返回缓存的变量，useCallback返回缓存的函数。</li>
 </ul>
-<h4 id="到底是否一定要用useMemo-useCallback进行优化"><a href="#到底是否一定要用useMemo-useCallback进行优化" class="headerlink" title="到底是否一定要用useMemo/useCallback进行优化"></a>到底是否一定要用useMemo/useCallback进行优化</h4><p>useMemo/useCallback的使用非常简单，不过我们需要思考一个问题，使用他们一定能够达到优化的目的吗？<br>React的学习经常容易陷入过度优化的误区。一些人在得知shouldComponentUpdate能够优化性能，恨不得每个组件都要用一下，不用就感觉自己的组件有问题。useMemo/useCallback也是一样。<br>明白了记忆函数的原理，我们应该知道，记忆函数并非完全没有代价，我们需要创建闭包，占用更多的内存，用以解决计算上的冗余。<br>useMemo/useCallback也是一样，这是一种成本上的交换。那么我们在使用时，就必须要思考，这样的交换，到底值不值？<br>如果不使用useCallback，我们就必须在函数组件内部创建超多的函数，这种情况是不是就一定有性能问题呢？</p>
-<p>不是的！<br>我们知道，一个函数执行完毕之后，就会从函数调用栈中被弹出，里面的内存也会被回收。因此，即使在函数内部创建了多个函数，执行完毕之后，这些创建的函数也都会被释放掉。函数式组件的性能是非常快的。相比class，函数更轻量，也避免了使用高阶组件、renderProps等会造成额外层级的技术。使用合理的情况下，性能几乎不会有什么问题。<br>而当我们使用useMemo/useCallback时，由于新增了对于闭包的使用，新增了对于依赖项的比较逻辑，因此，盲目使用它们，甚至可能会让你的组件变得更慢。<br>大多数情况下，这样的交换，并不划算，或者赚得不多。你的组件可能并不需要使用useMemo/useCallback来优化。</p>
-<h3 id="合理运用-mixin、-hoc、render-props、hooks"><a href="#合理运用-mixin、-hoc、render-props、hooks" class="headerlink" title="合理运用 mixin、 hoc、render props、hooks"></a>合理运用 mixin、 hoc、render props、hooks</h3><p>之间的区别</p>
+<h4 id="是否一定要用useMemo-useCallback进行优化"><a href="#是否一定要用useMemo-useCallback进行优化" class="headerlink" title="是否一定要用useMemo/useCallback进行优化"></a>是否一定要用useMemo/useCallback进行优化</h4><p>useMemo/useCallback的使用非常简单，不过我们需要思考一个问题，使用他们一定能够达到优化的目的吗？</p>
+<p>React的学习经常容易陷入过度优化的误区。一些人在得知shouldComponentUpdate能够优化性能，恨不得每个组件都要用一下，不用就感觉自己的组件有问题。useMemo/useCallback也是一样。</p>
+<p>我们知道记忆函数的原理，应该知道，记忆函数并非完全没有代价，我们需要创建闭包，占用更多的内存，用以解决计算上的冗余。<br>useMemo/useCallback也是一样，这是一种成本上的交换。那么我们在使用时，就必须要思考，这样的交换，到底值不值。</p>
+<p>如果不使用useCallback，我们就必须在函数组件内部创建超多的函数，这种情况是不是就一定有性能问题呢？</p>
+<p>答案是否定的</p>
+<p>我们知道，一个函数执行完毕之后，就会从函数调用栈中被弹出，里面的内存也会被回收。因此，即使在函数内部创建了多个函数，执行完毕之后，这些创建的函数也都会被释放掉。函数式组件的性能是非常快的。相比class，函数更轻量，也避免了使用高阶组件、renderProps等会造成额外层级的技术。使用合理的情况下，性能几乎不会有什么问题。<br>而当我们使用useMemo/useCallback时，由于新增了对于闭包的使用，新增了对于依赖项的比较逻辑，因此，盲目使用它们，甚至可能会让你的组件变得更慢。<br>大多数情况下，这样的交换，并不划算，或者赚得不多。你的组件可能并不需要使用useMemo/useCallback来优化。</p>
+<h3 id="mixin、hoc、render-props、hooks-？"><a href="#mixin、hoc、render-props、hooks-？" class="headerlink" title="mixin、hoc、render props、hooks ？"></a>mixin、hoc、render props、hooks ？</h3><p>区别与联系，合理运用</p>
 <h3 id="数据流管理"><a href="#数据流管理" class="headerlink" title="数据流管理"></a>数据流管理</h3><p>“单向数据绑定”是 React 推崇的一种应用架构的方式。当应用足够复杂时才能体会到它的好处，虽然在一般应用场景下你可能不会意识到它的存在</p>
 <ul>
 <li>单向数据流中的‘单向’– 数据从父组件到子组件这个流向叫单向。</li>
@@ -223,8 +227,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import React from &apos;react&apos;</span><br><span class="line">import PropTypes from &apos;prop-types&apos;</span><br><span class="line"></span><br><span class="line">class MiddleComponent extends React.Component &#123;</span><br><span class="line">  render () &#123;</span><br><span class="line">    return &lt;ChildComponent /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class ParentComponent extends React.Component &#123;</span><br><span class="line">  // 声明Context对象属性</span><br><span class="line">  static childContextTypes = &#123;</span><br><span class="line">    propA: PropTypes.string,</span><br><span class="line">    methodA: PropTypes.func</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  // 返回Context对象，方法名是约定好的</span><br><span class="line">  getChildContext () &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      propA: &apos;propA&apos;,</span><br><span class="line">      methodA: () =&gt; &apos;methodA&apos;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  render () &#123;</span><br><span class="line">    return &lt;MiddleComponent /&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>而对于Context的消费者，通过如下方式访问父组件提供的Context。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import React from &apos;react&apos;</span><br><span class="line">import PropTypes from &apos;prop-types&apos;</span><br><span class="line"></span><br><span class="line">class ChildComponent extends React.Component &#123;</span><br><span class="line">  // 声明需要使用的Context属性</span><br><span class="line">  static contextTypes = &#123;</span><br><span class="line">    propA: PropTypes.string</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  render () &#123;</span><br><span class="line">    const &#123;</span><br><span class="line">      propA,</span><br><span class="line">      methodA</span><br><span class="line">    &#125; = this.context</span><br><span class="line">    </span><br><span class="line">    console.log(`context.propA = $&#123;propA&#125;`)  // context.propA = propA</span><br><span class="line">    console.log(`context.methodA = $&#123;methodA&#125;`)  // context.methodA = undefined</span><br><span class="line">    </span><br><span class="line">    return ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>新的api</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">import React from &apos;react&apos;</span><br><span class="line">//定义context</span><br><span class="line">const RootContext = React.createContext(&#123;</span><br><span class="line">  showEyeCareDialog: false,</span><br><span class="line">  eyeCareBtn: &apos;unchecked&apos;,</span><br><span class="line">  clickEyeCareFunc: () =&gt; &#123;&#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// context 对象接受一个名为 displayName 的 property，类型为字符串。React DevTools 使用该字符串来确定 context 要显示的内容。</span><br><span class="line">RootContext.displayName = &apos;RootContext&apos;;</span><br><span class="line"></span><br><span class="line">export default RootContext</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 父组件render， 提供context</span><br><span class="line">render() &#123;</span><br><span class="line">  let &#123;showEyeCareDialog&#125; = this.state</span><br><span class="line">  return &lt;div class=&quot;outer_container&quot;&gt;</span><br><span class="line">    &lt;RootContext.Provider value=&#123;</span><br><span class="line">      &#123;</span><br><span class="line">        ...this.state,</span><br><span class="line">        clickEyeCareFunc: this.clickEyeCareFunc</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;&gt;</span><br><span class="line">      &#123;this.props.children&#125;</span><br><span class="line">      &lt;EyeCareDialog</span><br><span class="line">        visible=&#123;showEyeCareDialog&#125;</span><br><span class="line">        close=&#123;this.closeEyeCardDilog&#125;/&gt;</span><br><span class="line">    &lt;/RootContext.Provider&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//子组件，获取context数据</span><br><span class="line">return &lt;RootContext.Consumer&gt;</span><br><span class="line">  &#123;(&#123;clickEyeCareFunc, eyeCareBtn&#125;) =&gt; (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;div class=&quot;set_container&quot;&gt;</span><br><span class="line">      xxxx</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  )&#125;</span><br><span class="line">&lt;/RootContext.Consumer&gt;</span><br></pre></td></tr></table></figure>
+<p>新的context：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">import React from &apos;react&apos;</span><br><span class="line">//定义context</span><br><span class="line">const RootContext = React.createContext(&#123;</span><br><span class="line">  showEyeCareDialog: false,</span><br><span class="line">  eyeCareBtn: &apos;unchecked&apos;,</span><br><span class="line">  clickEyeCareFunc: () =&gt; &#123;&#125;,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// context 对象接受一个名为 displayName 的 property，类型为字符串。React DevTools 使用该字符串来确定 context 要显示的内容。</span><br><span class="line">RootContext.displayName = &apos;RootContext&apos;;</span><br><span class="line"></span><br><span class="line">export default RootContext</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 父组件render， 提供context</span><br><span class="line">render() &#123;</span><br><span class="line">  let &#123;showEyeCareDialog&#125; = this.state</span><br><span class="line">  return &lt;div class=&quot;outer_container&quot;&gt;</span><br><span class="line">    &lt;RootContext.Provider value=&#123;</span><br><span class="line">      &#123;</span><br><span class="line">        ...this.state,</span><br><span class="line">        clickEyeCareFunc: this.clickEyeCareFunc</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;&gt;</span><br><span class="line">      &#123;this.props.children&#125;</span><br><span class="line">      &lt;EyeCareDialog</span><br><span class="line">        visible=&#123;showEyeCareDialog&#125;</span><br><span class="line">        close=&#123;this.closeEyeCardDilog&#125;/&gt;</span><br><span class="line">    &lt;/RootContext.Provider&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//子组件，获取context数据</span><br><span class="line">return &lt;RootContext.Consumer&gt;</span><br><span class="line">  &#123;(&#123;clickEyeCareFunc, eyeCareBtn&#125;) =&gt; (</span><br><span class="line">    &lt;&gt;</span><br><span class="line">      &lt;div class=&quot;set_container&quot;&gt;</span><br><span class="line">      xxxx</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    &lt;/&gt;</span><br><span class="line">  )&#125;</span><br><span class="line">&lt;/RootContext.Consumer&gt;</span><br></pre></td></tr></table></figure>
 <p>useContext hooks 官方示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">const themes = &#123;</span><br><span class="line">  light: &#123;</span><br><span class="line">    foreground: &quot;#000000&quot;,</span><br><span class="line">    background: &quot;#eeeeee&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  dark: &#123;</span><br><span class="line">    foreground: &quot;#ffffff&quot;,</span><br><span class="line">    background: &quot;#222222&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const ThemeContext = React.createContext(themes.light);</span><br><span class="line"></span><br><span class="line">function App() &#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;ThemeContext.Provider value=&#123;themes.dark&#125;&gt;</span><br><span class="line">      &lt;Toolbar /&gt;</span><br><span class="line">    &lt;/ThemeContext.Provider&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Toolbar(props) &#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;ThemedButton /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function ThemedButton() &#123;</span><br><span class="line">  const theme = useContext(ThemeContext);</span><br><span class="line">  return (</span><br><span class="line">    &lt;button style=&#123;&#123; background: theme.background, color: theme.foreground &#125;&#125;&gt;</span><br><span class="line">      I am styled by theme context!</span><br><span class="line">    &lt;/button&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>当然，必不可少的还有redux，关于redux的内容就太多了</p>
 <p>比如：<br>redux尽量扁平化store<br>本身的增强combineReducer？compose？<br>一些常用中间件？ reselect避免冗余计算、redux-actions<br>处理异步？ redux-saga、redux-promise、redux-thunk、redux-observable<br>…</p>
@@ -294,7 +298,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="cka7xvr4f000c0oo7sychek4v" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="ckacc6aql001lkzo7sjzzq4zl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -713,7 +717,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="cka7xvr5n001n0oo7wznktqao" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ckacc6aqr001nkzo7p1t3kkft" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -918,7 +922,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="cka7xvr5d001g0oo7jxmhadid" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ckacc6aqe001fkzo7iqx77y8e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1024,7 +1028,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="cka7xvr5100140oo7geld69zl" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ckacc6aq30016kzo755j6t7sq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1122,7 +1126,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="cka7xvr4z00100oo7ke9legcg" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ckacc6aq30014kzo7lmo2cnjy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1184,7 +1188,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="cka7xvr4400020oo74zrgp5ej" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ckacc6aov0001kzo75uewv85r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1379,7 +1383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="cka7xvr54001a0oo73djdiv9v" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ckacc6aq7001ckzo76qst28f9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1543,7 +1547,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="cka7xvr4v000r0oo7ubq2m7hv" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ckacc6apf000akzo7o121k19u" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1652,7 +1656,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="cka7xvr4w000u0oo7jydbvmld" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ckacc6apg000ckzo77yl3nvjd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1785,7 +1789,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="cka7xvr5b001d0oo7vk1i8hoh" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ckacc6aq10011kzo7vldo7d0x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
