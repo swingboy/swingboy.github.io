@@ -17,7 +17,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://swingboy.github.io/imgs/关于前端性能优化的一些事/huancun.jpeg">
 <meta property="og:image" content="http://swingboy.github.io/imgs/关于前端性能优化的一些事/image.png">
-<meta property="og:updated_time" content="2020-05-12T07:05:38.293Z">
+<meta property="og:updated_time" content="2020-05-14T08:47:09.259Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于前端性能优化的一些事">
 <meta name="twitter:description" content="前端性能优化零碎知识点的一些东西，可能相对比较不太成”体统“简单理下，零碎的但必要的知识点。从“输入 URL 到页面加载完成，发生了什么”的角度简单梳理一遍  DNS 解析 TCP 连接 HTTP 请求发送 服务端处理请求，响应返回 浏览器拿到响应数据，解析响应内容，把解析的结果展示给用户  稍微详细点儿：  回车url到cpu中断，响应键盘操作 浏览器解析url到开启网络请求线程 DNS解析域名">
@@ -237,6 +237,9 @@
 </ol>
 </li>
 </ul>
+<ul>
+<li>鉴于js引擎会在编译阶段进行数项的性能优化。其中有些优化依赖于能够根据代码的词法进行静态分析，并预先确定所有变量和函数的定义位置，才能在执行过程中快速找到标识符。但如果引擎在代码中发现了 eval(..) 或 with，最坏的情况下不会做出优化。代码执行会更慢。尽量避免使用。</li>
+</ul>
 <h4 id="JS的解释阶段"><a href="#JS的解释阶段" class="headerlink" title="JS的解释阶段"></a>JS的解释阶段</h4><p>JS是解释型语言，所以它无需提前编译，而是由解释器实时运行<br>为了提高运行速度，现代浏览器一般采用即时编译（JIT-Just In Time compiler）  </p>
 <p>即字节码只在运行时编译，用到哪一行就编译哪一行，并且把编译结果缓存（inline cache）这样整个程序的运行速度能得到显著提升。</p>
 <p>而且，不同浏览器策略可能还不同，有的浏览器就省略了字节码的翻译步骤，直接转为机器码（如chrome的v8）<br>总结起来可以认为是： 核心的JIT编译器将源码编译成机器码运行</p>
@@ -309,6 +312,9 @@
 <li>Chrome源码调试 -&gt; More Tools -&gt; Rendering -&gt; Layer borders中看到，黄色的就是复合图层信息</li>
 </ul>
 <h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p>遇到图片等资源时，直接就是异步下载，不会阻塞解析，下载完毕后直接用图片替换原有src的地方</p>
+<ul>
+<li>一般来说：图片提前指定宽高或者脱离文档流，能有效减少因图片加载导致的页面回流</li>
+</ul>
 <p>JPEG<br>特点：有损压缩、体积小、加载快、不支持透明<br>适用场景：JPG 适用于呈现色彩丰富的图片，在我们日常开发中，JPG 图片经常作为大的背景图、轮播图或 Banner 图出现。<br>缺陷：处理矢量图形和 Logo 等线条感较强、颜色对比强烈的图像时，人为压缩导致的图片模糊会相当明显,而且不支持透明</p>
 <p>PNG-8 与 PNG-24<br>特点：无损压缩、质量高、体积大、支持透明<br>适用场景：呈现小的 Logo、颜色简单且对比强烈的图片或背景等。<br>缺陷：大</p>
 <p>SVG<br>特点：文本文件、体积小、不失真、兼容性好。</p>
@@ -403,7 +409,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@babel/plugin-syntax-dynamic-import</span><br><span class="line">import (/* webpackChunkName: &quot;authModal&quot; */ &apos;common/sth/index&apos;).then(chunk =&gt; &#123;</span><br><span class="line">  let sthModal = chunk.default,</span><br><span class="line">  sthModal();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>10、Tree Shaking（webpack 4 生产环境 默认开启）<br>11、alias别名的方式来映射一个路径，能让 Webpack 更快找到路径<br>12、noParse 当确定一个文件下没有其他依赖，就可以使用该属性让 Webpack 不扫描该文件<br>13、优化模块查找路径<br>14、preload-webpack-plugin 获取代码拆分的路径<br>15、webpack.IgnorePlugin(/^.\/locale$/, /moment$/) 忽略部分内容</p>
 <ul>
-<li>moment这个库中，如果引用了./locale/目录的内容，就忽略掉，不会打包进去<br>16、ModuleConcatenationPlugin进行scope hoisting（文件体积比之前更小，运行代码时创建的函数作用域也比之前少了，开销也随之变小。）</li>
+<li>moment这个库中，如果引用了./locale/目录的内容，就忽略掉，不会打包进去<br>16、ModuleConcatenationPlugin进行scope hoisting（文件体积比之前更小，运行代码时创建的函数作用域也比之前少了，开销也随之变小。）<br>17、cache-loader来做loader的缓存，加快编译的速度（增量式的）</li>
 </ul>
 <p>preload与prefetch 区别： </p>
 <ul>
@@ -469,7 +475,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="cka3kmldo001m7zo7ilsd15ro" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="cka7xvr5n001n0oo7wznktqao" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -480,11 +486,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2020/01/24/react性能优化/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/01/24/简单梳理react优化相关/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          react性能优化
+          简单梳理react优化相关
         
       </div>
     </a>
@@ -543,7 +549,7 @@
       <ul>
         
           <li>
-            <a href="/2020/01/24/react性能优化/">react性能优化</a>
+            <a href="/2020/01/24/简单梳理react优化相关/">简单梳理react优化相关</a>
           </li>
         
           <li>
