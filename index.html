@@ -308,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="ckbagc4xp001n9go7kpp9cpxl" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="ckbagkfwq001mhfo7dmrbtnie" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -701,6 +701,22 @@
 <h2 id="性能检测与分析"><a href="#性能检测与分析" class="headerlink" title="性能检测与分析"></a>性能检测与分析</h2><p>YSlow、PageSpeed、lightHouse（可以通过npm安装、安装chrome插件，chrome的Audits）、performance</p>
 <p>performance<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">if (window.performance &amp;&amp; typeof window.performance.getEntriesByType === &apos;function&apos;) &#123;</span><br><span class="line">  this.resources = window.performance.getEntriesByType(&apos;resource&apos;);</span><br><span class="line">  this.marks = window.performance.getEntriesByType(&apos;mark&apos;);</span><br><span class="line">  this.measures = window.performance.getEntriesByType(&apos;measure&apos;);</span><br><span class="line">  this.timing = window.performance.getEntriesByType(&apos;navigation&apos;)[0];</span><br><span class="line">  this.paint = window.performance.getEntriesByType(&apos;paint&apos;);</span><br><span class="line">&#125; else if (window.performance &amp;&amp; typeof window.performance.webkitGetEntriesByType === &apos;function&apos;) &#123;</span><br><span class="line">  this.resources = window.performance.webkitGetEntriesByType(&apos;resource&apos;);</span><br><span class="line">  this.marks = window.performance.webkitGetEntriesByType(&apos;mark&apos;);</span><br><span class="line">  this.measures = window.performance.webkitGetEntriesByType(&apos;measure&apos;);</span><br><span class="line">  this.timing = window.performance.webkitGetEntriesByType(&apos;navigation&apos;)[0];</span><br><span class="line">  this.paint = window.performance.webkitGetEntriesByType(&apos;paint&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">this.timing = this.timing || (window.performance &amp;&amp; window.performance.timing);</span><br><span class="line"></span><br><span class="line">let rst = &#123;</span><br><span class="line">  // 关键性能指标</span><br><span class="line">  fb: this.timing.responseStart - this.timing.domainLookupStart, // first byte</span><br><span class="line">  fpt: this.timing.responseEnd - this.timing.fetchStart,         // first paint time 白屏</span><br><span class="line">  tti: this.timing.domInteractive - this.timing.fetchStart,      // 首次可交互</span><br><span class="line">  ready: this.timing.domContentLoadedEventEnd - this.timing.fetchStart,</span><br><span class="line">  load: this.timing.loadEventStart - this.timing.fetchStart,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// 传输资源大小，用于判断文件是大小是否合适、是否开启了压缩(如 gzip)</span><br><span class="line">if (this.timing.transferSize !== undefined) &#123;</span><br><span class="line">  rst.transferSize = this.timing.transferSize;       // 文档 + 头部信息大小</span><br><span class="line">  rst.encodedBodySize = this.timing.encodedBodySize; // 压缩文档大小</span><br><span class="line">  rst.decodedBodySize = this.timing.decodedBodySize; // 解压文档大小</span><br><span class="line">&#125;</span><br><span class="line">const [firstPaint, firstContentfulPaint] = this.paint;</span><br><span class="line">if (firstPaint) &#123;</span><br><span class="line">  rst.fp = firstPaint.startTime;            // 准确的白屏时间</span><br><span class="line">  rst.fcp = firstContentfulPaint.startTime; // 准确的灰屏时间</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(rst)</span><br></pre></td></tr></table></figure></p>
 <p>TODO性能监控体系搭建</p>
+<p>关键指标</p>
+<ul>
+<li>客观度量指标<ul>
+<li>文档加载（Time to fistbyte、DomContentLoaded、Load）</li>
+<li>内容呈现（Fist paint、Fist Contentful Paint、Fist Meaningful paint、Largest Contentful Paint、Speed Index、First Screen Paint）</li>
+<li>交互响应（First Cpu idle、Time to Interactive、First Input delay、Frames per Second）</li>
+</ul>
+</li>
+<li>用户体验核心指标<ul>
+<li>白屏时间</li>
+<li>首屏时间</li>
+<li>可交互时间</li>
+<li>可流畅交互时间</li>
+</ul>
+</li>
+</ul>
 <p><strong><em>运行时性能瓶颈分析</em></strong></p>
 <h2 id="雅虎军规35条"><a href="#雅虎军规35条" class="headerlink" title="雅虎军规35条"></a>雅虎军规35条</h2><h3 id="内容部分"><a href="#内容部分" class="headerlink" title="内容部分"></a>内容部分</h3><p>1.尽量减少HTTP请求数<br>2.减少DNS查找<br>3.避免重定向<br>4.让Ajax可缓存<br>5.延迟加载组件<br>6.预加载组件<br>7.减少DOM元素的数量<br>8.跨域分离组件<br>9.尽量少用iframe<br>10.杜绝404</p>
 <h3 id="css部分"><a href="#css部分" class="headerlink" title="css部分"></a>css部分</h3><p>11.避免使用CSS表达式<br>12.选择舍弃@import<br>13.避免使用滤镜<br>14.把样式表放在顶部 </p>
@@ -728,7 +744,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ckbagc4xu001p9go7pscb8y8n" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ckbagkfwv001ohfo7n9i5wj2t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -933,7 +949,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ckbagc4xh001g9go7um3ei09l" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ckbagkfwj001fhfo7s3gicsp4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1039,7 +1055,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ckbagc4x300149go7gp6znjkb" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ckbagkfw60013hfo7hd32jp4q" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1137,7 +1153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ckbagc4x0000y9go70pvjoxw1" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ckbagkfw50011hfo7sx9qn0al" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1199,7 +1215,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ckbagc4w000029go7mm938472" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ckbagkfvb0002hfo7hewtghoq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1394,7 +1410,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ckbagc4x6001a9go7713lssyb" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ckbagkfw80019hfo7n3upc35e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1558,7 +1574,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ckbagc4wv000r9go76036saoh" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ckbagkfvw000qhfo7ncndgnye" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1674,7 +1690,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ckbagc4wy000u9go7xd7d8pej" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ckbagkfvz000rhfo7z7t7acbk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1807,7 +1823,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ckbagc4xf001d9go74jthv6xv" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ckbagkfwg001chfo7sgs1v7vb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
