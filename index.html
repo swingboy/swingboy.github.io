@@ -308,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="ckbagkfwq001mhfo7dmrbtnie" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2020/01/24/简单梳理react优化相关/" data-id="ckbha0h51001lhco79k51rypy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -607,6 +607,7 @@
 </ul>
 <p><strong><em> 其实，使用setInterval或setTimeout来实现主循环，根本错误就在于它们抽象等级不符合要求。我们想让浏览器执行的是一套可以控制各种细节的api，实现如“最优帧速率”、“选择绘制下一帧的最佳时机”等功能。但是如果使用它们的话，这些具体的细节就必须由开发者自己来完成。 </em></strong></p>
 <p>requestIdleCallback<br>当关注用户体验，不希望因为一些不重要的任务（如统计上报）导致用户感觉到卡顿的话，就应该考虑使用requestIdleCallback。因为requestIdleCallback回调的执行的前提条件是当前浏览器处于空闲状态。</p>
+<p>一些低优先级的任务可使用 requestIdleCallback 等浏览器不忙的时候来执行，同时因为时间有限，它所执行的任务应该尽量是能够量化，细分的微任务（micro task）。<br>因为它发生在一帧的最后，此时页面布局已经完成，所以不建议在 requestIdleCallback 里再操作 DOM，这样会导致页面再次重绘。DOM 操作建议在 rAF 中进行。同时，操作 DOM 所需要的耗时是不确定的，因为会导致重新计算布局和视图的绘制，所以这类操作不具备可预测性。<br>Promise 也不建议在这里面进行，因为 Promise 的回调属性 Event loop 中优先级较高的一种微任务，会在 requestIdleCallback 结束时立即执行，不管此时是否还有富余的时间，这样有很大可能会让一帧超过 16 ms。</p>
 <p>requestIdleCallback和requestAnimationFrame有什么区别？<br>requestAnimationFrame的回调会在每一帧确定执行，属于高优先级任务，而requestIdleCallback的回调则不一定，属于低优先级任务。<br>我们所看到的网页，都是浏览器一帧一帧绘制出来的，通常认为FPS为60的时候是比较流畅的，而FPS为个位数的时候就属于用户可以感知到的卡顿了</p>
 <p>CSS动画：<br>animation与transition</p>
 <p>区别：<br>1.动画状态的区别：<br>animation动画可以通过@keyframes属性对动画进行更为精细的控制，设置多个状态。<br>但是transition属性则只有两个状态，起始状态与结束状态。<br>2.子属性的数量不同：<br>两个属性都是复合属性，包含有若干个子属性，但是数目不相同。<br>当然子属性数量不同会对效果有影响，很容易区分<br>3.触发时机不同：<br>两个属性的触发时机有很大的不同，animation好比是一个自执行函数，只要定义好，立马生效触发动画。<br>transition则像是一个事件处理函数（事件监听器），只有它监听的属性值发生改变，动画效果才会生效。</p>
@@ -700,6 +701,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">// fn是我们需要包装的事件回调, delay是时间间隔的阈值</span><br><span class="line">function throttle(fn, delay) &#123;</span><br><span class="line">  // last为上一次触发回调的时间, timer是定时器</span><br><span class="line">  let last = 0, timer = null</span><br><span class="line">  // 将throttle处理结果当作函数返回</span><br><span class="line">  </span><br><span class="line">  return function () &#123; </span><br><span class="line">    // 保留调用时的this上下文</span><br><span class="line">    let context = this</span><br><span class="line">    // 保留调用时传入的参数</span><br><span class="line">    let args = arguments</span><br><span class="line">    // 记录本次触发回调的时间</span><br><span class="line">    let now = +new Date()</span><br><span class="line">    </span><br><span class="line">    // 判断上次触发的时间和本次触发的时间差是否小于时间间隔的阈值</span><br><span class="line">    if (now - last &lt; delay) &#123;</span><br><span class="line">    // 如果时间间隔小于我们设定的时间间隔阈值，则为本次触发操作设立一个新的定时器</span><br><span class="line">       clearTimeout(timer)</span><br><span class="line">       timer = setTimeout(function () &#123;</span><br><span class="line">          last = now</span><br><span class="line">          fn.apply(context, args)</span><br><span class="line">        &#125;, delay)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        // 如果时间间隔超出了我们设定的时间间隔阈值，那就不等了，无论如何要反馈给用户一次响应</span><br><span class="line">        last = now</span><br><span class="line">        fn.apply(context, args)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 用新的throttle包装scroll的回调</span><br><span class="line">const better_scroll = throttle(() =&gt; console.log(&apos;触发了滚动事件&apos;), 1000)</span><br><span class="line"></span><br><span class="line">document.addEventListener(&apos;scroll&apos;, better_scroll)</span><br></pre></td></tr></table></figure>
 <h2 id="性能检测与分析"><a href="#性能检测与分析" class="headerlink" title="性能检测与分析"></a>性能检测与分析</h2><p>YSlow、PageSpeed、lightHouse（可以通过npm安装、安装chrome插件，chrome的Audits）、performance</p>
 <p>performance<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">if (window.performance &amp;&amp; typeof window.performance.getEntriesByType === &apos;function&apos;) &#123;</span><br><span class="line">  this.resources = window.performance.getEntriesByType(&apos;resource&apos;);</span><br><span class="line">  this.marks = window.performance.getEntriesByType(&apos;mark&apos;);</span><br><span class="line">  this.measures = window.performance.getEntriesByType(&apos;measure&apos;);</span><br><span class="line">  this.timing = window.performance.getEntriesByType(&apos;navigation&apos;)[0];</span><br><span class="line">  this.paint = window.performance.getEntriesByType(&apos;paint&apos;);</span><br><span class="line">&#125; else if (window.performance &amp;&amp; typeof window.performance.webkitGetEntriesByType === &apos;function&apos;) &#123;</span><br><span class="line">  this.resources = window.performance.webkitGetEntriesByType(&apos;resource&apos;);</span><br><span class="line">  this.marks = window.performance.webkitGetEntriesByType(&apos;mark&apos;);</span><br><span class="line">  this.measures = window.performance.webkitGetEntriesByType(&apos;measure&apos;);</span><br><span class="line">  this.timing = window.performance.webkitGetEntriesByType(&apos;navigation&apos;)[0];</span><br><span class="line">  this.paint = window.performance.webkitGetEntriesByType(&apos;paint&apos;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">this.timing = this.timing || (window.performance &amp;&amp; window.performance.timing);</span><br><span class="line"></span><br><span class="line">let rst = &#123;</span><br><span class="line">  // 关键性能指标</span><br><span class="line">  fb: this.timing.responseStart - this.timing.domainLookupStart, // first byte</span><br><span class="line">  fpt: this.timing.responseEnd - this.timing.fetchStart,         // first paint time 白屏</span><br><span class="line">  tti: this.timing.domInteractive - this.timing.fetchStart,      // 首次可交互</span><br><span class="line">  ready: this.timing.domContentLoadedEventEnd - this.timing.fetchStart,</span><br><span class="line">  load: this.timing.loadEventStart - this.timing.fetchStart,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// 传输资源大小，用于判断文件是大小是否合适、是否开启了压缩(如 gzip)</span><br><span class="line">if (this.timing.transferSize !== undefined) &#123;</span><br><span class="line">  rst.transferSize = this.timing.transferSize;       // 文档 + 头部信息大小</span><br><span class="line">  rst.encodedBodySize = this.timing.encodedBodySize; // 压缩文档大小</span><br><span class="line">  rst.decodedBodySize = this.timing.decodedBodySize; // 解压文档大小</span><br><span class="line">&#125;</span><br><span class="line">const [firstPaint, firstContentfulPaint] = this.paint;</span><br><span class="line">if (firstPaint) &#123;</span><br><span class="line">  rst.fp = firstPaint.startTime;            // 准确的白屏时间</span><br><span class="line">  rst.fcp = firstContentfulPaint.startTime; // 准确的灰屏时间</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(rst)</span><br></pre></td></tr></table></figure></p>
+<p>web-vitals ?</p>
 <p>TODO性能监控体系搭建</p>
 <p>关键指标</p>
 <ul>
@@ -744,7 +746,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ckbagkfwv001ohfo7n9i5wj2t" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/12/10/关于前端性能优化的一些事/" data-id="ckbha0h55001nhco77dobx2r5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -949,7 +951,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ckbagkfwj001fhfo7s3gicsp4" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpack原理/" data-id="ckbha0h4s001ehco7izfzvi19" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1055,7 +1057,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ckbagkfw60013hfo7hd32jp4q" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackPlugin/" data-id="ckbha0h4h0012hco7504gns8t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1153,7 +1155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ckbagkfw50011hfo7sx9qn0al" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/webpackLoader/" data-id="ckbha0h4g0010hco7d9fitd8d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1215,7 +1217,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ckbagkfvb0002hfo7hewtghoq" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2019/03/29/about-tapable/" data-id="ckbha0h390000hco7bpgyb4lq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1410,7 +1412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ckbagkfw80019hfo7n3upc35e" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/聊聊前端安全/" data-id="ckbha0h4j0018hco7jm7xmd2p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1574,7 +1576,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ckbagkfvw000qhfo7ncndgnye" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/CSRF/" data-id="ckbha0h4b000phco76k5ymcym" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1690,7 +1692,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ckbagkfvz000rhfo7z7t7acbk" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/11/23/XSS/" data-id="ckbha0h4d000shco77uqx1zp2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
@@ -1823,7 +1825,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ckbagkfwg001chfo7sgs1v7vb" class="article-share-link">Share</a>
+      <a data-url="http://swingboy.github.io/2018/08/31/MV-模式/" data-id="ckbha0h4r001bhco71ktk1aex" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
